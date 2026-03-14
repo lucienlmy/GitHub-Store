@@ -520,4 +520,11 @@
     <string name="auto_update_title">Aggiornamento automatico</string>
     <string name="auto_update_description">Scarica e installa automaticamente gli aggiornamenti in background tramite Shizuku</string>
 
+    <string name="section_updates">Aggiornamenti</string>
+    <string name="update_check_interval_title">Intervallo di controllo</string>
+    <string name="update_check_interval_description">Ogni quanto verificare gli aggiornamenti in background</string>
+    <string name="interval_3h">3h</string>
+    <string name="interval_6h">6h</string>
+    <string name="interval_12h">12h</string>
+    <string name="interval_24h">24h</string>
 </resources>

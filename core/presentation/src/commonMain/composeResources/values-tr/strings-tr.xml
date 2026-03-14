@@ -518,4 +518,11 @@
     <string name="auto_update_title">Uygulamaları otomatik güncelle</string>
     <string name="auto_update_description">Shizuku aracılığıyla arka planda otomatik olarak güncellemeleri indirin ve yükleyin</string>
 
+    <string name="section_updates">Güncellemeler</string>
+    <string name="update_check_interval_title">Güncelleme kontrol aralığı</string>
+    <string name="update_check_interval_description">Arka planda uygulama güncellemelerinin ne sıklıkla kontrol edileceği</string>
+    <string name="interval_3h">3s</string>
+    <string name="interval_6h">6s</string>
+    <string name="interval_12h">12s</string>
+    <string name="interval_24h">24s</string>
 </resources>

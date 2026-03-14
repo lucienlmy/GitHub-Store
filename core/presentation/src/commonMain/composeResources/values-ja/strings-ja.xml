@@ -482,4 +482,11 @@
     <string name="auto_update_title">アプリを自動更新</string>
     <string name="auto_update_description">Shizukuを使用してバックグラウンドで自動的にアップデートをダウンロードしてインストール</string>
 
+    <string name="section_updates">アップデート</string>
+    <string name="update_check_interval_title">アップデート確認間隔</string>
+    <string name="update_check_interval_description">バックグラウンドでアプリのアップデートを確認する頻度</string>
+    <string name="interval_3h">3時間</string>
+    <string name="interval_6h">6時間</string>
+    <string name="interval_12h">12時間</string>
+    <string name="interval_24h">24時間</string>
 </resources>

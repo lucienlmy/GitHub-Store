@@ -520,4 +520,11 @@
     <string name="auto_update_title">স্বয়ংক্রিয়ভাবে অ্যাপ আপডেট করুন</string>
     <string name="auto_update_description">Shizuku এর মাধ্যমে ব্যাকগ্রাউন্ডে স্বয়ংক্রিয়ভাবে আপডেট ডাউনলোড এবং ইনস্টল করুন</string>
 
+    <string name="section_updates">আপডেট</string>
+    <string name="update_check_interval_title">আপডেট চেক করার ব্যবধান</string>
+    <string name="update_check_interval_description">ব্যাকগ্রাউন্ডে কতক্ষণ পর পর অ্যাপ আপডেট খোঁজা হবে</string>
+    <string name="interval_3h">৩ঘ</string>
+    <string name="interval_6h">৬ঘ</string>
+    <string name="interval_12h">১২ঘ</string>
+    <string name="interval_24h">২৪ঘ</string>
 </resources>

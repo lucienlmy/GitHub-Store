@@ -481,4 +481,11 @@
     <string name="auto_update_title">Actualizar apps automáticamente</string>
     <string name="auto_update_description">Descargar e instalar actualizaciones en segundo plano a través de Shizuku</string>
 
+    <string name="section_updates">Actualizaciones</string>
+    <string name="update_check_interval_title">Intervalo de verificación</string>
+    <string name="update_check_interval_description">Con qué frecuencia buscar actualizaciones en segundo plano</string>
+    <string name="interval_3h">3h</string>
+    <string name="interval_6h">6h</string>
+    <string name="interval_12h">12h</string>
+    <string name="interval_24h">24h</string>
 </resources>

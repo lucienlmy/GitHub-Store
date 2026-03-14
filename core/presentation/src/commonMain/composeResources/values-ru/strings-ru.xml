@@ -484,4 +484,11 @@
     <string name="auto_update_title">Автообновление приложений</string>
     <string name="auto_update_description">Автоматически загружать и устанавливать обновления в фоне через Shizuku</string>
 
+    <string name="section_updates">Обновления</string>
+    <string name="update_check_interval_title">Интервал проверки обновлений</string>
+    <string name="update_check_interval_description">Как часто проверять обновления приложения в фоне</string>
+    <string name="interval_3h">3ч</string>
+    <string name="interval_6h">6ч</string>
+    <string name="interval_12h">12ч</string>
+    <string name="interval_24h">24ч</string>
 </resources>

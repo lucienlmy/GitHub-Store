@@ -520,4 +520,11 @@
     <string name="auto_update_title">ऐप्स ऑटो-अपडेट करें</string>
     <string name="auto_update_description">Shizuku के माध्यम से पृष्ठभूमि में स्वचालित रूप से अपडेट डाउनलोड और इंस्टॉल करें</string>
 
+    <string name="section_updates">अपडेट</string>
+    <string name="update_check_interval_title">अपडेट जाँच अंतराल</string>
+    <string name="update_check_interval_description">पृष्ठभूमि में ऐप अपडेट कितनी बार जाँचें</string>
+    <string name="interval_3h">3घ</string>
+    <string name="interval_6h">6घ</string>
+    <string name="interval_12h">12घ</string>
+    <string name="interval_24h">24घ</string>
 </resources>

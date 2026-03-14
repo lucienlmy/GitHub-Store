@@ -521,4 +521,11 @@
     <string name="auto_update_title">تحديث التطبيقات تلقائيًا</string>
     <string name="auto_update_description">تنزيل التحديثات وتثبيتها تلقائيًا في الخلفية عبر Shizuku</string>
 
+    <string name="section_updates">التحديثات</string>
+    <string name="update_check_interval_title">فترة التحقق من التحديثات</string>
+    <string name="update_check_interval_description">عدد مرات التحقق من تحديثات التطبيق في الخلفية</string>
+    <string name="interval_3h">٣ ساعات</string>
+    <string name="interval_6h">٦ ساعات</string>
+    <string name="interval_12h">١٢ ساعة</string>
+    <string name="interval_24h">٢٤ ساعة</string>
 </resources>

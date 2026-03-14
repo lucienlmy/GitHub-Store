@@ -482,4 +482,11 @@
     <string name="auto_update_title">Mise à jour automatique</string>
     <string name="auto_update_description">Télécharger et installer automatiquement les mises à jour en arrière-plan via Shizuku</string>
 
+    <string name="section_updates">Mises à jour</string>
+    <string name="update_check_interval_title">Intervalle de vérification</string>
+    <string name="update_check_interval_description">Fréquence de vérification des mises à jour en arrière-plan</string>
+    <string name="interval_3h">3h</string>
+    <string name="interval_6h">6h</string>
+    <string name="interval_12h">12h</string>
+    <string name="interval_24h">24h</string>
 </resources>

@@ -483,4 +483,11 @@
     <string name="auto_update_title">自动更新应用</string>
     <string name="auto_update_description">通过 Shizuku 在后台自动下载并安装更新</string>
 
+    <string name="section_updates">更新</string>
+    <string name="update_check_interval_title">更新检查间隔</string>
+    <string name="update_check_interval_description">在后台检查应用更新的频率</string>
+    <string name="interval_3h">3小时</string>
+    <string name="interval_6h">6小时</string>
+    <string name="interval_12h">12小时</string>
+    <string name="interval_24h">24小时</string>
 </resources>

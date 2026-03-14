@@ -517,4 +517,11 @@
     <string name="auto_update_title">앱 자동 업데이트</string>
     <string name="auto_update_description">Shizuku를 통해 백그라운드에서 자동으로 업데이트 다운로드 및 설치</string>
 
+    <string name="section_updates">업데이트</string>
+    <string name="update_check_interval_title">업데이트 확인 주기</string>
+    <string name="update_check_interval_description">백그라운드에서 앱 업데이트를 확인하는 빈도</string>
+    <string name="interval_3h">3시간</string>
+    <string name="interval_6h">6시간</string>
+    <string name="interval_12h">12시간</string>
+    <string name="interval_24h">24시간</string>
 </resources>
