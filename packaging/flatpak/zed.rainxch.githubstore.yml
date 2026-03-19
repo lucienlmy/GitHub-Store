@@ -22,6 +22,7 @@ finish-args:
 
 modules:
   # Module 1: Bundle JetBrains Runtime (JBR) 21 for optimal Compose Desktop rendering
+  # Using plain jbr (no JCEF) — app doesn't use embedded Chromium
   - name: jbr
     buildsystem: simple
     build-commands:
@@ -30,14 +31,14 @@ modules:
     sources:
       # x86_64
       - type: file
-        url: https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-21.0.7-linux-x64-b631.27.tar.gz
-        sha256: a824bc7739e226e1b40ea0f8c4e4f4c6f796fc3b4abfa6e9abe3bd119a30d938
+        url: https://cache-redirector.jetbrains.com/intellij-jbr/jbr-21.0.10-linux-x64-b1163.105.tar.gz
+        sha256: b6a3b13451d296140727bbde9325dd9ee422e2e9b2c6a9378f346f1b8d1111bc
         only-arches:
           - x86_64
       # aarch64
       - type: file
-        url: https://cache-redirector.jetbrains.com/intellij-jbr/jbr_jcef-21.0.7-linux-aarch64-b631.27.tar.gz
-        sha256: a824bc7739e226e1b40ea0f8c4e4f4c6f796fc3b4abfa6e9abe3bd119a30d938
+        url: https://cache-redirector.jetbrains.com/intellij-jbr/jbr-21.0.10-linux-aarch64-b1163.105.tar.gz
+        sha256: 38804f526d869f5a9c49e9b90c04edcbc918b41e8e43264e5d5076d352a959bc
         only-arches:
           - aarch64
 

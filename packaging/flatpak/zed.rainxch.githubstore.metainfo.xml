@@ -30,9 +30,20 @@
   <screenshots>
     <screenshot type="default">
       <caption>Home screen showing trending repositories</caption>
-      <image>https://raw.githubusercontent.com/AshkanAhmady/GitHub-Store/main/screenshots/home.png</image>
+      <image>https://raw.githubusercontent.com/OpenHub-Store/GitHub-Store/main/media-resources/screenshots/desktop/desktop_linux_home.jpg</image>
     </screenshot>
-    <!-- Add more screenshots as needed -->
+    <screenshot>
+      <caption>Repository details with release info</caption>
+      <image>https://raw.githubusercontent.com/OpenHub-Store/GitHub-Store/main/media-resources/screenshots/desktop/desktop_linux_details.jpg</image>
+    </screenshot>
+    <screenshot>
+      <caption>Installing packages on Linux</caption>
+      <image>https://raw.githubusercontent.com/OpenHub-Store/GitHub-Store/main/media-resources/screenshots/desktop/desktop_linux_installing_rpm.jpg</image>
+    </screenshot>
+    <screenshot>
+      <caption>AppImage support on Linux</caption>
+      <image>https://raw.githubusercontent.com/OpenHub-Store/GitHub-Store/main/media-resources/screenshots/desktop/desktop_linux_appimage.jpg</image>
+    </screenshot>
   </screenshots>
 
   <url type="homepage">https://github.com/OpenHub-Store/GitHub-Store</url>
