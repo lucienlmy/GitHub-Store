@@ -6,6 +6,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -153,13 +154,18 @@ class HomeViewModel(
         }
 
         val targetCategory = category ?: _state.value.currentCategory
-        val targetPlatform = platform ?: _state.value.currentPlatform
+        val targetPlatformDeffered =
+            viewModelScope.async {
+                tweaksRepository.getDiscoveryPlatform().first()
+            }
         val targetTopic = if (topicExplicitlySet) topic else _state.value.selectedTopic
 
         logger.debug("Loading repos: category=$targetCategory, topic=$targetTopic, page=$nextPageIndex, isInitial=$isInitial")
 
         return viewModelScope
             .launch {
+                val targetPlatform = platform ?: targetPlatformDeffered.await()
+
                 if (platform != null) {
                     tweaksRepository.setDiscoveryPlatform(targetPlatform)
                 }
