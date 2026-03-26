@@ -604,4 +604,14 @@
     <string name="clear_seen_history_description">إعادة تعيين جميع المستودعات المشاهَدة لتظهر مجدداً في الخلاصات</string>
     <string name="seen_history_cleared">تم مسح سجل المشاهدة</string>
     <string name="seen_badge">تمت المشاهدة</string>
+
+    <string name="recently_viewed">تمت مشاهدته مؤخرًا</string>
+    <string name="profile_recently_viewed_description">المستودعات التي قمت بزيارتها</string>
+    <string name="downloaded_packages">الحزم التي تم تنزيلها</string>
+    <string name="downloaded_packages_description">ملفات APK والمثبتات من إصدارات GitHub</string>
+    <string name="delete_all">حذف الكل</string>
+    <string name="delete_downloads_confirmation_title">حذف جميع التنزيلات؟</string>
+    <string name="delete_downloads_confirmation_message">سيؤدي هذا إلى حذف جميع ملفات APK والمثبتات نهائيًا (%1$s). يمكنك إعادة تنزيلها في أي وقت.</string>
+    <string name="downloads_cleared">تم حذف جميع الحزم التي تم تنزيلها.</string>
+    <string name="unable_to_verify_attestation">تعذر التحقق</string>
 </resources>

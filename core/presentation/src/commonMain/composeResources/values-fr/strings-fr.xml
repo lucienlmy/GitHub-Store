@@ -565,4 +565,14 @@
     <string name="clear_seen_history_description">Réinitialiser tous les dépôts consultés pour qu\'ils réapparaissent dans les flux</string>
     <string name="seen_history_cleared">Historique des consultations effacé</string>
     <string name="seen_badge">Consulté</string>
+
+    <string name="recently_viewed">Récemment consultés</string>
+    <string name="profile_recently_viewed_description">Dépôts que vous avez visités</string>
+    <string name="downloaded_packages">Paquets téléchargés</string>
+    <string name="downloaded_packages_description">APK et installateurs depuis les versions GitHub</string>
+    <string name="delete_all">Tout supprimer</string>
+    <string name="delete_downloads_confirmation_title">Supprimer tous les téléchargements ?</string>
+    <string name="delete_downloads_confirmation_message">Cela supprimera définitivement tous les APK et installateurs (%1$s). Vous pouvez les télécharger à nouveau à tout moment.</string>
+    <string name="downloads_cleared">Tous les paquets téléchargés ont été supprimés.</string>
+    <string name="unable_to_verify_attestation">Impossible de vérifier</string>
 </resources>

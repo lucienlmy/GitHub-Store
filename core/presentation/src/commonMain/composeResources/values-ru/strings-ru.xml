@@ -567,4 +567,14 @@
     <string name="clear_seen_history_description">Сбросить все просмотренные репозитории, чтобы они снова появились в лентах</string>
     <string name="seen_history_cleared">История просмотров очищена</string>
     <string name="seen_badge">Просмотрено</string>
+
+    <string name="recently_viewed">Недавно просмотренные</string>
+    <string name="profile_recently_viewed_description">Репозитории, которые вы посещали</string>
+    <string name="downloaded_packages">Загруженные пакеты</string>
+    <string name="downloaded_packages_description">APK и установщики из релизов GitHub</string>
+    <string name="delete_all">Удалить всё</string>
+    <string name="delete_downloads_confirmation_title">Удалить все загрузки?</string>
+    <string name="delete_downloads_confirmation_message">Это навсегда удалит все APK и установщики (%1$s). Вы сможете скачать их снова в любое время.</string>
+    <string name="downloads_cleared">Все загруженные пакеты удалены.</string>
+    <string name="unable_to_verify_attestation">Не удалось проверить</string>
 </resources>

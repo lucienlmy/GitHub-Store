@@ -567,4 +567,14 @@
     <string name="clear_seen_history_description">重置所有已浏览的仓库，使其重新出现在信息流中</string>
     <string name="seen_history_cleared">浏览记录已清除</string>
     <string name="seen_badge">已浏览</string>
+
+    <string name="recently_viewed">最近查看</string>
+    <string name="profile_recently_viewed_description">你访问过的仓库</string>
+    <string name="downloaded_packages">已下载的包</string>
+    <string name="downloaded_packages_description">来自 GitHub 发布的 APK 和安装程序</string>
+    <string name="delete_all">全部删除</string>
+    <string name="delete_downloads_confirmation_title">删除所有下载？</string>
+    <string name="delete_downloads_confirmation_message">这将永久删除所有 APK 和安装程序（%1$s）。你可以随时重新下载。</string>
+    <string name="downloads_cleared">所有已下载的包已被删除。</string>
+    <string name="unable_to_verify_attestation">无法验证</string>
 </resources>

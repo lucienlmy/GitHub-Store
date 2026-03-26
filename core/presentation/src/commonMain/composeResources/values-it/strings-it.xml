@@ -603,4 +603,14 @@
     <string name="clear_seen_history_description">Reimposta tutti i repository visualizzati in modo che ricompaiano nei feed</string>
     <string name="seen_history_cleared">Cronologia visualizzazioni cancellata</string>
     <string name="seen_badge">Visualizzato</string>
+
+    <string name="recently_viewed">Visualizzati di recente</string>
+    <string name="profile_recently_viewed_description">Repository che hai visitato</string>
+    <string name="downloaded_packages">Pacchetti scaricati</string>
+    <string name="downloaded_packages_description">APK e installer dalle release GitHub</string>
+    <string name="delete_all">Elimina tutto</string>
+    <string name="delete_downloads_confirmation_title">Eliminare tutti i download?</string>
+    <string name="delete_downloads_confirmation_message">Questo rimuoverà definitivamente tutti gli APK e installer (%1$s). Puoi riscaricarli in qualsiasi momento.</string>
+    <string name="downloads_cleared">Tutti i pacchetti scaricati sono stati eliminati.</string>
+    <string name="unable_to_verify_attestation">Impossibile verificare</string>
 </resources>

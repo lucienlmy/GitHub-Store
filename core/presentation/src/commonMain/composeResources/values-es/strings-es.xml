@@ -564,4 +564,14 @@
     <string name="clear_seen_history_description">Restablecer todos los repositorios vistos para que aparezcan de nuevo en las fuentes</string>
     <string name="seen_history_cleared">Historial de vistos borrado</string>
     <string name="seen_badge">Visto</string>
+
+    <string name="recently_viewed">Vistos recientemente</string>
+    <string name="profile_recently_viewed_description">Repositorios que has visitado</string>
+    <string name="downloaded_packages">Paquetes descargados</string>
+    <string name="downloaded_packages_description">APKs e instaladores desde lanzamientos de GitHub</string>
+    <string name="delete_all">Eliminar todo</string>
+    <string name="delete_downloads_confirmation_title">¿Eliminar todas las descargas?</string>
+    <string name="delete_downloads_confirmation_message">Esto eliminará permanentemente todos los APKs e instaladores (%1$s). Puedes volver a descargarlos en cualquier momento.</string>
+    <string name="downloads_cleared">Todos los paquetes descargados han sido eliminados.</string>
+    <string name="unable_to_verify_attestation">No se pudo verificar</string>
 </resources>

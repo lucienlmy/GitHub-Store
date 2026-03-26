@@ -601,4 +601,14 @@
     <string name="clear_seen_history_description">모든 조회 기록을 초기화하여 피드에 다시 표시합니다</string>
     <string name="seen_history_cleared">조회 기록이 삭제되었습니다</string>
     <string name="seen_badge">확인함</string>
+
+    <string name="recently_viewed">최근 본 항목</string>
+    <string name="profile_recently_viewed_description">방문한 저장소</string>
+    <string name="downloaded_packages">다운로드된 패키지</string>
+    <string name="downloaded_packages_description">GitHub 릴리스의 APK 및 설치 파일</string>
+    <string name="delete_all">모두 삭제</string>
+    <string name="delete_downloads_confirmation_title">모든 다운로드를 삭제하시겠습니까?</string>
+    <string name="delete_downloads_confirmation_message">모든 APK 및 설치 파일이 영구적으로 삭제됩니다 (%1$s). 언제든 다시 다운로드할 수 있습니다.</string>
+    <string name="downloads_cleared">모든 다운로드된 패키지가 삭제되었습니다.</string>
+    <string name="unable_to_verify_attestation">확인할 수 없음</string>
 </resources>

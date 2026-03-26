@@ -603,4 +603,14 @@
     <string name="clear_seen_history_description">সমস্ত দেখা রিপোজিটরি রিসেট করুন যাতে সেগুলো ফিডে আবার দেখা যায়</string>
     <string name="seen_history_cleared">দেখার ইতিহাস মুছে ফেলা হয়েছে</string>
     <string name="seen_badge">দেখা হয়েছে</string>
+
+    <string name="recently_viewed">সাম্প্রতিক দেখা</string>
+    <string name="profile_recently_viewed_description">আপনি যেসব রিপোজিটরি দেখেছেন</string>
+    <string name="downloaded_packages">ডাউনলোড করা প্যাকেজসমূহ</string>
+    <string name="downloaded_packages_description">GitHub রিলিজ থেকে APK এবং ইনস্টলার</string>
+    <string name="delete_all">সব মুছুন</string>
+    <string name="delete_downloads_confirmation_title">সব ডাউনলোড মুছবেন?</string>
+    <string name="delete_downloads_confirmation_message">এটি সব APK এবং ইনস্টলার স্থায়ীভাবে মুছে ফেলবে (%1$s)। আপনি যেকোনো সময় আবার ডাউনলোড করতে পারবেন।</string>
+    <string name="downloads_cleared">সব ডাউনলোড করা প্যাকেজ মুছে ফেলা হয়েছে।</string>
+    <string name="unable_to_verify_attestation">যাচাই করা যায়নি</string>
 </resources>

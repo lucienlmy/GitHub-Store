@@ -601,4 +601,14 @@
     <string name="clear_seen_history_description">Tüm görüntülenen depoları sıfırlayarak akışlarda tekrar görünmelerini sağlayın</string>
     <string name="seen_history_cleared">Görüntüleme geçmişi temizlendi</string>
     <string name="seen_badge">Görüntülendi</string>
+
+    <string name="recently_viewed">Son görüntülenenler</string>
+    <string name="profile_recently_viewed_description">Ziyaret ettiğiniz depolar</string>
+    <string name="downloaded_packages">İndirilen paketler</string>
+    <string name="downloaded_packages_description">GitHub sürümlerinden APK ve kurulum dosyaları</string>
+    <string name="delete_all">Tümünü sil</string>
+    <string name="delete_downloads_confirmation_title">Tüm indirmeler silinsin mi?</string>
+    <string name="delete_downloads_confirmation_message">Bu işlem tüm APK ve kurulum dosyalarını kalıcı olarak silecek (%1$s). İstediğiniz zaman yeniden indirebilirsiniz.</string>
+    <string name="downloads_cleared">Tüm indirilen paketler silindi.</string>
+    <string name="unable_to_verify_attestation">Doğrulanamadı</string>
 </resources>

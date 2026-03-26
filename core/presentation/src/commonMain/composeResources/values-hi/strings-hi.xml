@@ -602,4 +602,14 @@
     <string name="clear_seen_history_description">सभी देखे गए रिपॉजिटरी रीसेट करें ताकि वे फ़ीड में फिर से दिखें</string>
     <string name="seen_history_cleared">देखने का इतिहास साफ़ किया गया</string>
     <string name="seen_badge">देखा गया</string>
+
+    <string name="recently_viewed">हाल ही में देखा गया</string>
+    <string name="profile_recently_viewed_description">वे रिपॉजिटरी जिन्हें आपने देखा है</string>
+    <string name="downloaded_packages">डाउनलोड किए गए पैकेज</string>
+    <string name="downloaded_packages_description">GitHub रिलीज़ से APK और इंस्टॉलर</string>
+    <string name="delete_all">सभी हटाएँ</string>
+    <string name="delete_downloads_confirmation_title">सभी डाउनलोड हटाएँ?</string>
+    <string name="delete_downloads_confirmation_message">यह सभी APK और इंस्टॉलर को स्थायी रूप से हटा देगा (%1$s)। आप उन्हें कभी भी फिर से डाउनलोड कर सकते हैं।</string>
+    <string name="downloads_cleared">सभी डाउनलोड किए गए पैकेज हटा दिए गए हैं।</string>
+    <string name="unable_to_verify_attestation">सत्यापित नहीं किया जा सका</string>
 </resources>

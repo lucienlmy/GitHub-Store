@@ -567,4 +567,14 @@
     <string name="clear_seen_history_description">Zresetuj wszystkie przeglądane repozytoria, aby ponownie pojawiły się w kanałach</string>
     <string name="seen_history_cleared">Historia przeglądania wyczyszczona</string>
     <string name="seen_badge">Przeglądane</string>
+
+    <string name="recently_viewed">Ostatnio oglądane</string>
+    <string name="profile_recently_viewed_description">Repozytoria, które odwiedziłeś</string>
+    <string name="downloaded_packages">Pobrane pakiety</string>
+    <string name="downloaded_packages_description">APK i instalatory z wydań GitHub</string>
+    <string name="delete_all">Usuń wszystko</string>
+    <string name="delete_downloads_confirmation_title">Usunąć wszystkie pobrania?</string>
+    <string name="delete_downloads_confirmation_message">Spowoduje to trwałe usunięcie wszystkich APK i instalatorów (%1$s). Możesz je pobrać ponownie w dowolnym momencie.</string>
+    <string name="downloads_cleared">Wszystkie pobrane pakiety zostały usunięte.</string>
+    <string name="unable_to_verify_attestation">Nie można zweryfikować</string>
 </resources>
