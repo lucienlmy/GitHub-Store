@@ -1,4 +1,4 @@
-package zed.rainxch.profile.presentation.components.sections
+package zed.rainxch.tweaks.presentation.components.sections
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -43,15 +43,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import zed.rainxch.githubstore.core.presentation.res.*
-import zed.rainxch.profile.presentation.ProfileAction
-import zed.rainxch.profile.presentation.ProfileState
-import zed.rainxch.profile.presentation.components.SectionHeader
-import zed.rainxch.profile.presentation.model.ProxyType
+import zed.rainxch.tweaks.presentation.TweaksAction
+import zed.rainxch.tweaks.presentation.TweaksState
+import zed.rainxch.tweaks.presentation.components.SectionHeader
+import zed.rainxch.tweaks.presentation.model.ProxyType
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.networkSection(
-    state: ProfileState,
-    onAction: (ProfileAction) -> Unit,
+    state: TweaksState,
+    onAction: (TweaksAction) -> Unit,
 ) {
     item {
         SectionHeader(
@@ -63,7 +63,7 @@ fun LazyListScope.networkSection(
         ProxyTypeCard(
             selectedType = state.proxyType,
             onTypeSelected = { type ->
-                onAction(ProfileAction.OnProxyTypeSelected(type))
+                onAction(TweaksAction.OnProxyTypeSelected(type))
             },
         )
 
@@ -161,8 +161,8 @@ private fun ProxyTypeCard(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ProxyDetailsCard(
-    state: ProfileState,
-    onAction: (ProfileAction) -> Unit,
+    state: TweaksState,
+    onAction: (TweaksAction) -> Unit,
 ) {
     val portValue = state.proxyPort
     val isPortInvalid =
@@ -191,7 +191,7 @@ private fun ProxyDetailsCard(
             ) {
                 OutlinedTextField(
                     value = state.proxyHost,
-                    onValueChange = { onAction(ProfileAction.OnProxyHostChanged(it)) },
+                    onValueChange = { onAction(TweaksAction.OnProxyHostChanged(it)) },
                     label = { Text(stringResource(Res.string.proxy_host)) },
                     placeholder = { Text("127.0.0.1") },
                     singleLine = true,
@@ -201,7 +201,7 @@ private fun ProxyDetailsCard(
 
                 OutlinedTextField(
                     value = state.proxyPort,
-                    onValueChange = { onAction(ProfileAction.OnProxyPortChanged(it)) },
+                    onValueChange = { onAction(TweaksAction.OnProxyPortChanged(it)) },
                     label = { Text(stringResource(Res.string.proxy_port)) },
                     placeholder = { Text("1080") },
                     singleLine = true,
@@ -221,7 +221,7 @@ private fun ProxyDetailsCard(
             // Username
             OutlinedTextField(
                 value = state.proxyUsername,
-                onValueChange = { onAction(ProfileAction.OnProxyUsernameChanged(it)) },
+                onValueChange = { onAction(TweaksAction.OnProxyUsernameChanged(it)) },
                 label = { Text(stringResource(Res.string.proxy_username)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -231,7 +231,7 @@ private fun ProxyDetailsCard(
             // Password with visibility toggle
             OutlinedTextField(
                 value = state.proxyPassword,
-                onValueChange = { onAction(ProfileAction.OnProxyPasswordChanged(it)) },
+                onValueChange = { onAction(TweaksAction.OnProxyPasswordChanged(it)) },
                 label = { Text(stringResource(Res.string.proxy_password)) },
                 singleLine = true,
                 visualTransformation =
@@ -242,7 +242,7 @@ private fun ProxyDetailsCard(
                     },
                 trailingIcon = {
                     IconButton(
-                        onClick = { onAction(ProfileAction.OnProxyPasswordVisibilityToggle) },
+                        onClick = { onAction(TweaksAction.OnProxyPasswordVisibilityToggle) },
                     ) {
                         Icon(
                             imageVector =
@@ -268,7 +268,7 @@ private fun ProxyDetailsCard(
 
             // Save button
             FilledTonalButton(
-                onClick = { onAction(ProfileAction.OnProxySave) },
+                onClick = { onAction(TweaksAction.OnProxySave) },
                 enabled = isFormValid,
                 modifier = Modifier.align(Alignment.End),
             ) {

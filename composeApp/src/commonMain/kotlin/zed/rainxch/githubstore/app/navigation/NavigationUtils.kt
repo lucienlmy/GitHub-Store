@@ -14,6 +14,8 @@ fun NavBackStackEntry?.getCurrentScreen(): GithubStoreGraph? {
         route.contains("DetailsScreen") -> toRoute<GithubStoreGraph.DetailsScreen>()
         route.contains("DeveloperProfileScreen") -> toRoute<GithubStoreGraph.DeveloperProfileScreen>()
         route.contains("ProfileScreen") -> GithubStoreGraph.ProfileScreen
+        route.contains("TweaksScreen") -> GithubStoreGraph.TweaksScreen
+        route.contains("RecentlyViewedScreen") -> GithubStoreGraph.RecentlyViewedScreen
         route.contains("FavouritesScreen") -> GithubStoreGraph.FavouritesScreen
         route.contains("StarredReposScreen") -> GithubStoreGraph.StarredReposScreen
         route.contains("AppsScreen") -> GithubStoreGraph.AppsScreen

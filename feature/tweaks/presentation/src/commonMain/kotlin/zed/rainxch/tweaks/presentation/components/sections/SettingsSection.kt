@@ -1,16 +1,16 @@
-package zed.rainxch.profile.presentation.components.sections
+package zed.rainxch.tweaks.presentation.components.sections
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import zed.rainxch.profile.presentation.ProfileAction
-import zed.rainxch.profile.presentation.ProfileState
+import zed.rainxch.tweaks.presentation.TweaksAction
+import zed.rainxch.tweaks.presentation.TweaksState
 
 fun LazyListScope.settings(
-    state: ProfileState,
-    onAction: (ProfileAction) -> Unit,
+    state: TweaksState,
+    onAction: (TweaksAction) -> Unit,
 ) {
     appearanceSection(
         state = state,

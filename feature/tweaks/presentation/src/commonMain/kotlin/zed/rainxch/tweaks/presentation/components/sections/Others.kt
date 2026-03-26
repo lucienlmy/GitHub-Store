@@ -1,4 +1,4 @@
-package zed.rainxch.profile.presentation.components.sections
+package zed.rainxch.tweaks.presentation.components.sections
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,15 +30,15 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import zed.rainxch.core.presentation.components.ExpressiveCard
 import zed.rainxch.githubstore.core.presentation.res.*
-import zed.rainxch.profile.presentation.ProfileAction
-import zed.rainxch.profile.presentation.ProfileState
-import zed.rainxch.profile.presentation.components.SectionHeader
-import zed.rainxch.profile.presentation.components.ToggleSettingCard
+import zed.rainxch.tweaks.presentation.TweaksAction
+import zed.rainxch.tweaks.presentation.TweaksState
+import zed.rainxch.tweaks.presentation.components.SectionHeader
+import zed.rainxch.tweaks.presentation.components.ToggleSettingCard
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.othersSection(
-    state: ProfileState,
-    onAction: (ProfileAction) -> Unit,
+    state: TweaksState,
+    onAction: (TweaksAction) -> Unit,
 ) {
     item {
         SectionHeader(
@@ -94,7 +94,7 @@ fun LazyListScope.othersSection(
 
                 FilledTonalButton(
                     onClick = {
-                        onAction(ProfileAction.OnClearCacheClick)
+                        onAction(TweaksAction.OnClearCacheClick)
                     },
                     shape = RoundedCornerShape(12.dp),
                     colors =
@@ -119,7 +119,7 @@ fun LazyListScope.othersSection(
             description = stringResource(Res.string.auto_detect_clipboard_description),
             checked = state.autoDetectClipboardLinks,
             onCheckedChange = { enabled ->
-                onAction(ProfileAction.OnAutoDetectClipboardToggled(enabled))
+                onAction(TweaksAction.OnAutoDetectClipboardToggled(enabled))
             },
         )
 
@@ -130,7 +130,7 @@ fun LazyListScope.othersSection(
             description = stringResource(Res.string.hide_seen_description),
             checked = state.isHideSeenEnabled,
             onCheckedChange = { enabled ->
-                onAction(ProfileAction.OnHideSeenToggled(enabled))
+                onAction(TweaksAction.OnHideSeenToggled(enabled))
             },
         )
 
@@ -138,7 +138,7 @@ fun LazyListScope.othersSection(
 
         ClearSeenHistoryCard(
             onClick = {
-                onAction(ProfileAction.OnClearSeenRepos)
+                onAction(TweaksAction.OnClearSeenRepos)
             },
         )
     }

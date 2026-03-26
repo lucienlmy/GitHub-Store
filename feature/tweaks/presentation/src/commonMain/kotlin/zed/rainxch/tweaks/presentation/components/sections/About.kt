@@ -1,4 +1,4 @@
-package zed.rainxch.profile.presentation.components.sections
+package zed.rainxch.tweaks.presentation.components.sections
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -30,13 +30,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import zed.rainxch.githubstore.core.presentation.res.*
-import zed.rainxch.profile.presentation.ProfileAction
-import zed.rainxch.profile.presentation.components.SectionHeader
+import zed.rainxch.tweaks.presentation.TweaksAction
+import zed.rainxch.tweaks.presentation.components.SectionHeader
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.about(
     versionName: String,
-    onAction: (ProfileAction) -> Unit,
+    onAction: (TweaksAction) -> Unit,
 ) {
     item {
         SectionHeader(
@@ -78,7 +78,7 @@ fun LazyListScope.about(
                     IconButton(
                         shape = IconButtonDefaults.shapes().shape,
                         onClick = {
-                            onAction(ProfileAction.OnHelpClick)
+                            onAction(TweaksAction.OnHelpClick)
                         },
                         colors =
                             IconButtonDefaults.iconButtonColors(

@@ -1,4 +1,4 @@
-package zed.rainxch.profile.presentation.components.sections
+package zed.rainxch.tweaks.presentation.components.sections
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -10,7 +10,6 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +23,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -36,21 +34,16 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.ripple
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import zed.rainxch.core.domain.model.AppTheme
@@ -60,15 +53,15 @@ import zed.rainxch.core.presentation.theme.isDynamicColorAvailable
 import zed.rainxch.core.presentation.utils.displayName
 import zed.rainxch.core.presentation.utils.primaryColor
 import zed.rainxch.githubstore.core.presentation.res.*
-import zed.rainxch.profile.presentation.ProfileAction
-import zed.rainxch.profile.presentation.ProfileState
-import zed.rainxch.profile.presentation.components.SectionHeader
-import zed.rainxch.profile.presentation.components.ToggleSettingCard
+import zed.rainxch.tweaks.presentation.TweaksAction
+import zed.rainxch.tweaks.presentation.TweaksState
+import zed.rainxch.tweaks.presentation.components.SectionHeader
+import zed.rainxch.tweaks.presentation.components.ToggleSettingCard
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.appearanceSection(
-    state: ProfileState,
-    onAction: (ProfileAction) -> Unit,
+    state: TweaksState,
+    onAction: (TweaksAction) -> Unit,
 ) {
     item {
         SectionHeader(
@@ -80,7 +73,7 @@ fun LazyListScope.appearanceSection(
         ThemeSelectionCard(
             isDarkTheme = state.isDarkTheme,
             onDarkThemeChange = { isDarkTheme ->
-                onAction(ProfileAction.OnDarkThemeChange(isDarkTheme))
+                onAction(TweaksAction.OnDarkThemeChange(isDarkTheme))
             },
         )
 
@@ -89,7 +82,7 @@ fun LazyListScope.appearanceSection(
         ThemeColorCard(
             selectedThemeColor = state.selectedThemeColor,
             onThemeColorSelected = { theme ->
-                onAction(ProfileAction.OnThemeColorSelected(theme))
+                onAction(TweaksAction.OnThemeColorSelected(theme))
             },
         )
 
@@ -101,7 +94,7 @@ fun LazyListScope.appearanceSection(
                 description = stringResource(Res.string.amoled_black_description),
                 checked = state.isAmoledThemeEnabled,
                 onCheckedChange = { enabled ->
-                    onAction(ProfileAction.OnAmoledThemeToggled(enabled))
+                    onAction(TweaksAction.OnAmoledThemeToggled(enabled))
                 },
             )
 
@@ -114,7 +107,7 @@ fun LazyListScope.appearanceSection(
             checked = state.selectedFontTheme == FontTheme.SYSTEM,
             onCheckedChange = { enabled ->
                 onAction(
-                    ProfileAction.OnFontThemeSelected(
+                    TweaksAction.OnFontThemeSelected(
                         if (enabled) {
                             FontTheme.SYSTEM
                         } else {
@@ -132,7 +125,7 @@ fun LazyListScope.appearanceSection(
             description = stringResource(Res.string.liquid_glass_option_description),
             checked = state.isLiquidGlassEnabled,
             onCheckedChange = { enabled ->
-                onAction(ProfileAction.OnLiquidGlassEnabledChange(enabled))
+                onAction(TweaksAction.OnLiquidGlassEnabledChange(enabled))
             },
         )
 
@@ -143,7 +136,7 @@ fun LazyListScope.appearanceSection(
             description = stringResource(Res.string.scrollbar_option_description),
             checked = state.isScrollbarEnabled,
             onCheckedChange = { enabled ->
-                onAction(ProfileAction.OnScrollbarToggled(enabled))
+                onAction(TweaksAction.OnScrollbarToggled(enabled))
             },
         )
     }

@@ -1,4 +1,4 @@
-package zed.rainxch.profile.presentation.components.sections
+package zed.rainxch.tweaks.presentation.components.sections
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -49,14 +49,14 @@ import zed.rainxch.core.domain.model.Platform
 import zed.rainxch.core.domain.model.ShizukuAvailability
 import zed.rainxch.core.presentation.components.ExpressiveCard
 import zed.rainxch.githubstore.core.presentation.res.*
-import zed.rainxch.profile.presentation.ProfileAction
-import zed.rainxch.profile.presentation.ProfileState
-import zed.rainxch.profile.presentation.components.SectionHeader
+import zed.rainxch.tweaks.presentation.TweaksAction
+import zed.rainxch.tweaks.presentation.TweaksState
+import zed.rainxch.tweaks.presentation.components.SectionHeader
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.installationSection(
-    state: ProfileState,
-    onAction: (ProfileAction) -> Unit,
+    state: TweaksState,
+    onAction: (TweaksAction) -> Unit,
 ) {
     if (getPlatform() != Platform.ANDROID) return
 
@@ -73,10 +73,10 @@ fun LazyListScope.installationSection(
             selectedType = state.installerType,
             shizukuAvailability = state.shizukuAvailability,
             onTypeSelected = { type ->
-                onAction(ProfileAction.OnInstallerTypeSelected(type))
+                onAction(TweaksAction.OnInstallerTypeSelected(type))
             },
             onRequestPermission = {
-                onAction(ProfileAction.OnRequestShizukuPermission)
+                onAction(TweaksAction.OnRequestShizukuPermission)
             }
         )
 
@@ -89,7 +89,7 @@ fun LazyListScope.installationSection(
             AutoUpdateCard(
                 enabled = state.autoUpdateEnabled,
                 onToggle = { enabled ->
-                    onAction(ProfileAction.OnAutoUpdateToggled(enabled))
+                    onAction(TweaksAction.OnAutoUpdateToggled(enabled))
                 }
             )
         }
@@ -103,8 +103,8 @@ fun LazyListScope.installationSection(
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 fun LazyListScope.updatesSection(
-    state: ProfileState,
-    onAction: (ProfileAction) -> Unit,
+    state: TweaksState,
+    onAction: (TweaksAction) -> Unit,
 ) {
     if (getPlatform() != Platform.ANDROID) return
 
@@ -120,7 +120,7 @@ fun LazyListScope.updatesSection(
         UpdateCheckIntervalCard(
             selectedIntervalHours = state.updateCheckIntervalHours,
             onIntervalSelected = { hours ->
-                onAction(ProfileAction.OnUpdateCheckIntervalChanged(hours))
+                onAction(TweaksAction.OnUpdateCheckIntervalChanged(hours))
             }
         )
 
@@ -129,7 +129,7 @@ fun LazyListScope.updatesSection(
         PreReleaseToggleCard(
             enabled = state.includePreReleases,
             onToggle = { enabled ->
-                onAction(ProfileAction.OnIncludePreReleasesToggled(enabled))
+                onAction(TweaksAction.OnIncludePreReleasesToggled(enabled))
             }
         )
     }

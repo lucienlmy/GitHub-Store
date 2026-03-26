@@ -71,17 +71,9 @@ fun BottomNavigation(
 ) {
     val liquidState = LocalBottomNavigationLiquid.current
 
-    if (currentScreen !in BottomNavigationUtils.allowedScreens()) return
+    if (currentScreen !in BottomNavigationUtils.allowedScreens().map { it.screen }) return
 
-    val visibleItems =
-        remember {
-            BottomNavigationUtils.items().filterNot {
-                getPlatform() != Platform.ANDROID &&
-                    it.screen == GithubStoreGraph.AppsScreen
-            }
-        }
-
-    val selectedIndex = visibleItems.indexOfFirst { it.screen == currentScreen }
+    val selectedIndex = BottomNavigationUtils.allowedScreens().indexOfFirst { it.screen == currentScreen }
 
     val itemPositions = remember { mutableMapOf<Int, Pair<Float, Float>>() }
 
@@ -272,7 +264,7 @@ fun BottomNavigation(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                visibleItems.forEachIndexed { index, item ->
+                BottomNavigationUtils.allowedScreens().forEachIndexed { index, item ->
                     LiquidGlassTabItem(
                         item = item,
                         hasBadge = item.screen == GithubStoreGraph.AppsScreen && isUpdateAvailable,

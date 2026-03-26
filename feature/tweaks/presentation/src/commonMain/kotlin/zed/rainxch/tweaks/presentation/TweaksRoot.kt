@@ -1,4 +1,4 @@
-package zed.rainxch.profile.presentation
+package zed.rainxch.tweaks.presentation
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,68 +33,63 @@ import zed.rainxch.core.presentation.locals.LocalBottomNavigationHeight
 import zed.rainxch.core.presentation.locals.LocalBottomNavigationLiquid
 import zed.rainxch.core.presentation.theme.GithubStoreTheme
 import zed.rainxch.core.presentation.utils.ObserveAsEvents
-import zed.rainxch.githubstore.core.presentation.res.*
-import zed.rainxch.profile.presentation.components.ClearDownloadsDialog
-import zed.rainxch.profile.presentation.components.LogoutDialog
-import zed.rainxch.profile.presentation.components.sections.logout
-import zed.rainxch.profile.presentation.components.sections.profile
+import zed.rainxch.githubstore.core.presentation.res.Res
+import zed.rainxch.githubstore.core.presentation.res.downloads_cleared
+import zed.rainxch.githubstore.core.presentation.res.proxy_saved
+import zed.rainxch.githubstore.core.presentation.res.seen_history_cleared
+import zed.rainxch.githubstore.core.presentation.res.tweaks_title
+import zed.rainxch.tweaks.presentation.components.ClearDownloadsDialog
+import zed.rainxch.tweaks.presentation.components.sections.about
+import zed.rainxch.tweaks.presentation.components.sections.othersSection
+import zed.rainxch.tweaks.presentation.components.sections.settings
 
 @Composable
-fun ProfileRoot(
-    onNavigateBack: () -> Unit,
-    onNavigateToDevProfile: (username: String) -> Unit,
-    onNavigateToAuthentication: () -> Unit,
-    onNavigateToStarredRepos: () -> Unit,
-    onNavigateToFavouriteRepos: () -> Unit,
-    onNavigateToRecentlyViewed: () -> Unit,
-    onNavigateToSponsor: () -> Unit,
-    viewModel: ProfileViewModel = koinViewModel(),
-) {
+fun TweaksRoot(viewModel: TweaksViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer =
+            androidx.lifecycle.LifecycleEventObserver { _, event ->
+                if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                    viewModel.onAction(TweaksAction.OnRefreshCacheSize)
+                }
+            }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
-            ProfileEvent.OnLogoutSuccessful -> {
-                coroutineScope.launch {
-                    snackbarState.showSnackbar(getString(Res.string.logout_success))
-
-                    onNavigateBack()
-                }
-            }
-
-            is ProfileEvent.OnLogoutError -> {
-                coroutineScope.launch {
-                    snackbarState.showSnackbar(event.message)
-                }
-            }
-
-            ProfileEvent.OnProxySaved -> {
+            TweaksEvent.OnProxySaved -> {
                 coroutineScope.launch {
                     snackbarState.showSnackbar(getString(Res.string.proxy_saved))
                 }
             }
 
-            is ProfileEvent.OnProxySaveError -> {
+            is TweaksEvent.OnProxySaveError -> {
                 coroutineScope.launch {
                     snackbarState.showSnackbar(event.message)
                 }
             }
 
-            ProfileEvent.OnCacheCleared -> {
+            TweaksEvent.OnCacheCleared -> {
                 coroutineScope.launch {
                     snackbarState.showSnackbar(getString(Res.string.downloads_cleared))
                 }
             }
 
-            is ProfileEvent.OnCacheClearError -> {
+            is TweaksEvent.OnCacheClearError -> {
                 coroutineScope.launch {
                     snackbarState.showSnackbar(event.message)
                 }
             }
 
-            ProfileEvent.OnSeenHistoryCleared -> {
+            TweaksEvent.OnSeenHistoryCleared -> {
                 coroutineScope.launch {
                     snackbarState.showSnackbar(getString(Res.string.seen_history_cleared))
                 }
@@ -102,49 +97,20 @@ fun ProfileRoot(
         }
     }
 
-    ProfileScreen(
+    TweaksScreen(
         state = state,
-        onAction = { action ->
-            when (action) {
-                ProfileAction.OnLoginClick -> {
-                    onNavigateToAuthentication()
-                }
-
-                ProfileAction.OnFavouriteReposClick -> {
-                    onNavigateToFavouriteRepos()
-                }
-
-                ProfileAction.OnStarredReposClick -> {
-                    onNavigateToStarredRepos()
-                }
-
-                is ProfileAction.OnRepositoriesClick -> {
-                    onNavigateToDevProfile(action.username)
-                }
-
-                ProfileAction.OnRecentlyViewedClick -> {
-                    onNavigateToRecentlyViewed()
-                }
-
-                ProfileAction.OnSponsorClick -> {
-                    onNavigateToSponsor()
-                }
-
-                else -> {
-                    viewModel.onAction(action)
-                }
-            }
-        },
+        onAction = viewModel::onAction,
         snackbarState = snackbarState,
     )
 
-    if (state.isLogoutDialogVisible) {
-        LogoutDialog(
+    if (state.isClearDownloadsDialogVisible) {
+        ClearDownloadsDialog(
+            cacheSize = state.cacheSize,
             onDismissRequest = {
-                viewModel.onAction(ProfileAction.OnLogoutDismiss)
+                viewModel.onAction(TweaksAction.OnClearDownloadsDismiss)
             },
-            onLogout = {
-                viewModel.onAction(ProfileAction.OnLogoutConfirmClick)
+            onConfirm = {
+                viewModel.onAction(TweaksAction.OnClearDownloadsConfirm)
             },
         )
     }
@@ -152,9 +118,9 @@ fun ProfileRoot(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun ProfileScreen(
-    state: ProfileState,
-    onAction: (ProfileAction) -> Unit,
+fun TweaksScreen(
+    state: TweaksState,
+    onAction: (TweaksAction) -> Unit,
     snackbarState: SnackbarHostState,
 ) {
     val liquidState = LocalBottomNavigationLiquid.current
@@ -186,7 +152,16 @@ fun ProfileScreen(
                     .padding(innerPadding)
                     .padding(16.dp),
         ) {
-            profile(
+            settings(
+                state = state,
+                onAction = onAction,
+            )
+
+            item {
+                Spacer(Modifier.height(16.dp))
+            }
+
+            othersSection(
                 state = state,
                 onAction = onAction,
             )
@@ -195,11 +170,10 @@ fun ProfileScreen(
                 Spacer(Modifier.height(32.dp))
             }
 
-            if (state.isUserLoggedIn) {
-                logout(
-                    onAction = onAction,
-                )
-            }
+            about(
+                versionName = state.versionName,
+                onAction = onAction,
+            )
 
             item {
                 Spacer(Modifier.height(bottomNavHeight + 32.dp))
@@ -214,7 +188,7 @@ private fun TopAppBar() {
     TopAppBar(
         title = {
             Text(
-                text = stringResource(Res.string.profile_title),
+                text = stringResource(Res.string.tweaks_title),
                 style = MaterialTheme.typography.titleMediumEmphasized,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -227,8 +201,8 @@ private fun TopAppBar() {
 @Composable
 private fun Preview() {
     GithubStoreTheme {
-        ProfileScreen(
-            state = ProfileState(),
+        TweaksScreen(
+            state = TweaksState(),
             onAction = {},
             snackbarState = SnackbarHostState(),
         )

@@ -37,9 +37,11 @@ import zed.rainxch.devprofile.presentation.DeveloperProfileRoot
 import zed.rainxch.favourites.presentation.FavouritesRoot
 import zed.rainxch.home.presentation.HomeRoot
 import zed.rainxch.profile.presentation.ProfileRoot
+import zed.rainxch.profile.presentation.SponsorScreen
 import zed.rainxch.recentlyviewed.presentation.RecentlyViewedRoot
 import zed.rainxch.search.presentation.SearchRoot
 import zed.rainxch.starred.presentation.StarredReposRoot
+import zed.rainxch.tweaks.presentation.TweaksRoot
 
 @Composable
 fun AppNavigation(
@@ -283,11 +285,15 @@ fun AppNavigation(
                 }
 
                 composable<GithubStoreGraph.SponsorScreen> {
-                    zed.rainxch.profile.presentation.SponsorScreen(
+                    SponsorScreen(
                         onNavigateBack = {
                             navController.navigateUp()
                         },
                     )
+                }
+
+                composable<GithubStoreGraph.TweaksScreen> {
+                    TweaksRoot()
                 }
 
                 composable<GithubStoreGraph.AppsScreen> {

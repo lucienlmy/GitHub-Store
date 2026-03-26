@@ -1,14 +1,8 @@
 package zed.rainxch.githubstore.app.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person2
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person2
-import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import org.jetbrains.compose.resources.StringResource
 import zed.rainxch.core.domain.getPlatform
@@ -49,12 +43,18 @@ object BottomNavigationUtils {
                 iconFilled = Icons.Filled.Person2,
                 screen = GithubStoreGraph.ProfileScreen,
             ),
+            BottomNavigationItem(
+                titleRes = Res.string.bottom_nav_profile_tweaks,
+                iconOutlined = Icons.Outlined.Settings,
+                iconFilled = Icons.Filled.Settings,
+                screen = GithubStoreGraph.TweaksScreen,
+            ),
         )
 
-    fun allowedScreens(): List<GithubStoreGraph> =
+    fun allowedScreens(): List<BottomNavigationItem> =
         items()
             .filterNot {
                 getPlatform() != Platform.ANDROID &&
                     it.screen == GithubStoreGraph.AppsScreen
-            }.map { it.screen }
+            }
 }

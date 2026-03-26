@@ -394,6 +394,7 @@
     <string name="bottom_nav_search_title">Search</string>
     <string name="bottom_nav_apps_title">Apps</string>
     <string name="bottom_nav_profile_title">Profile</string>
+    <string name="bottom_nav_profile_tweaks">Tweaks</string>
 
     <string name="forked_repository">Fork</string>
 
@@ -620,4 +621,6 @@
     <string name="recent_searches">Recent searches</string>
     <string name="clear_all_history">Clear all</string>
     <string name="remove_search_history_item">Remove</string>
+
+    <string name="tweaks_title">Tweaks</string>
 </resources>

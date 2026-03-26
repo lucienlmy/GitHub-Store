@@ -65,6 +65,7 @@ kotlin {
             implementation(projects.feature.starred.presentation)
 
             implementation(projects.feature.recentlyViewed.presentation)
+            implementation(projects.feature.tweaks.presentation)
 
             implementation(libs.jetbrains.compose.navigation)
             implementation(libs.bundles.koin.common)
