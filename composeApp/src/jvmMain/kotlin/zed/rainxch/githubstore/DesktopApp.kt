@@ -64,7 +64,7 @@ fun main(args: Array<String>) {
                 withTimeoutOrNull(LANGUAGE_PREF_READ_TIMEOUT_MS) {
                     tweaksRepo.getAppLanguage().first()
                 }
-            } catch (_: Throwable) {
+            } catch (_: Exception) {
                 null
             }
         localization.setActiveLanguageTag(tag)

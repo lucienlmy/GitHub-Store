@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
                     withTimeoutOrNull(LANGUAGE_PREF_READ_TIMEOUT_MS) {
                         tweaksRepository.getAppLanguage().first()
                     }
-                } catch (_: Throwable) {
+                } catch (_: Exception) {
                     null
                 }
             localizationManager.setActiveLanguageTag(tag)
