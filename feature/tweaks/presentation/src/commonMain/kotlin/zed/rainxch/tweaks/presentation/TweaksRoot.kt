@@ -133,14 +133,14 @@ fun TweaksRoot(viewModel: TweaksViewModel = koinViewModel()) {
                             withDismissAction = true,
                         )
                     if (result == SnackbarResult.ActionPerformed) {
-                        // Desktop-only path: `exitProcess` terminates
-                        // the JVM; the user reopens the app, at which
-                        // point `DesktopApp.main` reads the persisted
-                        // language and applies it before Compose
-                        // starts. On Android this event never fires —
-                        // `MainActivity` handles runtime changes via
-                        // `recreate()` directly.
-                        kotlin.system.exitProcess(0)
+                        // Best-effort relaunch on Desktop; see
+                        // `RestartApp.jvm.kt`. Falls back to plain
+                        // exit if a clean relaunch isn't possible
+                        // (IDE runs, sandbox restrictions) — the
+                        // preference is already persisted so the new
+                        // locale takes effect on the next manual
+                        // launch either way.
+                        restartAppAfterLanguageChange()
                     }
                 }
             }
