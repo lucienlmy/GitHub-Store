@@ -514,6 +514,42 @@ class DesktopInstaller(
         Logger.i { "Running in Flatpak sandbox — delegating installation to host system" }
         Logger.i { "File: ${file.absolutePath} (.$ext)" }
 
+        // Arch packages use the double extension `.pkg.tar.zst`. Callers
+        // may pass either "pkg.tar.zst" or just "zst" via `ext` depending
+        // on which classification path computed it, so gate on the
+        // filename directly — same authoritative check installLinux uses.
+        val nameLower = file.name.lowercase()
+        if (nameLower.endsWith(".pkg.tar.zst")) {
+            Logger.d { "Opening .pkg.tar.zst package via xdg-open portal for host installation" }
+            try {
+                val process = ProcessBuilder("xdg-open", file.absolutePath).start()
+                val exitCode = process.waitFor()
+                if (exitCode == 0) {
+                    Logger.i { "Arch package opened on host system for installation" }
+                    showFlatpakNotification(
+                        title = "Package Ready to Install",
+                        message = "The Arch package has been opened in your system's " +
+                            "package manager. Follow the prompts to complete installation.",
+                    )
+                } else {
+                    Logger.w { "xdg-open exited with code $exitCode" }
+                    showFlatpakNotification(
+                        title = "Installation",
+                        message = "Please open this .pkg.tar.zst file with your package manager.",
+                    )
+                    openInFileManager(file)
+                }
+            } catch (e: Exception) {
+                Logger.w { "Failed to open .pkg.tar.zst via xdg-open: ${e.message}" }
+                showFlatpakNotification(
+                    title = "Download Complete",
+                    message = "Please install manually: sudo pacman -U <path>",
+                )
+                openInFileManager(file)
+            }
+            return
+        }
+
         when (ext) {
             "deb", "rpm" -> {
                 Logger.d { "Opening .$ext package via xdg-open portal for host installation" }
@@ -949,6 +985,22 @@ class DesktopInstaller(
         throw IOException("Could not install RPM package. Please install it manually.")
     }
 
+    /**
+     * Wraps a string for safe embedding inside a POSIX shell
+     * single-quoted context. Handles embedded single quotes via the
+     * `'\''` closing-escaping-reopening trick.
+     *
+     *   `foo`          → `'foo'`
+     *   `foo'bar`      → `'foo'\''bar'`
+     *   `don't panic`  → `'don'\''t panic'`
+     *
+     * Use this whenever a filename (or any externally-sourced string)
+     * needs to be interpolated into a shell command that ends up being
+     * executed — terminal command builders, `sh -c` invocations, etc.
+     */
+    private fun shellQuoteSingleQuotes(s: String): String =
+        "'" + s.replace("'", "'\\''") + "'"
+
     private fun installPacmanPackage(file: File) {
         Logger.d { "Installing pacman package: ${file.absolutePath}" }
 
@@ -964,15 +1016,13 @@ class DesktopInstaller(
             return
         }
 
+        // argv-list invocation — no shell involved, so filenames with
+        // special chars are passed safely. No `sh -c` fallback needed
+        // here because pacman -U doesn't need any shell-level chaining
+        // (unlike DEB's `dpkg || apt-get install -f`).
         val installMethods =
             listOf(
                 listOf("pkexec", "pacman", "-U", "--noconfirm", file.absolutePath),
-                listOf(
-                    "pkexec",
-                    "sh",
-                    "-c",
-                    "pacman -U --noconfirm '${file.absolutePath}'",
-                ),
                 null,
             )
 
@@ -1006,11 +1056,14 @@ class DesktopInstaller(
         Logger.d { "Opening terminal for pacman -U install" }
 
         val availableTerminals = detectAvailableTerminals()
+        val quoted = shellQuoteSingleQuotes(filePath)
 
         if (availableTerminals.isEmpty()) {
+            // Notification body is user-visible text, not a shell command,
+            // so the raw path is fine to display here.
             tryShowNotification(
                 "Install via Terminal",
-                "Run: sudo pacman -U '$filePath'",
+                "Run: sudo pacman -U $quoted",
             )
             throw IOException("No terminal emulator found to run pacman install.")
         }
@@ -1023,7 +1076,7 @@ class DesktopInstaller(
                 append("echo ''; ")
                 append("echo 'You will be prompted for your sudo password.'; ")
                 append("echo ''; ")
-                append("sudo pacman -U '$filePath'; ")
+                append("sudo pacman -U $quoted; ")
                 append("EXIT=\$?; ")
                 append("echo ''; ")
                 append("if [ \$EXIT -eq 0 ]; then ")
@@ -1057,6 +1110,7 @@ class DesktopInstaller(
             )
         }
 
+        val quoted = shellQuoteSingleQuotes(filePath)
         val command =
             buildString {
                 append("echo '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'; ")
@@ -1064,7 +1118,10 @@ class DesktopInstaller(
                 append("echo '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'; ")
                 append("echo ''; ")
                 append("echo 'This file is an Arch Linux package (.pkg.tar.zst):'; ")
-                append("echo '  $filePath'; ")
+                // printf treats %s as a plain arg, so the shell-escaped
+                // $quoted resolves back to the real path when printed —
+                // no literal escape characters bleed into the display.
+                append("printf '  %s\\n' $quoted; ")
                 append("echo ''; ")
                 append("echo 'Your system uses a different package format.'; ")
                 append("echo 'Please download the .deb, .rpm, or .AppImage variant'; ")
