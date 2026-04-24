@@ -209,13 +209,17 @@ class PackageEventReceiver() :
                 VersionVerdict.UNKNOWN -> app.isUpdateAvailable
             }
 
-        repo.updateApp(
-            app.copy(
-                installedVersion = systemInfo.versionName,
-                installedVersionName = systemInfo.versionName,
-                installedVersionCode = systemInfo.versionCode,
-                isUpdateAvailable = newIsUpdateAvailable,
-            ),
+        // Targeted column-only write: avoids clobbering sibling fields
+        // (download orchestrator metadata, variant pin, favourite
+        // toggle, checkForUpdates results…) that may have landed
+        // between `onPackageInstalled`'s initial `getAppByPackage` and
+        // this write. See `InstalledAppsRepository.updateInstalledVersion`.
+        repo.updateInstalledVersion(
+            packageName = packageName,
+            installedVersion = systemInfo.versionName,
+            installedVersionName = systemInfo.versionName,
+            installedVersionCode = systemInfo.versionCode,
+            isUpdateAvailable = newIsUpdateAvailable,
         )
 
         Logger.i {

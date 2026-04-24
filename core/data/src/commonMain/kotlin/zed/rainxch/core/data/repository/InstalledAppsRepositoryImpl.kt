@@ -457,6 +457,22 @@ class InstalledAppsRepositoryImpl(
         installedAppsDao.updateApp(app.toEntity())
     }
 
+    override suspend fun updateInstalledVersion(
+        packageName: String,
+        installedVersion: String,
+        installedVersionName: String?,
+        installedVersionCode: Long,
+        isUpdateAvailable: Boolean,
+    ) {
+        installedAppsDao.updateInstalledVersion(
+            packageName = packageName,
+            installedVersion = installedVersion,
+            installedVersionName = installedVersionName,
+            installedVersionCode = installedVersionCode,
+            isUpdateAvailable = isUpdateAvailable,
+        )
+    }
+
     override suspend fun updatePendingStatus(
         packageName: String,
         isPending: Boolean,

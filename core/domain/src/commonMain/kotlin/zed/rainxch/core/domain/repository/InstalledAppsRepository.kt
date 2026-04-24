@@ -41,6 +41,24 @@ interface InstalledAppsRepository {
 
     suspend fun updateApp(app: InstalledApp)
 
+    /**
+     * Atomically writes only the installed-version columns + the
+     * `isUpdateAvailable` flag for [packageName]. Prefer this over
+     * [updateApp] on hot paths where the caller holds a possibly-stale
+     * snapshot and only wants to persist a version change — full-row
+     * updates from stale snapshots can clobber concurrent writes to
+     * sibling columns (download orchestrator, variant pin, favourite
+     * toggle, periodic update check). Introduced for the external
+     * install path (`PackageEventReceiver`).
+     */
+    suspend fun updateInstalledVersion(
+        packageName: String,
+        installedVersion: String,
+        installedVersionName: String?,
+        installedVersionCode: Long,
+        isUpdateAvailable: Boolean,
+    )
+
     suspend fun updatePendingStatus(
         packageName: String,
         isPending: Boolean,
