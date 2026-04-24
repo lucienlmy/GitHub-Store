@@ -30,6 +30,7 @@ import zed.rainxch.core.domain.repository.MatchingPreview
 import zed.rainxch.core.domain.system.Installer
 import zed.rainxch.core.domain.util.AssetFilter
 import zed.rainxch.core.domain.util.AssetVariant
+import zed.rainxch.core.domain.util.VersionMath
 
 class InstalledAppsRepositoryImpl(
     private val database: AppDatabase,
@@ -318,15 +319,12 @@ class InstalledAppsRepositoryImpl(
             }
 
             val (matchedRelease, primaryAsset, variantWasLost) = resolved
-            val normalizedInstalledTag = normalizeVersion(app.installedVersion)
-            val normalizedLatestTag = normalizeVersion(matchedRelease.tagName)
 
             val isUpdateAvailable =
-                if (normalizedInstalledTag == normalizedLatestTag) {
-                    false
-                } else {
-                    isVersionNewer(normalizedLatestTag, normalizedInstalledTag)
-                }
+                VersionMath.isVersionNewer(
+                    candidate = matchedRelease.tagName,
+                    current = app.installedVersion,
+                )
 
             Logger.d {
                 "Update check for ${app.appName}: " +
@@ -583,153 +581,8 @@ class InstalledAppsRepositoryImpl(
         )
     }
 
-    /**
-     * Reduces a tag or installed-version string to a form that
-     * [parseSemanticVersion] can actually digest.
-     *
-     * Why this matters: when a user sideloads an update from outside
-     * GitHub Store, [SyncInstalledAppsUseCase] picks up the new
-     * `versionName` from the Android package manager and writes it back
-     * to `installedVersion`. But the immediately-following
-     * [checkForUpdates] then compares that fresh value against the
-     * GitHub release `tagName`. If the maintainer publishes tags like
-     * `release-1.2.0` or `App-1.2.0` (any prefix that isn't just `v`),
-     * the OLD normalize-by-stripping-v left them alone, the equality
-     * check failed, and [isVersionNewer] fell through to a lexicographic
-     * comparison where the leading letter (`'r'` = 114) is "greater
-     * than" the digit (`'1'` = 49), incorrectly re-flagging the update.
-     *
-     * The new normalization tries, in order:
-     *   1. Strip leading `v` / `V`
-     *   2. Drop `+build` metadata (semver says it's ignored for ordering)
-     *   3. If the result is still not parseable, extract the first
-     *      dotted-digit substring (optionally followed by a `-pre`
-     *      identifier) and use that.
-     *
-     * Examples:
-     *   `v1.2.3`               → `1.2.3`
-     *   `1.2.3+sha.abcd`       → `1.2.3`
-     *   `1.2.3-rc1`            → `1.2.3-rc1`        (preserved — affects ordering)
-     *   `release-1.2.0`        → `1.2.0`
-     *   `App-v1.2.0-stable`    → `1.2.0-stable`
-     *   `build-2025.04.10`     → `2025.04.10`
-     *   `not-a-version`        → `not-a-version`    (unchanged — let caller fall back)
-     */
-    private fun normalizeVersion(version: String): String {
-        val cleaned = version.trim().removePrefix("v").removePrefix("V").trim()
-        val withoutBuildMetadata = cleaned.substringBefore('+')
-        if (parseSemanticVersion(withoutBuildMetadata) != null) {
-            return withoutBuildMetadata
-        }
-        val match =
-            Regex("""\d+(?:\.\d+)*(?:-[\w.]+)?""")
-                .find(withoutBuildMetadata)
-        return match?.value ?: withoutBuildMetadata
-    }
-
-    /**
-     * Compare two version strings and return true if [candidate] is newer than [current].
-     * Handles semantic versioning (1.2.3), pre-release suffixes (1.2.3-beta.1),
-     * and falls back to lexicographic comparison for non-standard formats.
-     *
-     * Pre-release versions are considered older than their stable counterparts:
-     *   1.2.3-beta < 1.2.3  (per semver spec)
-     *
-     * This prevents false "downgrade" notifications when a user has a pre-release
-     * installed and the latest stable version has a lower or equal base version.
-     */
-    private fun isVersionNewer(
-        candidate: String,
-        current: String,
-    ): Boolean {
-        val candidateParsed = parseSemanticVersion(candidate)
-        val currentParsed = parseSemanticVersion(current)
-
-        if (candidateParsed != null && currentParsed != null) {
-            // Compare major.minor.patch
-            for (i in 0 until maxOf(candidateParsed.numbers.size, currentParsed.numbers.size)) {
-                val c = candidateParsed.numbers.getOrElse(i) { 0 }
-                val r = currentParsed.numbers.getOrElse(i) { 0 }
-                if (c > r) return true
-                if (c < r) return false
-            }
-            // Numbers are equal; compare pre-release suffixes
-            // No pre-release > has pre-release (e.g., 1.0.0 > 1.0.0-beta)
-            return when {
-                candidateParsed.preRelease == null && currentParsed.preRelease != null -> {
-                    true
-                }
-
-                candidateParsed.preRelease != null && currentParsed.preRelease == null -> {
-                    false
-                }
-
-                candidateParsed.preRelease != null && currentParsed.preRelease != null -> {
-                    comparePreRelease(candidateParsed.preRelease, currentParsed.preRelease) > 0
-                }
-
-                else -> {
-                    false
-                } // both null, versions are equal
-            }
-        }
-
-        // Fallback: lexicographic comparison (better than just "not equal")
-        return candidate > current
-    }
-
-    private data class SemanticVersion(
-        val numbers: List<Int>,
-        val preRelease: String?,
-    )
-
-    private fun parseSemanticVersion(version: String): SemanticVersion? {
-        // Split off pre-release suffix: "1.2.3-beta.1" -> "1.2.3" and "beta.1"
-        val hyphenIndex = version.indexOf('-')
-        val numberPart = if (hyphenIndex >= 0) version.substring(0, hyphenIndex) else version
-        val preRelease = if (hyphenIndex >= 0) version.substring(hyphenIndex + 1) else null
-
-        val parts = numberPart.split(".")
-        val numbers = parts.mapNotNull { it.toIntOrNull() }
-
-        // Only valid if we could parse at least one number and all parts were valid numbers
-        if (numbers.isEmpty() || numbers.size != parts.size) return null
-
-        return SemanticVersion(numbers, preRelease)
-    }
-
-    /**
-     * Compare pre-release identifiers per semver spec:
-     * Identifiers consisting of only digits are compared numerically.
-     * Identifiers with letters are compared lexically.
-     * Numeric identifiers always have lower precedence than alphanumeric.
-     * A larger set of pre-release fields has higher precedence if all preceding are equal.
-     */
-    private fun comparePreRelease(
-        a: String,
-        b: String,
-    ): Int {
-        val aParts = a.split(".")
-        val bParts = b.split(".")
-
-        for (i in 0 until minOf(aParts.size, bParts.size)) {
-            val aNum = aParts[i].toIntOrNull()
-            val bNum = bParts[i].toIntOrNull()
-
-            val cmp =
-                when {
-                    aNum != null && bNum != null -> aNum.compareTo(bNum)
-
-                    aNum != null -> -1
-
-                    // numeric < alphanumeric
-                    bNum != null -> 1
-
-                    else -> aParts[i].compareTo(bParts[i])
-                }
-            if (cmp != 0) return cmp
-        }
-
-        return aParts.size.compareTo(bParts.size)
-    }
+    // Version normalization + comparison lives in
+    // `core.domain.util.VersionMath` so the periodic update check,
+    // the external-install verdict in `PackageEventReceiver`, and any
+    // future surfaces all share one comparator. See #378.
 }
