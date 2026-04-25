@@ -100,4 +100,9 @@ sealed interface AppsAction {
     data class OnInstallPendingApp(
         val app: InstalledAppUi,
     ) : AppsAction
+
+    // External import banner (E1)
+    data object OnImportProposalReview : AppsAction
+
+    data object OnImportProposalDismiss : AppsAction
 }

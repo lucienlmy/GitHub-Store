@@ -147,6 +147,7 @@ import zed.rainxch.githubstore.core.presentation.res.updating_x_of_y
 fun AppsRoot(
     onNavigateBack: () -> Unit,
     onNavigateToRepo: (repoId: Long) -> Unit,
+    onNavigateToExternalImport: () -> Unit,
     viewModel: AppsViewModel = koinViewModel(),
     state: AppsState,
 ) {
@@ -175,6 +176,10 @@ fun AppsRoot(
             }
 
             is AppsEvent.ImportComplete -> { // handled by ShowSuccess
+            }
+
+            AppsEvent.NavigateToExternalImport -> {
+                onNavigateToExternalImport()
             }
         }
     }

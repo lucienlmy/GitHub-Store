@@ -230,6 +230,28 @@ class TweaksRepositoryImpl(
         }
     }
 
+    override fun getExternalImportEnabled(): Flow<Boolean> =
+        preferences.data.map { prefs ->
+            prefs[EXTERNAL_IMPORT_ENABLED_KEY] ?: true
+        }
+
+    override suspend fun setExternalImportEnabled(enabled: Boolean) {
+        preferences.edit { prefs ->
+            prefs[EXTERNAL_IMPORT_ENABLED_KEY] = enabled
+        }
+    }
+
+    override fun getExternalMatchSearchEnabled(): Flow<Boolean> =
+        preferences.data.map { prefs ->
+            prefs[EXTERNAL_MATCH_SEARCH_ENABLED_KEY] ?: false
+        }
+
+    override suspend fun setExternalMatchSearchEnabled(enabled: Boolean) {
+        preferences.edit { prefs ->
+            prefs[EXTERNAL_MATCH_SEARCH_ENABLED_KEY] = enabled
+        }
+    }
+
     companion object {
         private const val DEFAULT_UPDATE_CHECK_INTERVAL_HOURS = 6L
 
@@ -251,5 +273,7 @@ class TweaksRepositoryImpl(
         private val YOUDAO_APP_KEY = stringPreferencesKey("youdao_app_key")
         private val YOUDAO_APP_SECRET = stringPreferencesKey("youdao_app_secret")
         private val APP_LANGUAGE_KEY = stringPreferencesKey("app_language")
+        private val EXTERNAL_IMPORT_ENABLED_KEY = booleanPreferencesKey("external_import_enabled")
+        private val EXTERNAL_MATCH_SEARCH_ENABLED_KEY = booleanPreferencesKey("external_match_search_enabled")
     }
 }

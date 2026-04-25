@@ -441,6 +441,17 @@ class AppsViewModel(
             AppsAction.OnDismissUninstallDialog -> {
                 _state.update { it.copy(appPendingUninstall = null) }
             }
+
+            AppsAction.OnImportProposalReview -> {
+                _state.update { it.copy(showImportProposalBanner = false) }
+                viewModelScope.launch {
+                    _events.send(AppsEvent.NavigateToExternalImport)
+                }
+            }
+
+            AppsAction.OnImportProposalDismiss -> {
+                _state.update { it.copy(showImportProposalBanner = false) }
+            }
         }
     }
 

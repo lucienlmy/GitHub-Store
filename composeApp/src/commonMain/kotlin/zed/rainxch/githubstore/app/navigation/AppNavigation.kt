@@ -309,6 +309,9 @@ fun AppNavigation(
                                 ),
                             )
                         },
+                        onNavigateToExternalImport = {
+                            navController.navigate(GithubStoreGraph.ExternalImportScreen)
+                        },
                         viewModel = appsViewModel,
                         state = appsState,
                     )
