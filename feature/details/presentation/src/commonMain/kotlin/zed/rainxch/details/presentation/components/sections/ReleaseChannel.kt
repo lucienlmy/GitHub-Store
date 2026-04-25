@@ -36,7 +36,6 @@ import zed.rainxch.githubstore.core.presentation.res.Res
 import zed.rainxch.githubstore.core.presentation.res.action_switch_to_stable
 import zed.rainxch.githubstore.core.presentation.res.channel_chip_include_betas
 import zed.rainxch.githubstore.core.presentation.res.channel_chip_stable_only
-import zed.rainxch.githubstore.core.presentation.res.channel_toggle_cd
 import zed.rainxch.githubstore.core.presentation.res.merged_whats_changed_title
 import zed.rainxch.githubstore.core.presentation.res.stalled_project_warning_days
 import zed.rainxch.githubstore.core.presentation.res.stalled_project_warning_description
@@ -81,13 +80,14 @@ fun LazyListScope.releaseChannel(
                 ) {
                     if (installedApp != null) {
                         val includeBetas = installedApp.includePreReleases
+                        val channelLabel =
+                            if (includeBetas) {
+                                stringResource(Res.string.channel_chip_include_betas)
+                            } else {
+                                stringResource(Res.string.channel_chip_stable_only)
+                            }
                         ChannelChip(
-                            label =
-                                if (includeBetas) {
-                                    stringResource(Res.string.channel_chip_include_betas)
-                                } else {
-                                    stringResource(Res.string.channel_chip_stable_only)
-                                },
+                            label = channelLabel,
                             icon = Icons.Default.Science,
                             // Visually signal the "hot" channel when the user
                             // has opted into betas; keep it muted when they're
@@ -99,7 +99,13 @@ fun LazyListScope.releaseChannel(
                                     MaterialTheme.colorScheme.onSurfaceVariant
                                 },
                             onClick = { onAction(DetailsAction.ToggleIncludeBetas) },
-                            contentDescriptionText = stringResource(Res.string.channel_toggle_cd),
+                            // Mirror the visible label so screen readers hear
+                            // the current channel ("Include betas" / "Stable
+                            // only") instead of the previous static
+                            // "Toggle beta releases for this app" string,
+                            // which gave no indication of which side the
+                            // toggle is currently on.
+                            contentDescriptionText = channelLabel,
                         )
                     }
 

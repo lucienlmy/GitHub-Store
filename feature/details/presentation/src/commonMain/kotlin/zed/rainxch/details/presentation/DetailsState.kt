@@ -93,6 +93,16 @@ data class DetailsState(
      * "What's changed since v1.2.3".
      */
     val mergedChangelogBaseTag: String? = null,
+    /**
+     * Whether [latestStableRelease] has at least one asset that the
+     * platform installer can handle. Computed by the ViewModel
+     * whenever `allReleases` changes — we can't compute it here
+     * because the installer's per-platform asset-extension policy
+     * lives outside the data model. Gates [canSwitchToStable] so
+     * the rollback chip never advertises an action that would
+     * silently no-op for releases that ship only source tarballs.
+     */
+    val latestStableHasInstallableAsset: Boolean = false,
 ) {
     val filteredReleases: List<GithubRelease>
         get() =
@@ -108,21 +118,25 @@ data class DetailsState(
      * the "Switch to stable vX.Y.Z" rollback action.
      */
     val latestStableRelease: GithubRelease?
-        get() = allReleases.firstOrNull { !it.isEffectivelyPreRelease() }
+        get() =
+            allReleases
+                .filter { !it.isEffectivelyPreRelease() }
+                .maxByOrNull { it.publishedAt }
 
     /**
      * True when the install button should expose a "switch to
      * stable" rollback affordance: the user is tracking this app,
      * is currently on a release that's effectively a pre-release,
-     * and a distinct stable release exists. The handler
-     * (`DetailsAction.SwitchToStable`) selects the stable release
-     * and invokes the normal install path.
+     * a distinct stable release exists, AND that stable release has
+     * at least one installable asset on the current platform. The
+     * handler (`DetailsAction.SwitchToStable`) selects the stable
+     * release and invokes the normal install path.
      */
     val canSwitchToStable: Boolean
         get() {
             val app = installedApp ?: return false
             val stable = latestStableRelease ?: return false
-            // Is the currently-installed release a pre-release?
+            if (!latestStableHasInstallableAsset) return false
             val installedIsPreRelease =
                 allReleases.firstOrNull { it.tagName == app.installedVersion }
                     ?.isEffectivelyPreRelease() == true

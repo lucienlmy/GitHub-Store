@@ -417,6 +417,7 @@ class DetailsViewModel(
         val stalledStableSinceDays: Int?,
         val mergedChangelog: String?,
         val mergedChangelogBaseTag: String?,
+        val latestStableHasInstallableAsset: Boolean,
     )
 
     @OptIn(kotlin.time.ExperimentalTime::class)
@@ -451,6 +452,11 @@ class DetailsViewModel(
                 null to null
             }
 
+        val latestStable =
+            allReleases
+                .filter { !it.isEffectivelyPreRelease() }
+                .maxByOrNull { it.publishedAt }
+
         // Stalled-project warning: the project has at least one stable
         // release, has shipped pre-releases on top of it, and the last
         // stable is older than [STALLED_STABLE_THRESHOLD_DAYS]. That's
@@ -458,23 +464,25 @@ class DetailsViewModel(
         // a heads-up before the user opts into betas.
         val stalledDays: Int? =
             run {
-                val latestStable =
-                    allReleases.firstOrNull { !it.isEffectivelyPreRelease() }
-                        ?: return@run null
+                val stable = latestStable ?: return@run null
                 val preReleasesAfter =
                     allReleases.any { release ->
                         release.isEffectivelyPreRelease() &&
-                            VersionMath.isVersionNewer(release.tagName, latestStable.tagName)
+                            VersionMath.isVersionNewer(release.tagName, stable.tagName)
                     }
                 if (!preReleasesAfter) return@run null
-                val days = daysSinceIso(latestStable.publishedAt) ?: return@run null
+                val days = daysSinceIso(stable.publishedAt) ?: return@run null
                 if (days >= STALLED_STABLE_THRESHOLD_DAYS) days else null
             }
+
+        val latestStableHasInstallableAsset =
+            latestStable?.assets?.any { installer.isAssetInstallable(it.name) } == true
 
         return ReleaseInsights(
             stalledStableSinceDays = stalledDays,
             mergedChangelog = merged,
             mergedChangelogBaseTag = mergedBase,
+            latestStableHasInstallableAsset = latestStableHasInstallableAsset,
         )
     }
 
@@ -529,6 +537,19 @@ class DetailsViewModel(
      */
     private fun switchToStable() {
         val stable = _state.value.latestStableRelease ?: return
+        // Defence in depth: the chip should already be hidden when the
+        // stable release ships nothing the platform installer can
+        // handle, but a stale state could still drive us here. Resolve
+        // the primary asset up front and bail before the dispatch chain
+        // would otherwise reach `install()` with `primaryAsset = null`
+        // and silently no-op.
+        val (_, primary) = recomputeAssetsForRelease(stable, _state.value.installedApp)
+        if (primary == null) {
+            logger.warn(
+                "switchToStable: stable ${stable.tagName} has no installable asset; skipping",
+            )
+            return
+        }
         onAction(DetailsAction.SelectRelease(stable))
         onAction(DetailsAction.InstallPrimary)
     }
@@ -671,8 +692,16 @@ class DetailsViewModel(
                 val selected = byPrevCategory
                     ?: releases.firstOrNull { !it.isEffectivelyPreRelease() }
                     ?: releases.firstOrNull()
-                val resolvedCategory =
-                    if (byPrevCategory != null) prevCategory else ReleaseCategory.STABLE
+                // When the previous category yields nothing, derive the
+                // category from the actually-selected release so the
+                // filter matches what's on screen — otherwise a
+                // pre-release-only project leaves the user with category
+                // STABLE and an empty filtered list.
+                val resolvedCategory = when {
+                    byPrevCategory != null -> prevCategory
+                    selected?.isEffectivelyPreRelease() == true -> ReleaseCategory.PRE_RELEASE
+                    else -> ReleaseCategory.STABLE
+                }
                 val (installable, primary) =
                     recomputeAssetsForRelease(selected, _state.value.installedApp)
                 val insights = computeReleaseInsights(releases, _state.value.installedApp)
@@ -688,6 +717,8 @@ class DetailsViewModel(
                         stalledStableSinceDays = insights.stalledStableSinceDays,
                         mergedChangelog = insights.mergedChangelog,
                         mergedChangelogBaseTag = insights.mergedChangelogBaseTag,
+                        latestStableHasInstallableAsset =
+                            insights.latestStableHasInstallableAsset,
                     )
                 }
             } catch (e: CancellationException) {
@@ -755,6 +786,8 @@ class DetailsViewModel(
                             mergedChangelog = insights.mergedChangelog,
                             mergedChangelogBaseTag = insights.mergedChangelogBaseTag,
                             stalledStableSinceDays = insights.stalledStableSinceDays,
+                            latestStableHasInstallableAsset =
+                                insights.latestStableHasInstallableAsset,
                         )
                     }
                 }
@@ -2308,6 +2341,8 @@ class DetailsViewModel(
                         stalledStableSinceDays = insights.stalledStableSinceDays,
                         mergedChangelog = insights.mergedChangelog,
                         mergedChangelogBaseTag = insights.mergedChangelogBaseTag,
+                        latestStableHasInstallableAsset =
+                            insights.latestStableHasInstallableAsset,
                     )
 
                 telemetryRepository.recordRepoViewed(repo.id)
