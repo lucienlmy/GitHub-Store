@@ -13,6 +13,8 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import zed.rainxch.core.domain.repository.InstalledAppsRepository
 import zed.rainxch.core.domain.system.PackageMonitor
+import zed.rainxch.core.domain.util.VersionVerdict
+import zed.rainxch.core.domain.util.resolveExternalInstallVerdict
 
 /**
  * Listens for package install/replace/remove broadcasts to update tracked app state.
@@ -28,11 +30,17 @@ class PackageEventReceiver() :
     KoinComponent {
     private val installedAppsRepositoryKoin: InstalledAppsRepository by inject()
     private val packageMonitorKoin: PackageMonitor by inject()
+    private val appScopeKoin: CoroutineScope by inject()
 
     // Explicitly provided dependencies (dynamic registration path)
     private var explicitRepository: InstalledAppsRepository? = null
     private var explicitMonitor: PackageMonitor? = null
 
+    // Local fallback scope for the manifest-registered path when
+    // `onReceive` fires but Koin somehow couldn't resolve the shared
+    // app scope (extremely unlikely — the Application installs Koin
+    // synchronously in onCreate). The async backstop below prefers
+    // the Koin scope via `getBackstopScope`.
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     constructor(
@@ -46,6 +54,13 @@ class PackageEventReceiver() :
     private fun getRepository(): InstalledAppsRepository = explicitRepository ?: installedAppsRepositoryKoin
 
     private fun getMonitor(): PackageMonitor = explicitMonitor ?: packageMonitorKoin
+
+    private fun getBackstopScope(): CoroutineScope =
+        // Koin's app-scoped CoroutineScope outlives a manifest-registered
+        // receiver whose local `scope` would die with the instance. Fall
+        // back to the local scope only if Koin isn't initialized yet
+        // (shouldn't happen post-Application.onCreate, but defensive).
+        runCatching { appScopeKoin }.getOrElse { scope }
 
     override fun onReceive(
         context: Context?,
@@ -122,19 +137,111 @@ class PackageEventReceiver() :
                     Logger.i { "Resolved pending install via broadcast (no system info): $packageName" }
                 }
             } else {
-                val systemInfo = monitor.getInstalledPackageInfo(packageName)
-                if (systemInfo != null) {
-                    repo.updateApp(
-                        app.copy(
-                            installedVersionName = systemInfo.versionName,
-                            installedVersionCode = systemInfo.versionCode,
-                        ),
-                    )
-                    Logger.d { "Updated version info via broadcast: $packageName (v${systemInfo.versionName})" }
-                }
+                handleExternalInstall(packageName, app, repo, monitor)
             }
         } catch (e: Exception) {
             Logger.e { "PackageEventReceiver error for $packageName: ${e.message}" }
+        }
+    }
+
+    /**
+     * Path taken when the broadcast fires for a tracked app that the
+     * user did NOT install from inside the store (sideload, browser
+     * download, Play Store update, F-Droid update of a shared
+     * package, etc.). The pending-install branch above handles the
+     * in-app install case.
+     *
+     * Strategy (GitHub-Store#378):
+     *
+     *  1. Refresh every version field from PackageManager — this is
+     *     the strictest source of truth for what is actually on
+     *     device right now.
+     *  2. Apply [resolveExternalInstallVerdict] for an immediate
+     *     decision about `isUpdateAvailable`. The resolver uses a
+     *     priority ladder (versionCode → versionName vs
+     *     latestVersionName → versionName vs release tag) and only
+     *     returns [VersionVerdict.UNKNOWN] when none of those
+     *     produce a reliable answer.
+     *  3. Dispatch an async `checkForUpdates(packageName)` on the
+     *     app-scoped coroutine scope. That call re-fetches the
+     *     latest release list from GitHub and applies
+     *     [zed.rainxch.core.domain.util.VersionMath] with the freshly
+     *     updated `installedVersion`, so even an incorrect optimistic
+     *     verdict is corrected within the RTT of a single GitHub
+     *     API hit.
+     *
+     * The async backstop runs on the Koin-provided app scope so it
+     * survives the receiver instance being torn down after
+     * `onReceive` returns — critical for the manifest-registered
+     * path.
+     */
+    private suspend fun handleExternalInstall(
+        packageName: String,
+        app: zed.rainxch.core.domain.model.InstalledApp,
+        repo: InstalledAppsRepository,
+        monitor: PackageMonitor,
+    ) {
+        val systemInfo = monitor.getInstalledPackageInfo(packageName) ?: return
+        val versionChanged =
+            systemInfo.versionCode != app.installedVersionCode ||
+                systemInfo.versionName != app.installedVersionName
+        if (!versionChanged) {
+            Logger.d {
+                "Broadcast touch with no version change: $packageName (v${systemInfo.versionName})"
+            }
+            return
+        }
+
+        val verdict =
+            resolveExternalInstallVerdict(
+                app = app,
+                newVersionName = systemInfo.versionName,
+                newVersionCode = systemInfo.versionCode,
+            )
+
+        val newIsUpdateAvailable =
+            when (verdict) {
+                VersionVerdict.UP_TO_DATE -> false
+                VersionVerdict.UPDATE_AVAILABLE -> true
+                // Preserve the current flag for UNKNOWN — the async
+                // checkForUpdates below is about to overwrite it with
+                // an authoritative answer anyway.
+                VersionVerdict.UNKNOWN -> app.isUpdateAvailable
+            }
+
+        // Targeted column-only write: avoids clobbering sibling fields
+        // (download orchestrator metadata, variant pin, favourite
+        // toggle, checkForUpdates results…) that may have landed
+        // between `onPackageInstalled`'s initial `getAppByPackage` and
+        // this write. See `InstalledAppsRepository.updateInstalledVersion`.
+        repo.updateInstalledVersion(
+            packageName = packageName,
+            installedVersion = systemInfo.versionName,
+            installedVersionName = systemInfo.versionName,
+            installedVersionCode = systemInfo.versionCode,
+            isUpdateAvailable = newIsUpdateAvailable,
+        )
+
+        Logger.i {
+            "External version change via broadcast: $packageName " +
+                "DB v${app.installedVersionName}(${app.installedVersionCode}) → " +
+                "System v${systemInfo.versionName}(${systemInfo.versionCode}), " +
+                "verdict=$verdict, updateAvailable=$newIsUpdateAvailable"
+        }
+
+        // Authoritative re-validation against fresh GitHub release data.
+        // Runs on the app scope so it outlives this broadcast.
+        getBackstopScope().launch {
+            try {
+                repo.checkForUpdates(packageName)
+                Logger.d {
+                    "External-install re-validation completed for $packageName"
+                }
+            } catch (e: Exception) {
+                Logger.w {
+                    "External-install re-validation failed for $packageName: ${e.message}"
+                }
+            }
         }
     }
 

@@ -72,6 +72,7 @@ import zed.rainxch.details.presentation.components.sections.header
 import zed.rainxch.details.presentation.components.sections.logs
 import zed.rainxch.details.presentation.components.sections.reportIssue
 import zed.rainxch.details.presentation.components.sections.stats
+import zed.rainxch.details.presentation.components.sections.releaseChannel
 import zed.rainxch.details.presentation.components.sections.whatsNew
 import zed.rainxch.details.presentation.components.states.ErrorState
 import zed.rainxch.details.presentation.model.TranslationTarget
@@ -449,6 +450,11 @@ fun DetailsScreen(
                             repoStats = stats,
                         )
                     }
+
+                    releaseChannel(
+                        state = state,
+                        onAction = onAction,
+                    )
 
                     if (state.isComingFromUpdate) {
                         state.selectedRelease?.let { release ->

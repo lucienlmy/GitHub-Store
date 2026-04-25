@@ -112,4 +112,19 @@ sealed interface DetailsAction {
      * sheet.
      */
     data object UnpinPreferredVariant : DetailsAction
+
+    /**
+     * Flips the per-app `includePreReleases` flag. Exposed as the
+     * inline channel toggle on Details so users can opt in/out of
+     * beta updates without digging into the apps advanced settings
+     * sheet (GitHub-Store release UX #2).
+     */
+    data object ToggleIncludeBetas : DetailsAction
+
+    /**
+     * Switches the currently-tracked app from a pre-release to the
+     * latest stable release. Selects the stable release and
+     * initiates the install flow on it (GitHub-Store release UX #3).
+     */
+    data object SwitchToStable : DetailsAction
 }

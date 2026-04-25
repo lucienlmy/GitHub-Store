@@ -29,6 +29,7 @@ import zed.rainxch.core.domain.model.GithubRelease
 import zed.rainxch.core.domain.model.InstalledApp
 import zed.rainxch.core.domain.model.Platform
 import zed.rainxch.core.domain.model.RateLimitException
+import zed.rainxch.core.domain.model.isEffectivelyPreRelease
 import zed.rainxch.core.domain.network.Downloader
 import zed.rainxch.core.domain.repository.FavouritesRepository
 import zed.rainxch.core.domain.repository.InstalledAppsRepository
@@ -46,6 +47,7 @@ import zed.rainxch.core.domain.model.InstallerType
 import zed.rainxch.core.domain.system.PackageMonitor
 import zed.rainxch.core.domain.use_cases.SyncInstalledAppsUseCase
 import zed.rainxch.core.domain.util.AssetVariant
+import zed.rainxch.core.domain.util.VersionMath
 import zed.rainxch.core.domain.utils.BrowserHelper
 import zed.rainxch.core.domain.utils.ShareManager
 import zed.rainxch.details.domain.model.ApkValidationResult
@@ -394,7 +396,162 @@ class DetailsViewModel(
             DetailsAction.UnpinPreferredVariant -> {
                 unpinPreferredVariant()
             }
+
+            DetailsAction.ToggleIncludeBetas -> {
+                toggleIncludeBetas()
+            }
+
+            DetailsAction.SwitchToStable -> {
+                switchToStable()
+            }
         }
+    }
+
+    /**
+     * Derived signals surfaced in the Details UX for pre-release
+     * handling (release UX #4 and #6). Computed once per release-list
+     * load and re-used across the two call sites that update state
+     * with a fresh `allReleases`.
+     */
+    private data class ReleaseInsights(
+        val stalledStableSinceDays: Int?,
+        val mergedChangelog: String?,
+        val mergedChangelogBaseTag: String?,
+        val latestStableHasInstallableAsset: Boolean,
+    )
+
+    @OptIn(kotlin.time.ExperimentalTime::class)
+    private fun computeReleaseInsights(
+        allReleases: List<GithubRelease>,
+        installedApp: InstalledApp?,
+    ): ReleaseInsights {
+        // Merged "What's changed since v…": concatenate release notes
+        // for every release strictly newer than the installed tag,
+        // most-recent-first. Mirrors what app stores do when the user
+        // skips versions between updates — they deserve to see every
+        // intermediate changelog, not just the head one.
+        val (merged, mergedBase) =
+            if (installedApp != null && allReleases.size > 1) {
+                val installedTag = installedApp.installedVersion
+                val newer =
+                    allReleases.filter { release ->
+                        VersionMath.isVersionNewer(release.tagName, installedTag)
+                    }
+                if (newer.size >= 2) {
+                    val body =
+                        newer.joinToString(separator = "\n\n") { release ->
+                            val heading = "— ${release.tagName} —"
+                            val notes = release.description?.trim().orEmpty()
+                            if (notes.isEmpty()) heading else "$heading\n$notes"
+                        }
+                    body to installedTag
+                } else {
+                    null to null
+                }
+            } else {
+                null to null
+            }
+
+        val latestStable =
+            allReleases
+                .filter { !it.isEffectivelyPreRelease() }
+                .maxByOrNull { it.publishedAt }
+
+        // Stalled-project warning: the project has at least one stable
+        // release, has shipped pre-releases on top of it, and the last
+        // stable is older than [STALLED_STABLE_THRESHOLD_DAYS]. That's
+        // the "beta spiral with no stabilisation" signal that warrants
+        // a heads-up before the user opts into betas.
+        val stalledDays: Int? =
+            run {
+                val stable = latestStable ?: return@run null
+                val preReleasesAfter =
+                    allReleases.any { release ->
+                        release.isEffectivelyPreRelease() &&
+                            VersionMath.isVersionNewer(release.tagName, stable.tagName)
+                    }
+                if (!preReleasesAfter) return@run null
+                val days = daysSinceIso(stable.publishedAt) ?: return@run null
+                if (days >= STALLED_STABLE_THRESHOLD_DAYS) days else null
+            }
+
+        val latestStableHasInstallableAsset =
+            latestStable?.assets?.any { installer.isAssetInstallable(it.name) } == true
+
+        return ReleaseInsights(
+            stalledStableSinceDays = stalledDays,
+            mergedChangelog = merged,
+            mergedChangelogBaseTag = mergedBase,
+            latestStableHasInstallableAsset = latestStableHasInstallableAsset,
+        )
+    }
+
+    @OptIn(kotlin.time.ExperimentalTime::class)
+    private fun daysSinceIso(isoTimestamp: String?): Int? {
+        if (isoTimestamp.isNullOrBlank()) return null
+        return try {
+            val published = kotlin.time.Instant.parse(isoTimestamp)
+            val now = System.now()
+            val diffMs = now.toEpochMilliseconds() - published.toEpochMilliseconds()
+            if (diffMs < 0) null else (diffMs / MILLIS_PER_DAY).toInt()
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Flips the per-app `includePreReleases` flag via
+     * [InstalledAppsRepository.setIncludePreReleases]. Kicks off a
+     * fresh `checkForUpdates` so the new channel takes effect
+     * immediately on-screen instead of waiting for the next
+     * periodic cycle.
+     */
+    private fun toggleIncludeBetas() {
+        val app = _state.value.installedApp ?: return
+        val newValue = !app.includePreReleases
+        viewModelScope.launch {
+            try {
+                installedAppsRepository.setIncludePreReleases(
+                    packageName = app.packageName,
+                    enabled = newValue,
+                )
+                // Re-validate against the new channel immediately so
+                // the user sees the result of the toggle in the next
+                // frame (the DB observer will also refresh state).
+                installedAppsRepository.checkForUpdates(app.packageName)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (t: Throwable) {
+                logger.warn("toggleIncludeBetas failed for ${app.packageName}: ${t.message}")
+            }
+        }
+    }
+
+    /**
+     * Switches the currently-tracked app to the latest stable
+     * release: selects it as the picked release, and triggers the
+     * normal install flow. Reuses the existing `InstallPrimary`
+     * path so downgrade warnings, signing-key checks, and asset
+     * picking all kick in exactly as they do for a manual version
+     * selection.
+     */
+    private fun switchToStable() {
+        val stable = _state.value.latestStableRelease ?: return
+        // Defence in depth: the chip should already be hidden when the
+        // stable release ships nothing the platform installer can
+        // handle, but a stale state could still drive us here. Resolve
+        // the primary asset up front and bail before the dispatch chain
+        // would otherwise reach `install()` with `primaryAsset = null`
+        // and silently no-op.
+        val (_, primary) = recomputeAssetsForRelease(stable, _state.value.installedApp)
+        if (primary == null) {
+            logger.warn(
+                "switchToStable: stable ${stable.tagName} has no installable asset; skipping",
+            )
+            return
+        }
+        onAction(DetailsAction.SelectRelease(stable))
+        onAction(DetailsAction.InstallPrimary)
     }
 
     /**
@@ -528,17 +685,26 @@ class DetailsViewModel(
                 // the category too so the UI doesn't end up with a category
                 // selected but no matching release.
                 val byPrevCategory = when (prevCategory) {
-                    ReleaseCategory.STABLE -> releases.firstOrNull { !it.isPrerelease }
-                    ReleaseCategory.PRE_RELEASE -> releases.firstOrNull { it.isPrerelease }
+                    ReleaseCategory.STABLE -> releases.firstOrNull { !it.isEffectivelyPreRelease() }
+                    ReleaseCategory.PRE_RELEASE -> releases.firstOrNull { it.isEffectivelyPreRelease() }
                     ReleaseCategory.ALL -> releases.firstOrNull()
                 }
                 val selected = byPrevCategory
-                    ?: releases.firstOrNull { !it.isPrerelease }
+                    ?: releases.firstOrNull { !it.isEffectivelyPreRelease() }
                     ?: releases.firstOrNull()
-                val resolvedCategory =
-                    if (byPrevCategory != null) prevCategory else ReleaseCategory.STABLE
+                // When the previous category yields nothing, derive the
+                // category from the actually-selected release so the
+                // filter matches what's on screen — otherwise a
+                // pre-release-only project leaves the user with category
+                // STABLE and an empty filtered list.
+                val resolvedCategory = when {
+                    byPrevCategory != null -> prevCategory
+                    selected?.isEffectivelyPreRelease() == true -> ReleaseCategory.PRE_RELEASE
+                    else -> ReleaseCategory.STABLE
+                }
                 val (installable, primary) =
                     recomputeAssetsForRelease(selected, _state.value.installedApp)
+                val insights = computeReleaseInsights(releases, _state.value.installedApp)
                 _state.update {
                     it.copy(
                         allReleases = releases,
@@ -548,6 +714,11 @@ class DetailsViewModel(
                         selectedReleaseCategory = resolvedCategory,
                         installableAssets = installable,
                         primaryAsset = primary,
+                        stalledStableSinceDays = insights.stalledStableSinceDays,
+                        mergedChangelog = insights.mergedChangelog,
+                        mergedChangelogBaseTag = insights.mergedChangelogBaseTag,
+                        latestStableHasInstallableAsset =
+                            insights.latestStableHasInstallableAsset,
                     )
                 }
             } catch (e: CancellationException) {
@@ -604,7 +775,21 @@ class DetailsViewModel(
                 .getAppByRepoIdAsFlow(repoId)
                 .distinctUntilChanged()
                 .collect { app ->
-                    _state.update { it.copy(installedApp = app) }
+                    // Recompute merged changelog + stalled signals
+                    // against the new installed version — if the
+                    // user just updated externally, the installed
+                    // tag flips and what they've "missed" changes.
+                    val insights = computeReleaseInsights(_state.value.allReleases, app)
+                    _state.update {
+                        it.copy(
+                            installedApp = app,
+                            mergedChangelog = insights.mergedChangelog,
+                            mergedChangelogBaseTag = insights.mergedChangelogBaseTag,
+                            stalledStableSinceDays = insights.stalledStableSinceDays,
+                            latestStableHasInstallableAsset =
+                                insights.latestStableHasInstallableAsset,
+                        )
+                    }
                 }
         }
     }
@@ -739,8 +924,8 @@ class DetailsViewModel(
         val newCategory = action.category
         val filtered =
             when (newCategory) {
-                ReleaseCategory.STABLE -> _state.value.allReleases.filter { !it.isPrerelease }
-                ReleaseCategory.PRE_RELEASE -> _state.value.allReleases.filter { it.isPrerelease }
+                ReleaseCategory.STABLE -> _state.value.allReleases.filter { !it.isEffectivelyPreRelease() }
+                ReleaseCategory.PRE_RELEASE -> _state.value.allReleases.filter { it.isEffectivelyPreRelease() }
                 ReleaseCategory.ALL -> _state.value.allReleases
             }
         val newSelected = filtered.firstOrNull()
@@ -2114,7 +2299,7 @@ class DetailsViewModel(
                 }
 
                 val selectedRelease =
-                    allReleases.firstOrNull { !it.isPrerelease }
+                    allReleases.firstOrNull { !it.isEffectivelyPreRelease() }
                         ?: allReleases.firstOrNull()
 
                 val (installable, primary) = recomputeAssetsForRelease(selectedRelease, installedApp)
@@ -2125,6 +2310,8 @@ class DetailsViewModel(
                 val liquidGlassEnabled = tweaksRepository.getLiquidGlassEnabled().first()
 
                 logger.debug("Loaded repo: ${repo.name}, installedApp: ${installedApp?.packageName}")
+
+                val insights = computeReleaseInsights(allReleases, installedApp)
 
                 _state.value =
                     _state.value.copy(
@@ -2151,6 +2338,11 @@ class DetailsViewModel(
                         deviceLanguageCode = translationRepository.getDeviceLanguageCode(),
                         isComingFromUpdate = isComingFromUpdate,
                         isLiquidGlassEnabled = liquidGlassEnabled,
+                        stalledStableSinceDays = insights.stalledStableSinceDays,
+                        mergedChangelog = insights.mergedChangelog,
+                        mergedChangelogBaseTag = insights.mergedChangelogBaseTag,
+                        latestStableHasInstallableAsset =
+                            insights.latestStableHasInstallableAsset,
                     )
 
                 telemetryRepository.recordRepoViewed(repo.id)
@@ -2231,5 +2423,7 @@ class DetailsViewModel(
     private companion object {
         const val OBTAINIUM_REPO_ID: Long = 523534328
         const val APP_MANAGER_REPO_ID: Long = 268006778
+        const val STALLED_STABLE_THRESHOLD_DAYS = 180
+        const val MILLIS_PER_DAY = 86_400_000L
     }
 }

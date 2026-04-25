@@ -143,6 +143,32 @@ interface InstalledAppDao {
     )
 
     /**
+     * Atomically writes the installed-version columns and the
+     * `isUpdateAvailable` flag for [packageName]. Used by the external
+     * install / sideload path (`PackageEventReceiver.handleExternalInstall`)
+     * where a stale snapshot + full-row update could otherwise clobber
+     * concurrent writes to sibling columns (download orchestrator,
+     * variant pin, favourite toggle, `checkForUpdates`, etc.).
+     */
+    @Query(
+        """
+        UPDATE installed_apps
+           SET installedVersion = :installedVersion,
+               installedVersionName = :installedVersionName,
+               installedVersionCode = :installedVersionCode,
+               isUpdateAvailable = :isUpdateAvailable
+         WHERE packageName = :packageName
+        """,
+    )
+    suspend fun updateInstalledVersion(
+        packageName: String,
+        installedVersion: String,
+        installedVersionName: String?,
+        installedVersionCode: Long,
+        isUpdateAvailable: Boolean,
+    )
+
+    /**
      * Sets the path + version + asset name of a
      * downloaded-but-not-yet-installed asset. Pass all `null` to
      * clear (e.g. after the user installs the file).
