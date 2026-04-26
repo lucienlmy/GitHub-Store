@@ -27,7 +27,7 @@ import zed.rainxch.apps.presentation.import.model.RepoSuggestionUi
 import zed.rainxch.githubstore.core.presentation.res.Res
 import zed.rainxch.githubstore.core.presentation.res.external_import_search_empty
 import zed.rainxch.githubstore.core.presentation.res.external_import_search_icon_label
-import zed.rainxch.githubstore.core.presentation.res.external_import_search_placeholder
+import zed.rainxch.githubstore.core.presentation.res.external_import_search_placeholder_url
 
 @Composable
 fun RepoSearchOverride(
@@ -58,7 +58,7 @@ fun RepoSearchOverride(
                 },
                 placeholder = {
                     Text(
-                        text = stringResource(Res.string.external_import_search_placeholder),
+                        text = stringResource(Res.string.external_import_search_placeholder_url),
                     )
                 },
                 trailingIcon = {

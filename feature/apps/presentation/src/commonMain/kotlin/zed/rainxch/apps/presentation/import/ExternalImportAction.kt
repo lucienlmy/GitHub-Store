@@ -11,21 +11,27 @@ sealed interface ExternalImportAction {
 
     data class OnPermissionDenied(val sdkInt: Int?) : ExternalImportAction
 
-    data object OnSkipCurrentCard : ExternalImportAction
+    data class OnSkipCard(val packageName: String) : ExternalImportAction
 
-    data object OnSkipForever : ExternalImportAction
+    data class OnSkipForever(val packageName: String) : ExternalImportAction
 
     data object OnSkipRemaining : ExternalImportAction
 
-    data class OnPickSuggestion(val suggestion: RepoSuggestionUi) : ExternalImportAction
+    data class OnPickSuggestion(
+        val packageName: String,
+        val suggestion: RepoSuggestionUi,
+    ) : ExternalImportAction
 
-    data object OnExpandCurrentCard : ExternalImportAction
+    data class OnLinkCard(val packageName: String) : ExternalImportAction
 
-    data object OnCollapseCurrentCard : ExternalImportAction
+    data class OnToggleCardExpanded(val packageName: String) : ExternalImportAction
 
-    data class OnSearchOverrideChanged(val query: String) : ExternalImportAction
+    data class OnSearchOverrideChanged(
+        val packageName: String,
+        val query: String,
+    ) : ExternalImportAction
 
-    data object OnSearchOverrideSubmit : ExternalImportAction
+    data class OnSearchOverrideSubmit(val packageName: String) : ExternalImportAction
 
     data object OnUndoLast : ExternalImportAction
 

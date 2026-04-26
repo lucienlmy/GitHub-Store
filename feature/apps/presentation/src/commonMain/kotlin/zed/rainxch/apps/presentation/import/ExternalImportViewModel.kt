@@ -3,7 +3,9 @@ package zed.rainxch.apps.presentation.import
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -24,8 +26,10 @@ import zed.rainxch.apps.presentation.import.model.SuggestionSource
 import zed.rainxch.core.domain.logging.GitHubStoreLogger
 import zed.rainxch.core.domain.model.DeviceApp
 import zed.rainxch.core.domain.repository.ExternalImportRepository
+import zed.rainxch.core.domain.repository.InstalledAppsRepository
 import zed.rainxch.core.domain.repository.TelemetryRepository
 import zed.rainxch.core.domain.system.ExternalAppCandidate
+import zed.rainxch.core.domain.system.ExternalDecisionSnapshot
 import zed.rainxch.core.domain.system.InstallerKind
 import zed.rainxch.core.domain.system.RepoMatchResult
 import zed.rainxch.core.domain.system.RepoMatchSource
@@ -41,10 +45,14 @@ import zed.rainxch.githubstore.core.presentation.res.external_import_installer_s
 import zed.rainxch.githubstore.core.presentation.res.external_import_installer_sideload
 import zed.rainxch.githubstore.core.presentation.res.external_import_installer_unknown
 import zed.rainxch.githubstore.core.presentation.res.external_import_search_error_default
+import zed.rainxch.githubstore.core.presentation.res.external_import_undo_failed
+import zed.rainxch.githubstore.core.presentation.res.external_import_undo_linked
+import zed.rainxch.githubstore.core.presentation.res.external_import_undo_skipped
 
 class ExternalImportViewModel(
     private val externalImportRepository: ExternalImportRepository,
     private val appsRepository: AppsRepository,
+    private val installedAppsRepository: InstalledAppsRepository,
     private val telemetry: TelemetryRepository,
     private val logger: GitHubStoreLogger,
 ) : ViewModel() {
@@ -52,6 +60,7 @@ class ExternalImportViewModel(
     private var hasStarted = false
     private var scanJob: Job? = null
     private var searchJob: Job? = null
+    private var pendingUndo: PendingUndo? = null
 
     private val _state = MutableStateFlow(ExternalImportState())
     val state =
@@ -93,32 +102,40 @@ class ExternalImportViewModel(
                 startScanIfIdle(force = true)
             }
 
-            ExternalImportAction.OnSkipCurrentCard -> skipCurrent(neverAsk = false)
+            is ExternalImportAction.OnSkipCard -> skipPackage(action.packageName, neverAsk = false)
 
-            ExternalImportAction.OnSkipForever -> skipCurrent(neverAsk = true)
+            is ExternalImportAction.OnSkipForever -> skipPackage(action.packageName, neverAsk = true)
 
             ExternalImportAction.OnSkipRemaining -> skipRemaining()
 
-            is ExternalImportAction.OnPickSuggestion -> pickSuggestion(action.suggestion)
+            is ExternalImportAction.OnPickSuggestion ->
+                pickSuggestion(action.packageName, action.suggestion)
 
-            ExternalImportAction.OnExpandCurrentCard -> {
-                _state.update { it.copy(currentExpanded = true) }
-            }
+            is ExternalImportAction.OnLinkCard -> linkCardWithPreselected(action.packageName)
 
-            ExternalImportAction.OnCollapseCurrentCard -> {
-                _state.update { it.copy(currentExpanded = false) }
-            }
+            is ExternalImportAction.OnToggleCardExpanded -> toggleCardExpanded(action.packageName)
 
             is ExternalImportAction.OnSearchOverrideChanged -> {
-                // Explicit submit only: typing alone never fires a request,
-                // both because the existing UX expects an Enter/icon tap and
-                // to avoid hammering the rate-limited backend search.
-                _state.update { it.copy(searchOverrideQuery = action.query) }
+                // Explicit submit only — we never auto-fire on keystrokes.
+                _state.update {
+                    if (it.activeSearchPackage != action.packageName) {
+                        // Switched cards: drop stale results from the previous card.
+                        it.copy(
+                            activeSearchPackage = action.packageName,
+                            searchQuery = action.query,
+                            searchResults = persistentListOf(),
+                            isSearching = false,
+                            searchError = null,
+                        )
+                    } else {
+                        it.copy(searchQuery = action.query)
+                    }
+                }
             }
 
-            ExternalImportAction.OnSearchOverrideSubmit -> submitSearchOverride()
+            is ExternalImportAction.OnSearchOverrideSubmit -> submitSearchOverride(action.packageName)
 
-            ExternalImportAction.OnUndoLast -> Unit
+            ExternalImportAction.OnUndoLast -> undoLast()
 
             ExternalImportAction.OnExit -> {
                 viewModelScope.launch {
@@ -129,6 +146,28 @@ class ExternalImportViewModel(
             ExternalImportAction.OnDismissCompletionToast -> {
                 _state.update { it.copy(showCompletionToast = false) }
             }
+        }
+    }
+
+    private fun toggleCardExpanded(packageName: String) {
+        _state.update { current ->
+            val nextSet =
+                if (packageName in current.expandedPackages) {
+                    current.expandedPackages.toPersistentSet().remove(packageName)
+                } else {
+                    current.expandedPackages.toPersistentSet().add(packageName)
+                }
+            // Clear cross-card search results when collapsing the active card so
+            // they don't bleed into the next card the user expands.
+            val keepSearch = current.activeSearchPackage == packageName && packageName in nextSet
+            current.copy(
+                expandedPackages = nextSet,
+                activeSearchPackage = if (keepSearch) current.activeSearchPackage else null,
+                searchQuery = if (keepSearch) current.searchQuery else "",
+                searchResults = if (keepSearch) current.searchResults else persistentListOf(),
+                isSearching = if (keepSearch) current.isSearching else false,
+                searchError = if (keepSearch) current.searchError else null,
+            )
         }
     }
 
@@ -175,7 +214,6 @@ class ExternalImportViewModel(
                         it.copy(
                             phase = ImportPhase.Done,
                             cards = persistentListOf(),
-                            currentCardIndex = 0,
                             autoImported = autoLinked.size,
                             showCompletionToast = true,
                         )
@@ -186,8 +224,6 @@ class ExternalImportViewModel(
                         it.copy(
                             phase = ImportPhase.AwaitingReview,
                             cards = cards,
-                            currentCardIndex = 0,
-                            currentExpanded = false,
                             autoImported = autoLinked.size,
                         )
                     }
@@ -230,17 +266,51 @@ class ExternalImportViewModel(
         )
     }
 
-    private fun submitSearchOverride() {
-        val query = _state.value.searchOverrideQuery.trim()
+    private fun submitSearchOverride(packageName: String) {
+        val current = _state.value
+        // Search submit applies to whichever card was last typed in. If the
+        // active package and the submitted package mismatch, we still honour
+        // the submit using the active query — this only happens if the user
+        // taps the icon in a different card before the keystrokes registered,
+        // which the UI prevents via per-card query binding.
+        if (current.activeSearchPackage != packageName) return
+
+        val query = current.searchQuery.trim()
         if (query.isEmpty()) {
             searchJob?.cancel()
             _state.update {
                 it.copy(
                     isSearching = false,
                     searchError = null,
-                    searchOverrideResults = persistentListOf(),
+                    searchResults = persistentListOf(),
                 )
             }
+            return
+        }
+
+        // Fast-path: a github.com/owner/repo URL bypasses the search API and
+        // surfaces a single MANUAL suggestion that the user can tap to link.
+        // This unblocks users with rate-limited search and matches Obtainium's
+        // "paste a URL" mental model.
+        parseGithubRepoUrl(query)?.let { (owner, repo) ->
+            searchJob?.cancel()
+            _state.update {
+                it.copy(
+                    isSearching = false,
+                    searchError = null,
+                    searchResults = persistentListOf(
+                        RepoSuggestionUi(
+                            owner = owner,
+                            repo = repo,
+                            confidence = 1.0,
+                            source = SuggestionSource.MANUAL,
+                            stars = null,
+                            description = null,
+                        ),
+                    ),
+                )
+            }
+            viewModelScope.launch { runCatching { telemetry.importSearchOverrideUsed() } }
             return
         }
 
@@ -260,10 +330,14 @@ class ExternalImportViewModel(
                         runCatching { telemetry.importSearchOverrideNoResults() }
                     }
                     _state.update {
-                        it.copy(
+                        // Stale-completion guard: if the user collapsed or switched cards
+                        // while the request was in flight, drop the response on the floor
+                        // so old results never bleed into a newly-active card.
+                        if (it.activeSearchPackage != packageName) it
+                        else it.copy(
                             isSearching = false,
                             searchError = null,
-                            searchOverrideResults =
+                            searchResults =
                                 suggestions.map { s -> s.toUi() }.toImmutableList(),
                         )
                     }
@@ -273,10 +347,11 @@ class ExternalImportViewModel(
                     logger.error("Search override failed for '$query': ${e.message}")
                     val fallback = getString(Res.string.external_import_search_error_default)
                     _state.update {
-                        it.copy(
+                        if (it.activeSearchPackage != packageName) it
+                        else it.copy(
                             isSearching = false,
                             searchError = e.message ?: fallback,
-                            searchOverrideResults = persistentListOf(),
+                            searchResults = persistentListOf(),
                         )
                     }
                 },
@@ -284,15 +359,20 @@ class ExternalImportViewModel(
         }
     }
 
-    private fun skipCurrent(neverAsk: Boolean) {
-        val current = _state.value.currentCard ?: return
+    private fun skipPackage(packageName: String, neverAsk: Boolean) {
+        val card = _state.value.cards.firstOrNull { it.packageName == packageName } ?: return
         viewModelScope.launch {
+            val snapshot = runCatching {
+                externalImportRepository.snapshotDecision(packageName)
+            }.getOrNull()
+            val hadInstalledRow = installedAppsRepository.getAppByPackage(packageName) != null
+
             try {
-                externalImportRepository.skipPackage(current.packageName, neverAsk = neverAsk)
+                externalImportRepository.skipPackage(packageName, neverAsk = neverAsk)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                logger.error("Skip failed for ${current.packageName}: ${e.message}")
+                logger.error("Skip failed for $packageName: ${e.message}")
             }
             runCatching {
                 telemetry.importSkipped(
@@ -300,19 +380,31 @@ class ExternalImportViewModel(
                     persisted = if (neverAsk) "forever" else "7day",
                 )
             }
-            advanceAfter { it.copy(skipped = it.skipped + 1) }
+            removeCardFromState(packageName) { it.copy(skipped = it.skipped + 1) }
+
+            pendingUndo = PendingUndo(
+                card = card,
+                snapshot = snapshot,
+                hadInstalledAppRowBefore = hadInstalledRow,
+                kind = PendingUndo.Kind.Skip,
+            )
+            _events.send(
+                ExternalImportEvent.ShowUndoSnackbar(
+                    getString(Res.string.external_import_undo_skipped, card.appLabel),
+                ),
+            )
         }
     }
 
-    private fun pickSuggestion(suggestion: RepoSuggestionUi) {
-        val current = _state.value.currentCard ?: return
-        val preselected = current.preselectedSuggestion
+    private fun pickSuggestion(packageName: String, suggestion: RepoSuggestionUi) {
+        val card = _state.value.cards.firstOrNull { it.packageName == packageName } ?: return
+        val preselected = card.preselectedSuggestion
         val source = if (suggestion == preselected) "preselected" else "alternative"
-        val candidate = candidatesByPackage[current.packageName]
+        val candidate = candidatesByPackage[packageName]
 
         viewModelScope.launch {
             if (candidate == null) {
-                logger.error("Cannot materialize ${current.packageName}: candidate missing from snapshot")
+                logger.error("Cannot materialize $packageName: candidate missing from snapshot")
                 _events.send(
                     ExternalImportEvent.ShowError(
                         getString(Res.string.external_import_error_link_failed),
@@ -320,6 +412,11 @@ class ExternalImportViewModel(
                 )
                 return@launch
             }
+
+            val snapshot = runCatching {
+                externalImportRepository.snapshotDecision(packageName)
+            }.getOrNull()
+            val hadInstalledRow = installedAppsRepository.getAppByPackage(packageName) != null
 
             val materialized = materializeAndMark(candidate, suggestion.owner, suggestion.repo, source)
             if (!materialized) {
@@ -333,7 +430,94 @@ class ExternalImportViewModel(
             runCatching {
                 telemetry.importManuallyLinked(countBucket = "1-2", source = source)
             }
-            advanceAfter { it.copy(manuallyLinked = it.manuallyLinked + 1) }
+            removeCardFromState(packageName) { it.copy(manuallyLinked = it.manuallyLinked + 1) }
+
+            pendingUndo = PendingUndo(
+                card = card,
+                snapshot = snapshot,
+                hadInstalledAppRowBefore = hadInstalledRow,
+                kind = PendingUndo.Kind.Link,
+            )
+            _events.send(
+                ExternalImportEvent.ShowUndoSnackbar(
+                    getString(Res.string.external_import_undo_linked, card.appLabel),
+                ),
+            )
+        }
+    }
+
+    private fun linkCardWithPreselected(packageName: String) {
+        val card = _state.value.cards.firstOrNull { it.packageName == packageName } ?: return
+        val preselect = card.preselectedSuggestion
+        if (preselect != null) {
+            pickSuggestion(packageName, preselect)
+        } else {
+            // No preselection means there's nothing to confidently link to. The
+            // list-mode UI hides the link CTA in this case, but defensively
+            // surface the expand affordance instead of silently dropping.
+            toggleCardExpanded(packageName)
+        }
+    }
+
+    private fun undoLast() {
+        val undo = pendingUndo ?: return
+        pendingUndo = null
+
+        viewModelScope.launch {
+            try {
+                if (undo.kind == PendingUndo.Kind.Link && !undo.hadInstalledAppRowBefore) {
+                    // The link materialized a new installed_apps row; remove it
+                    // before restoring the link table state so getAppByPackage
+                    // observers see the rollback in one shot.
+                    runCatching {
+                        installedAppsRepository.deleteInstalledApp(undo.packageName)
+                    }
+                }
+
+                if (undo.snapshot != null) {
+                    externalImportRepository.restoreDecision(undo.snapshot)
+                } else {
+                    // No prior row existed (first-ever scan + decision). Drop
+                    // the new link entirely so the candidate becomes pending
+                    // again on the next scan.
+                    runCatching { externalImportRepository.unlink(undo.packageName) }
+                }
+
+                // Re-insert the original card at the top so the user can retry
+                // immediately. We use the card we cached on the snackbar token —
+                // re-running resolveMatches would issue a network call and risks
+                // returning different suggestions than the user just saw.
+                _state.update { current ->
+                    if (current.cards.any { it.packageName == undo.packageName }) {
+                        current
+                    } else {
+                        val tally = when (undo.kind) {
+                            PendingUndo.Kind.Link ->
+                                current.copy(
+                                    manuallyLinked = (current.manuallyLinked - 1).coerceAtLeast(0),
+                                )
+                            PendingUndo.Kind.Skip ->
+                                current.copy(
+                                    skipped = (current.skipped - 1).coerceAtLeast(0),
+                                )
+                        }
+                        tally.copy(
+                            cards = (listOf(undo.card) + current.cards).toImmutableList(),
+                            phase = ImportPhase.AwaitingReview,
+                            showCompletionToast = false,
+                        )
+                    }
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logger.error("Undo failed for ${undo.packageName}: ${e.message}")
+                _events.send(
+                    ExternalImportEvent.ShowError(
+                        getString(Res.string.external_import_undo_failed),
+                    ),
+                )
+            }
         }
     }
 
@@ -369,7 +553,7 @@ class ExternalImportViewModel(
     private fun skipRemaining() {
         val current = _state.value
         if (current.phase != ImportPhase.AwaitingReview) return
-        val remaining = current.cards.drop(current.currentCardIndex)
+        val remaining = current.cards
         if (remaining.isEmpty()) return
 
         viewModelScope.launch {
@@ -390,10 +574,20 @@ class ExternalImportViewModel(
                 )
             }
 
+            // Skip-remaining is intentionally not undoable — bulk skip clears
+            // the wizard and triggers the completion screen, and a single
+            // snackbar isn't a sensible affordance for "undo seven things".
+            pendingUndo = null
+
             _state.update {
                 it.copy(
-                    currentCardIndex = it.cards.size,
-                    currentExpanded = false,
+                    cards = persistentListOf(),
+                    expandedPackages = persistentSetOf(),
+                    activeSearchPackage = null,
+                    searchQuery = "",
+                    searchResults = persistentListOf(),
+                    isSearching = false,
+                    searchError = null,
                     phase = ImportPhase.Done,
                     skipped = it.skipped + remaining.size,
                     showCompletionToast = true,
@@ -485,24 +679,34 @@ class ExternalImportViewModel(
             signingFingerprint = signingFingerprint,
         )
 
-    private suspend fun advanceAfter(transform: (ExternalImportState) -> ExternalImportState) {
-        val nextIndex = _state.value.currentCardIndex + 1
-        val total = _state.value.cards.size
-        val done = nextIndex >= total
-
+    private suspend fun removeCardFromState(
+        packageName: String,
+        tally: (ExternalImportState) -> ExternalImportState,
+    ) {
+        // _state.update may invoke the lambda multiple times under contention;
+        // never assign captured vars from inside it. Read the post-update
+        // state to decide whether to fire the completion event.
         _state.update { current ->
-            val tallied = transform(current).copy(currentExpanded = false)
-            if (done) {
+            val newCards = current.cards.filterNot { it.packageName == packageName }.toImmutableList()
+            val tallied = tally(current).copy(
+                cards = newCards,
+                expandedPackages = current.expandedPackages.toPersistentSet().remove(packageName),
+                activeSearchPackage = if (current.activeSearchPackage == packageName) null else current.activeSearchPackage,
+                searchQuery = if (current.activeSearchPackage == packageName) "" else current.searchQuery,
+                searchResults = if (current.activeSearchPackage == packageName) persistentListOf() else current.searchResults,
+                isSearching = if (current.activeSearchPackage == packageName) false else current.isSearching,
+                searchError = if (current.activeSearchPackage == packageName) null else current.searchError,
+            )
+            if (newCards.isEmpty()) {
                 tallied.copy(
                     phase = ImportPhase.Done,
                     showCompletionToast = true,
                 )
             } else {
-                tallied.copy(currentCardIndex = nextIndex)
+                tallied
             }
         }
-
-        if (done) {
+        if (_state.value.cards.isEmpty()) {
             _events.send(ExternalImportEvent.PlayConfetti)
         }
     }
@@ -534,9 +738,46 @@ class ExternalImportViewModel(
             else -> getString(Res.string.external_import_installer_unknown)
         }
 
+    private data class PendingUndo(
+        val card: CandidateUi,
+        val snapshot: ExternalDecisionSnapshot?,
+        val hadInstalledAppRowBefore: Boolean,
+        val kind: Kind,
+    ) {
+        val packageName: String get() = card.packageName
+        val appLabel: String get() = card.appLabel
+
+        enum class Kind { Skip, Link }
+    }
+
     companion object {
         private const val AUTO_LINK_THRESHOLD = 0.85
         private const val PRESELECT_MIN = 0.5
         private const val PRESELECT_MAX = 0.85
     }
 }
+
+private fun parseGithubRepoUrl(input: String): Pair<String, String>? {
+    val trimmed = input.trim().removeSuffix("/")
+    if (trimmed.isEmpty()) return null
+    // Accept both bare host references and full https URLs. Anything else
+    // (search keywords, partial slugs without owner) falls through to the
+    // backend search path.
+    val withoutScheme = trimmed
+        .removePrefix("https://")
+        .removePrefix("http://")
+        .removePrefix("www.")
+    if (!withoutScheme.startsWith("github.com/", ignoreCase = true)) return null
+    val path = withoutScheme.substring("github.com/".length)
+    val parts = path.split('/').filter { it.isNotEmpty() }
+    if (parts.size < 2) return null
+    val owner = parts[0]
+    val repo = parts[1].substringBefore('?').substringBefore('#')
+    if (!isValidGithubSegment(owner) || !isValidGithubSegment(repo)) return null
+    return owner to repo
+}
+
+private fun isValidGithubSegment(s: String): Boolean =
+    s.isNotEmpty() &&
+        s.length <= 100 &&
+        s.all { it.isLetterOrDigit() || it == '-' || it == '_' || it == '.' }

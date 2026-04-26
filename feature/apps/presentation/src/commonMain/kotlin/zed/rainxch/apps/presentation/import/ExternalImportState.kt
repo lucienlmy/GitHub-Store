@@ -1,7 +1,9 @@
 package zed.rainxch.apps.presentation.import
 
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import zed.rainxch.apps.presentation.import.model.CandidateUi
 import zed.rainxch.apps.presentation.import.model.ImportPhase
 import zed.rainxch.apps.presentation.import.model.RepoSuggestionUi
@@ -13,10 +15,10 @@ data class ExternalImportState(
     val skipped: Int = 0,
     val manuallyLinked: Int = 0,
     val cards: ImmutableList<CandidateUi> = persistentListOf(),
-    val currentCardIndex: Int = 0,
-    val currentExpanded: Boolean = false,
-    val searchOverrideQuery: String = "",
-    val searchOverrideResults: ImmutableList<RepoSuggestionUi> = persistentListOf(),
+    val expandedPackages: ImmutableSet<String> = persistentSetOf(),
+    val activeSearchPackage: String? = null,
+    val searchQuery: String = "",
+    val searchResults: ImmutableList<RepoSuggestionUi> = persistentListOf(),
     val isSearching: Boolean = false,
     val searchError: String? = null,
     val isPermissionDenied: Boolean = false,
@@ -25,12 +27,9 @@ data class ExternalImportState(
     val showCompletionToast: Boolean = false,
     val errorMessage: String? = null,
 ) {
-    val currentCard: CandidateUi?
-        get() = cards.getOrNull(currentCardIndex)
-
     val cardsRemaining: Int
-        get() = (cards.size - currentCardIndex).coerceAtLeast(0)
+        get() = cards.size
 
     val isWizardComplete: Boolean
-        get() = phase == ImportPhase.Done || (cards.isNotEmpty() && currentCardIndex >= cards.size)
+        get() = phase == ImportPhase.Done || (phase == ImportPhase.AwaitingReview && cards.isEmpty())
 }

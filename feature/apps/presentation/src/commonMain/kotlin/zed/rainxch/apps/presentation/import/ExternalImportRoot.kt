@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -31,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import zed.rainxch.apps.presentation.import.components.CompletionToast
@@ -38,7 +40,7 @@ import zed.rainxch.apps.presentation.import.components.ConfettiOverlay
 import zed.rainxch.apps.presentation.import.components.EmptyStateScreen
 import zed.rainxch.apps.presentation.import.components.ImportProgressScreen
 import zed.rainxch.apps.presentation.import.components.PermissionRationaleScreen
-import zed.rainxch.apps.presentation.import.components.WizardCardStack
+import zed.rainxch.apps.presentation.import.components.WizardList
 import zed.rainxch.apps.presentation.import.model.ImportPhase
 import zed.rainxch.apps.presentation.import.util.LocalReducedMotion
 import zed.rainxch.apps.presentation.import.util.rememberSystemReducedMotion
@@ -48,6 +50,7 @@ import zed.rainxch.githubstore.core.presentation.res.external_import_overflow_mo
 import zed.rainxch.githubstore.core.presentation.res.external_import_overflow_skip_remaining
 import zed.rainxch.githubstore.core.presentation.res.external_import_top_bar_back
 import zed.rainxch.githubstore.core.presentation.res.external_import_top_bar_title
+import zed.rainxch.githubstore.core.presentation.res.external_import_undo_action
 
 @Composable
 fun ExternalImportRoot(
@@ -68,6 +71,23 @@ fun ExternalImportRoot(
                 scope.launch { snackbarHostState.showSnackbar(event.message) }
             }
             ExternalImportEvent.PlayConfetti -> confettiTrigger++
+            is ExternalImportEvent.ShowUndoSnackbar -> {
+                // Dismiss any prior snackbar so undo always wins the slot — the
+                // VM tracks one pending undo, and showing a stale message would
+                // let the user mis-target it.
+                snackbarHostState.currentSnackbarData?.dismiss()
+                scope.launch {
+                    val undoLabel = getString(Res.string.external_import_undo_action)
+                    val result = snackbarHostState.showSnackbar(
+                        message = event.message,
+                        actionLabel = undoLabel,
+                        withDismissAction = true,
+                    )
+                    if (result == SnackbarResult.ActionPerformed) {
+                        viewModel.onAction(ExternalImportAction.OnUndoLast)
+                    }
+                }
+            }
         }
     }
 
@@ -143,8 +163,7 @@ fun ExternalImportRoot(
                     }
 
                     ImportPhase.AwaitingReview -> {
-                        val current = state.currentCard
-                        if (current == null) {
+                        if (state.cards.isEmpty()) {
                             EmptyStateScreen(
                                 isPermissionDenied = state.isPermissionDenied,
                                 onRequestPermission = {
@@ -153,43 +172,39 @@ fun ExternalImportRoot(
                                 onExit = { viewModel.onAction(ExternalImportAction.OnExit) },
                             )
                         } else {
-                            WizardCardStack(
+                            WizardList(
                                 cards = state.cards,
-                                currentIndex = state.currentCardIndex,
-                                expanded = state.currentExpanded,
-                                searchQuery = state.searchOverrideQuery,
-                                searchResults = state.searchOverrideResults,
+                                expandedPackages = state.expandedPackages,
+                                activeSearchPackage = state.activeSearchPackage,
+                                searchQuery = state.searchQuery,
+                                searchResults = state.searchResults,
                                 isSearching = state.isSearching,
                                 searchError = state.searchError,
-                                onExpand = {
-                                    viewModel.onAction(ExternalImportAction.OnExpandCurrentCard)
-                                },
-                                onCollapse = {
-                                    viewModel.onAction(ExternalImportAction.OnCollapseCurrentCard)
-                                },
-                                onPick = { suggestion ->
-                                    viewModel.onAction(ExternalImportAction.OnPickSuggestion(suggestion))
-                                },
-                                onSkip = {
-                                    viewModel.onAction(ExternalImportAction.OnSkipCurrentCard)
-                                },
-                                onLink = {
-                                    val preselect = current.preselectedSuggestion
-                                    if (preselect != null) {
-                                        viewModel.onAction(
-                                            ExternalImportAction.OnPickSuggestion(preselect),
-                                        )
-                                    } else {
-                                        viewModel.onAction(ExternalImportAction.OnSkipCurrentCard)
-                                    }
-                                },
-                                onSearchQueryChange = { query ->
+                                onToggleExpanded = { pkg ->
                                     viewModel.onAction(
-                                        ExternalImportAction.OnSearchOverrideChanged(query),
+                                        ExternalImportAction.OnToggleCardExpanded(pkg),
                                     )
                                 },
-                                onSearchSubmit = {
-                                    viewModel.onAction(ExternalImportAction.OnSearchOverrideSubmit)
+                                onPick = { pkg, suggestion ->
+                                    viewModel.onAction(
+                                        ExternalImportAction.OnPickSuggestion(pkg, suggestion),
+                                    )
+                                },
+                                onSkip = { pkg ->
+                                    viewModel.onAction(ExternalImportAction.OnSkipCard(pkg))
+                                },
+                                onLink = { pkg ->
+                                    viewModel.onAction(ExternalImportAction.OnLinkCard(pkg))
+                                },
+                                onSearchQueryChange = { pkg, query ->
+                                    viewModel.onAction(
+                                        ExternalImportAction.OnSearchOverrideChanged(pkg, query),
+                                    )
+                                },
+                                onSearchSubmit = { pkg ->
+                                    viewModel.onAction(
+                                        ExternalImportAction.OnSearchOverrideSubmit(pkg),
+                                    )
                                 },
                             )
                         }

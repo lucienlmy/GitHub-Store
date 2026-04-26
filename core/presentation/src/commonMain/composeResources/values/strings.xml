@@ -783,13 +783,11 @@
     </plurals>
     <string name="external_import_card_action_skip">Skip</string>
     <string name="external_import_card_action_link">Link</string>
-    <string name="external_import_card_progress_chip">Card %1$d of %2$d</string>
     <string name="external_import_card_installer_chip">Installed via %1$s</string>
     <string name="external_import_card_preselect_known">We think this is %1$s · %2$d%%</string>
     <string name="external_import_card_preselect_unknown">Tap to find a repo</string>
     <string name="external_import_card_expand_label">Expand to see other matches</string>
     <string name="external_import_card_collapse_label">Collapse card</string>
-    <string name="external_import_search_placeholder">Not the right repo? Search…</string>
     <string name="external_import_search_icon_label">Search GitHub</string>
     <string name="external_import_search_empty">No matches</string>
     <string name="external_import_search_error_default">Search failed</string>
@@ -828,6 +826,17 @@
     <string name="external_import_installer_sideload">Sideload</string>
     <string name="external_import_installer_self">GitHub Store</string>
     <string name="external_import_installer_unknown">Unknown source</string>
+    <string name="external_import_search_placeholder_url">Paste a github.com URL or search…</string>
+    <string name="external_import_undo_linked">Linked %1$s.</string>
+    <string name="external_import_undo_skipped">Skipped %1$s.</string>
+    <string name="external_import_undo_action">Undo</string>
+    <string name="external_import_undo_failed">Couldn\'t undo — try again.</string>
+    <string name="external_import_card_action_more">More matches</string>
+    <string name="external_import_card_action_less">Hide matches</string>
+    <plurals name="external_import_list_remaining">
+        <item quantity="one">%1$d app to review</item>
+        <item quantity="other">%1$d apps to review</item>
+    </plurals>
 
     <!-- E1: Details unlink dialog -->
     <string name="details_unlink_external_app_menu">Unlink from this repo</string>
