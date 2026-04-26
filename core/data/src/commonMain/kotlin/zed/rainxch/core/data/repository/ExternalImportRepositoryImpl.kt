@@ -83,7 +83,12 @@ class ExternalImportRepositoryImpl(
     override suspend fun runFullScan(): ScanResult {
         val started = nowMillis()
         val granted = scanner.isPermissionGranted()
-        val candidates = scanner.snapshot()
+        val rawCandidates = scanner.snapshot()
+        // Surface only candidates with positive evidence that the app is
+        // GitHub-published. Without this we'd show every app whose installer
+        // we didn't recognise (UNKNOWN bucket) — a flood of Samsung utilities,
+        // random sideloads, and OEM apps the user knows aren't open source.
+        val candidates = rawCandidates.filter { hasPositiveEvidence(it) }
         candidateSnapshot.update { candidates.associateBy { it.packageName } }
 
         val now = nowMillis()
@@ -98,10 +103,9 @@ class ExternalImportRepositoryImpl(
             externalLinkDao.upsert(updated)
         }
 
-        // Prune PENDING_REVIEW rows whose package is no longer on the device or
-        // is no longer eligible (filtered by classifier, e.g. SYSTEM/PLAY/OEM).
-        // Without this, the banner count drifts past the actual reviewable set
-        // and the wizard ends up showing far fewer cards than the banner promised.
+        // Prune PENDING_REVIEW rows whose package is gone or no longer passes
+        // the evidence filter. Without this, the banner count drifts past the
+        // actual reviewable set after we tightened the policy.
         val livePackages = candidates.map { it.packageName }.toSet()
         runCatching { externalLinkDao.prunePendingReviewNotIn(livePackages) }
             .onFailure { Logger.d { "prune pending failed: ${it.message}" } }
@@ -117,7 +121,7 @@ class ExternalImportRepositoryImpl(
         return ScanResult(
             totalCandidates = candidates.size,
             newCandidates = newCandidates,
-            autoLinked = 0, // wired with backend match resolver in Week 2
+            autoLinked = 0,
             pendingReview = pendingReview,
             durationMillis = durationMs,
             permissionGranted = granted,
@@ -502,6 +506,13 @@ class ExternalImportRepositoryImpl(
         }
     }
 
+    private suspend fun hasPositiveEvidence(candidate: ExternalAppCandidate): Boolean {
+        if (candidate.installerKind in TRUSTED_GITHUB_INSTALLERS) return true
+        if (candidate.manifestHint != null) return true
+        val fp = candidate.signingFingerprint ?: return false
+        return runCatching { signingFingerprintDao.lookup(fp) != null }.getOrDefault(false)
+    }
+
     private fun mergeCandidate(
         existing: ExternalLinkEntity?,
         candidate: ExternalAppCandidate,
@@ -614,5 +625,13 @@ class ExternalImportRepositoryImpl(
         private const val MAX_SEARCH_QUERY_LEN = 100
         private const val MAX_SEED_PAGES = 50
         private const val SEED_SOURCE_BACKEND = "backend_seed"
+
+        // Stores whose entire catalog is sourced from GitHub releases — apps installed
+        // through them are surfaced even without a manifest hint or fingerprint match.
+        private val TRUSTED_GITHUB_INSTALLERS =
+            setOf(
+                zed.rainxch.core.domain.system.InstallerKind.STORE_OBTAINIUM,
+                zed.rainxch.core.domain.system.InstallerKind.STORE_FDROID,
+            )
     }
 }
