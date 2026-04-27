@@ -1,10 +1,7 @@
 package zed.rainxch.apps.presentation.import.util
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
-import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -34,19 +31,14 @@ private class AndroidPackageVisibilityRequester(
         }
 
     override suspend fun requestOrOpenSettings(): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return true
-        // QUERY_ALL_PACKAGES is a "special app access" permission as of API 30 — there
-        // is no native runtime dialog. Best we can do is land the user on the App Info
-        // page where the toggle lives. We can't observe grant from here; the caller
-        // re-checks `isGranted` after the user returns.
-        val intent =
-            Intent(
-                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.fromParts("package", context.packageName, null),
-            ).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-        runCatching { context.startActivity(intent) }
+        // No-op by contract. QUERY_ALL_PACKAGES is granted at install time
+        // via the manifest declaration — there is no user-grantable runtime
+        // toggle on stock Android, and `ACTION_APPLICATION_DETAILS_SETTINGS`
+        // does not surface the (non-existent) toggle either. Some OEMs
+        // (Samsung One UI 4+) expose a "Special access → Allow access to all
+        // apps" setting, but no public Intent reliably deep-links to it.
+        // Callers must rely on `isGranted()` and gracefully degrade when
+        // false; the scanner's heuristic-based degraded path handles this.
         return false
     }
 }
