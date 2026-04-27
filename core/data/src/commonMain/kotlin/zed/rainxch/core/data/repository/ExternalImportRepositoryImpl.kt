@@ -29,7 +29,6 @@ import zed.rainxch.core.domain.system.ExternalAppCandidate
 import zed.rainxch.core.domain.system.ExternalAppScanner
 import zed.rainxch.core.domain.system.ExternalDecisionSnapshot
 import zed.rainxch.core.domain.system.ExternalLinkState
-import zed.rainxch.core.domain.system.ImportSummary
 import zed.rainxch.core.domain.system.RepoMatchResult
 import zed.rainxch.core.domain.system.RepoMatchSource
 import zed.rainxch.core.domain.system.RepoMatchSuggestion
@@ -261,56 +260,6 @@ class ExternalImportRepositoryImpl(
         }
     }
 
-    override suspend fun importAutoMatched(matches: List<RepoMatchResult>): ImportSummary {
-        debug.i { "importAutoMatched ENTER matches=${matches.size}" }
-        var linked = 0
-        var failed = 0
-        val now = nowMillis()
-        matches.forEach { result ->
-            val top = result.topSuggestion
-            if (top != null && top.confidence >= AUTO_LINK_CONFIDENCE_THRESHOLD) {
-                val outcome = runCatching {
-                    val existing = externalLinkDao.get(result.packageName)
-                    val base = existing ?: ExternalLinkEntity(
-                        packageName = result.packageName,
-                        state = ExternalLinkState.MATCHED.name,
-                        repoOwner = top.owner,
-                        repoName = top.repo,
-                        matchSource = top.source.name.lowercase(),
-                        matchConfidence = top.confidence,
-                        signingFingerprint = null,
-                        installerKind = null,
-                        firstSeenAt = now,
-                        lastReviewedAt = now,
-                        skipExpiresAt = null,
-                    )
-                    upsertWithLog(
-                        base.copy(
-                            state = ExternalLinkState.MATCHED.name,
-                            repoOwner = top.owner,
-                            repoName = top.repo,
-                            matchSource = top.source.name.lowercase(),
-                            matchConfidence = top.confidence,
-                            lastReviewedAt = now,
-                        ),
-                        callsite = "importAutoMatched",
-                    )
-                }
-                outcome
-                    .onSuccess { linked++ }
-                    .onFailure { e ->
-                        if (e is CancellationException) throw e
-                        failed++
-                        Logger.w(e) { "auto-link upsert failed for ${result.packageName}" }
-                    }
-            }
-        }
-        debug.i { "importAutoMatched EXIT linked=$linked failed=$failed" }
-        runCatching { telemetry.importAutoLinked(countBucket = bucketCount(linked)) }
-            .onFailure { Logger.d { "telemetry importAutoLinked failed: ${it.message}" } }
-        return ImportSummary(attempted = matches.size, linked = linked, failed = failed)
-    }
-
     override suspend fun linkManually(
         packageName: String,
         owner: String,
@@ -394,7 +343,6 @@ class ExternalImportRepositoryImpl(
             matchSource = row.matchSource,
             matchConfidence = row.matchConfidence,
             skipExpiresAt = row.skipExpiresAt,
-            hadInstalledAppRow = false,
         )
     }
 
@@ -647,7 +595,6 @@ class ExternalImportRepositoryImpl(
         private val INITIAL_SCAN_COMPLETED_AT_KEY = longPreferencesKey("external_import_initial_scan_at")
         private const val SKIP_TTL_MILLIS: Long = 7L * 24 * 60 * 60 * 1000
         private const val MATCH_BATCH_SIZE = 25
-        private const val AUTO_LINK_CONFIDENCE_THRESHOLD = 0.85
         private const val FINGERPRINT_CONFIDENCE = 0.92
         private const val SEARCH_OVERRIDE_CONFIDENCE = 0.5
         private const val SEARCH_LIMIT = 10

@@ -65,6 +65,7 @@ class InstallerSourceClassifier(
             setOf(
                 "dev.imranr.obtainium",
                 "dev.imranr.obtainium.app",
+                "dev.imranr.obtainium.fdroid",
             )
         private const val FDROID = "org.fdroid.fdroid"
         private const val PLAY = "com.android.vending"

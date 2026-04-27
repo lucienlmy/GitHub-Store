@@ -469,13 +469,16 @@ class AppsViewModel(
             }
 
             AppsAction.OnImportProposalReview -> {
+                // Snapshot the current count to the dismiss watermark BEFORE the
+                // navigation event is sent. Symmetric with OnImportProposalDismiss
+                // and avoids a race where observePendingExternalImports reads a
+                // stale watermark while we're navigating and re-flashes the banner.
+                // After the wizard runs, count drops (auto-import) or stays > the
+                // snapshotted watermark only if NEW candidates appeared post-Review.
+                val current = _state.value.pendingExternalImportCount
                 _state.update { it.copy(showImportProposalBanner = false) }
                 viewModelScope.launch {
-                    // Reviewing implies the user is acting on the current set,
-                    // so wipe the dismiss watermark — banner can re-show next
-                    // time as count comes back >0 (or stays >0 if any cards
-                    // remained un-decided).
-                    runCatching { tweaksRepository.setExternalImportBannerDismissedAtCount(0) }
+                    runCatching { tweaksRepository.setExternalImportBannerDismissedAtCount(current) }
                     _events.send(AppsEvent.NavigateToExternalImport)
                 }
             }

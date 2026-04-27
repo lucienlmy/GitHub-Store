@@ -3,7 +3,6 @@ package zed.rainxch.core.domain.repository
 import kotlinx.coroutines.flow.Flow
 import zed.rainxch.core.domain.system.ExternalAppCandidate
 import zed.rainxch.core.domain.system.ExternalDecisionSnapshot
-import zed.rainxch.core.domain.system.ImportSummary
 import zed.rainxch.core.domain.system.RepoMatchResult
 import zed.rainxch.core.domain.system.ScanResult
 
@@ -19,8 +18,6 @@ interface ExternalImportRepository {
     suspend fun runDeltaScan(changedPackageNames: Set<String>): ScanResult
 
     suspend fun resolveMatches(candidates: List<ExternalAppCandidate>): List<RepoMatchResult>
-
-    suspend fun importAutoMatched(matches: List<RepoMatchResult>): ImportSummary
 
     suspend fun linkManually(
         packageName: String,

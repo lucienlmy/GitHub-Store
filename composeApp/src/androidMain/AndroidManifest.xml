@@ -27,6 +27,7 @@
     <queries>
         <package android:name="dev.imranr.obtainium.app" />
         <package android:name="dev.imranr.obtainium" />
+        <package android:name="dev.imranr.obtainium.fdroid" />
         <package android:name="org.fdroid.fdroid" />
         <package android:name="com.android.vending" />
         <package android:name="com.aurora.store" />

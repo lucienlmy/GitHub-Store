@@ -8,9 +8,3 @@ data class ScanResult(
     val durationMillis: Long,
     val permissionGranted: Boolean,
 )
-
-data class ImportSummary(
-    val attempted: Int,
-    val linked: Int,
-    val failed: Int,
-)

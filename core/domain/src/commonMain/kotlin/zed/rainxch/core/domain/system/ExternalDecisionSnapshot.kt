@@ -8,5 +8,4 @@ data class ExternalDecisionSnapshot(
     val matchSource: String?,
     val matchConfidence: Double?,
     val skipExpiresAt: Long?,
-    val hadInstalledAppRow: Boolean,
 )

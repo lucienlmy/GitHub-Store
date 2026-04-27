@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 expect fun rememberPackageVisibilityRequester(): PackageVisibilityRequester
 
 interface PackageVisibilityRequester {
-    val isGranted: Boolean
+    suspend fun isGranted(): Boolean
+
     suspend fun requestOrOpenSettings(): Boolean
 }

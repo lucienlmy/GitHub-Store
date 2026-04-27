@@ -8,6 +8,7 @@ actual fun rememberPackageVisibilityRequester(): PackageVisibilityRequester =
     remember { JvmPackageVisibilityRequester }
 
 private object JvmPackageVisibilityRequester : PackageVisibilityRequester {
-    override val isGranted: Boolean = true
+    override suspend fun isGranted(): Boolean = true
+
     override suspend fun requestOrOpenSettings(): Boolean = true
 }

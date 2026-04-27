@@ -80,7 +80,7 @@ fun PermissionRationaleScreen(
                 Button(onClick = {
                     scope.launch {
                         onAction(ExternalImportAction.OnRequestPermission)
-                        if (requester.isGranted) {
+                        if (requester.isGranted()) {
                             onAction(ExternalImportAction.OnPermissionGranted(sdkInt))
                         } else {
                             requester.requestOrOpenSettings()

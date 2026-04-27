@@ -8,6 +8,8 @@ import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 // keep in sync with AndroidExternalAppScanner.GRANT_THRESHOLD
 private const val GRANT_THRESHOLD = 30
@@ -21,12 +23,14 @@ actual fun rememberPackageVisibilityRequester(): PackageVisibilityRequester {
 private class AndroidPackageVisibilityRequester(
     private val context: Context,
 ) : PackageVisibilityRequester {
-    override val isGranted: Boolean
-        get() {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return true
+    // pm.getInstalledPackages is a binder IPC and can take noticeable time on devices
+    // with many packages — keep it off the main thread.
+    override suspend fun isGranted(): Boolean =
+        withContext(Dispatchers.IO) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return@withContext true
             val pm = context.packageManager
             val visible = runCatching { pm.getInstalledPackages(0) }.getOrElse { emptyList() }
-            return visible.size >= GRANT_THRESHOLD
+            visible.size >= GRANT_THRESHOLD
         }
 
     override suspend fun requestOrOpenSettings(): Boolean {
