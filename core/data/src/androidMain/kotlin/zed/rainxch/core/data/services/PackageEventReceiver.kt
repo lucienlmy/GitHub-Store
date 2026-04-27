@@ -110,53 +110,59 @@ class PackageEventReceiver() :
         try {
             val repo = getRepository()
             val monitor = getMonitor()
-            val app = repo.getAppByPackage(packageName) ?: return
+            val app = repo.getAppByPackage(packageName)
 
-            if (app.isPendingInstall) {
-                val systemInfo = monitor.getInstalledPackageInfo(packageName)
-                if (systemInfo != null) {
-                    val expectedVersionCode = app.latestVersionCode ?: 0L
-                    val wasActuallyUpdated =
-                        expectedVersionCode > 0L &&
-                            systemInfo.versionCode >= expectedVersionCode
+            // First-time installs (app == null) skip the tracked-app branches
+            // but MUST still hit the backstop delta-scan launch below — that's
+            // how a freshly-installed GitHub app surfaces as a wizard candidate
+            // when the user installs it after the initial scan.
+            if (app != null) {
+                if (app.isPendingInstall) {
+                    val systemInfo = monitor.getInstalledPackageInfo(packageName)
+                    if (systemInfo != null) {
+                        val expectedVersionCode = app.latestVersionCode ?: 0L
+                        val wasActuallyUpdated =
+                            expectedVersionCode > 0L &&
+                                systemInfo.versionCode >= expectedVersionCode
 
-                    if (wasActuallyUpdated) {
-                        repo.updateAppVersion(
-                            packageName = packageName,
-                            newTag = app.latestVersion ?: systemInfo.versionName,
-                            newAssetName = app.latestAssetName ?: "",
-                            newAssetUrl = app.latestAssetUrl ?: "",
-                            newVersionName = systemInfo.versionName,
-                            newVersionCode = systemInfo.versionCode,
-                            signingFingerprint = app.signingFingerprint,
-                        )
-                        repo.updatePendingStatus(packageName, false)
-                        Logger.i { "Update confirmed via broadcast: $packageName (v${systemInfo.versionName})" }
-                    } else {
-                        repo.updateApp(
-                            app.copy(
-                                isPendingInstall = false,
-                                installedVersionName = systemInfo.versionName,
-                                installedVersionCode = systemInfo.versionCode,
-                                isUpdateAvailable =
-                                    (
-                                        app.latestVersionCode
-                                            ?: 0L
-                                    ) > systemInfo.versionCode,
-                            ),
-                        )
-                        Logger.i {
-                            "Package replaced but not updated to target: $packageName " +
-                                "(system: v${systemInfo.versionName}/${systemInfo.versionCode}, " +
-                                "target: v${app.latestVersionName}/${app.latestVersionCode})"
+                        if (wasActuallyUpdated) {
+                            repo.updateAppVersion(
+                                packageName = packageName,
+                                newTag = app.latestVersion ?: systemInfo.versionName,
+                                newAssetName = app.latestAssetName ?: "",
+                                newAssetUrl = app.latestAssetUrl ?: "",
+                                newVersionName = systemInfo.versionName,
+                                newVersionCode = systemInfo.versionCode,
+                                signingFingerprint = app.signingFingerprint,
+                            )
+                            repo.updatePendingStatus(packageName, false)
+                            Logger.i { "Update confirmed via broadcast: $packageName (v${systemInfo.versionName})" }
+                        } else {
+                            repo.updateApp(
+                                app.copy(
+                                    isPendingInstall = false,
+                                    installedVersionName = systemInfo.versionName,
+                                    installedVersionCode = systemInfo.versionCode,
+                                    isUpdateAvailable =
+                                        (
+                                            app.latestVersionCode
+                                                ?: 0L
+                                        ) > systemInfo.versionCode,
+                                ),
+                            )
+                            Logger.i {
+                                "Package replaced but not updated to target: $packageName " +
+                                    "(system: v${systemInfo.versionName}/${systemInfo.versionCode}, " +
+                                    "target: v${app.latestVersionName}/${app.latestVersionCode})"
+                            }
                         }
+                    } else {
+                        repo.updatePendingStatus(packageName, false)
+                        Logger.i { "Resolved pending install via broadcast (no system info): $packageName" }
                     }
                 } else {
-                    repo.updatePendingStatus(packageName, false)
-                    Logger.i { "Resolved pending install via broadcast (no system info): $packageName" }
+                    handleExternalInstall(packageName, app, repo, monitor)
                 }
-            } else {
-                handleExternalInstall(packageName, app, repo, monitor)
             }
         } catch (e: Exception) {
             Logger.e { "PackageEventReceiver error for $packageName: ${e.message}" }
@@ -166,7 +172,7 @@ class PackageEventReceiver() :
         // import banner can pick up the new candidate. Guarded so we
         // don't churn on apps the user already linked or asked us to
         // ignore. Runs on the app scope — independent of the install
-        // path above.
+        // path above. Always fires regardless of whether `app` was found.
         getBackstopScope().launch {
             runCatching {
                 val rescan = shouldRescan(packageName)
