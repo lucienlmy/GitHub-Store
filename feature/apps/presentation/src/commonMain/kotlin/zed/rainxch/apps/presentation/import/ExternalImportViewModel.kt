@@ -400,9 +400,22 @@ class ExternalImportViewModel(
     private fun skipPackage(packageName: String, neverAsk: Boolean) {
         val card = _state.value.cards.firstOrNull { it.packageName == packageName } ?: return
         viewModelScope.launch {
-            val snapshot = runCatching {
+            // Distinguish "no prior row" (success → null) from "couldn't read"
+            // (failure). Treating the latter as null would let undoLast's
+            // fallback unlink wipe a row that should have been preserved.
+            val snapshotResult = runCatching {
                 externalImportRepository.snapshotDecision(packageName)
-            }.getOrNull()
+            }
+            if (snapshotResult.isFailure) {
+                logger.error("Snapshot read failed for $packageName: ${snapshotResult.exceptionOrNull()?.message}")
+                _events.send(
+                    ExternalImportEvent.ShowError(
+                        getString(Res.string.external_import_error_link_failed),
+                    ),
+                )
+                return@launch
+            }
+            val snapshot = snapshotResult.getOrNull()
             val hadInstalledRow = installedAppsRepository.getAppByPackage(packageName) != null
 
             // Short-circuit on failure: don't remove the card, don't offer undo,
@@ -465,9 +478,19 @@ class ExternalImportViewModel(
                 return@launch
             }
 
-            val snapshot = runCatching {
+            val snapshotResult = runCatching {
                 externalImportRepository.snapshotDecision(packageName)
-            }.getOrNull()
+            }
+            if (snapshotResult.isFailure) {
+                logger.error("Snapshot read failed for $packageName: ${snapshotResult.exceptionOrNull()?.message}")
+                _events.send(
+                    ExternalImportEvent.ShowError(
+                        getString(Res.string.external_import_error_link_failed),
+                    ),
+                )
+                return@launch
+            }
+            val snapshot = snapshotResult.getOrNull()
             val hadInstalledRow = installedAppsRepository.getAppByPackage(packageName) != null
 
             val materialized = materializeAndMark(candidate, suggestion.owner, suggestion.repo, source)
@@ -513,32 +536,24 @@ class ExternalImportViewModel(
 
     private fun undoLast() {
         val undo = pendingUndo ?: return
-        pendingUndo = null
 
         viewModelScope.launch {
             try {
+                // Run rollback DAO ops without swallowing — any failure must
+                // abort and preserve `pendingUndo` so the user can retry from
+                // the snackbar. UI state is mutated only after every op succeeds.
                 if (undo.kind == PendingUndo.Kind.Link && !undo.hadInstalledAppRowBefore) {
-                    // The link materialized a new installed_apps row; remove it
-                    // before restoring the link table state so getAppByPackage
-                    // observers see the rollback in one shot.
-                    runCatching {
-                        installedAppsRepository.deleteInstalledApp(undo.packageName)
-                    }
+                    installedAppsRepository.deleteInstalledApp(undo.packageName)
                 }
 
                 if (undo.snapshot != null) {
                     externalImportRepository.restoreDecision(undo.snapshot)
                 } else {
-                    // No prior row existed (first-ever scan + decision). Drop
-                    // the new link entirely so the candidate becomes pending
-                    // again on the next scan.
-                    runCatching { externalImportRepository.unlink(undo.packageName) }
+                    externalImportRepository.unlink(undo.packageName)
                 }
 
-                // Re-insert the original card at the top so the user can retry
-                // immediately. We use the card we cached on the snackbar token —
-                // re-running resolveMatches would issue a network call and risks
-                // returning different suggestions than the user just saw.
+                // All DAO ops succeeded — now mutate UI and consume the token.
+                pendingUndo = null
                 _state.update { current ->
                     if (current.cards.any { it.packageName == undo.packageName }) {
                         current
@@ -564,6 +579,7 @@ class ExternalImportViewModel(
                 throw e
             } catch (e: Exception) {
                 logger.error("Undo failed for ${undo.packageName}: ${e.message}")
+                // Preserve pendingUndo so the snackbar can offer Undo again.
                 _events.send(
                     ExternalImportEvent.ShowError(
                         getString(Res.string.external_import_undo_failed),
@@ -609,27 +625,42 @@ class ExternalImportViewModel(
         viewModelScope.launch {
             // Roll each auto-linked package back to its PRE-LINK external_links
             // state using the snapshot captured BEFORE materializeAndMark wrote
-            // the MATCHED row. Snapshotting now would just read the post-link
-            // MATCHED state and restoreDecision would be a no-op. installed_apps
-            // is only deleted for packages whose row did NOT pre-exist before
-            // auto-link — same policy as undoLast.
-            packages.forEach { pkg ->
-                val preSnapshot = preSnapshots[pkg]
-                val hadRowBefore = hadInstalledMap[pkg] == true
-                if (!hadRowBefore) {
-                    runCatching { installedAppsRepository.deleteInstalledApp(pkg) }
+            // the MATCHED row. installed_apps is only deleted for packages whose
+            // row did NOT pre-exist before auto-link — same policy as undoLast.
+            //
+            // Fail-fast: any DAO failure aborts the bulk undo before we touch
+            // UI state or clear the pre-link maps. The user keeps seeing the
+            // AutoImportSummary screen and can retry. Already-rolled-back
+            // packages stay rolled back (idempotent on retry).
+            try {
+                packages.forEach { pkg ->
+                    val preSnapshot = preSnapshots[pkg]
+                    val hadRowBefore = hadInstalledMap[pkg] == true
+                    if (!hadRowBefore) {
+                        installedAppsRepository.deleteInstalledApp(pkg)
+                    }
+                    if (preSnapshot != null) {
+                        externalImportRepository.restoreDecision(preSnapshot)
+                    } else {
+                        // No pre-link row existed — drop the auto-link row entirely.
+                        externalImportRepository.unlink(pkg)
+                    }
                 }
-                if (preSnapshot != null) {
-                    runCatching { externalImportRepository.restoreDecision(preSnapshot) }
-                } else {
-                    // No pre-link row existed — drop the auto-link row entirely.
-                    runCatching { externalImportRepository.unlink(pkg) }
-                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logger.error("Bulk undo failed: ${e.message}")
+                _events.send(
+                    ExternalImportEvent.ShowError(
+                        getString(Res.string.external_import_undo_failed),
+                    ),
+                )
+                return@launch
             }
 
-            // Bulk-undo invalidates the single-row undo token: the user cleared
-            // the auto-link wave wholesale, so a stale "Undo" snackbar from a
-            // pre-summary action would now point at a row we just restored.
+            // All rollbacks succeeded — invalidate the single-row undo token,
+            // clear the per-package metadata so a subsequent wizard run can't
+            // see stale pre-link snapshots, and rebuild the wizard.
             pendingUndo = null
             autoLinkedHadInstalledRow = emptyMap()
             autoLinkedPreSnapshots = emptyMap()
@@ -769,9 +800,22 @@ class ExternalImportViewModel(
             // restore the DAO row to its original state, and the
             // installed_apps presence flag to decide whether to delete the
             // installed_apps row (only if auto-link created it).
-            val preSnapshot = runCatching {
+            //
+            // Snapshot failure must skip the auto-link entirely — without a
+            // reliable pre-link snapshot, undo would fall back to unlink and
+            // wipe a row that should have been preserved. Push the candidate
+            // through manual review instead.
+            val snapshotResult = runCatching {
                 externalImportRepository.snapshotDecision(result.packageName)
-            }.getOrNull()
+            }
+            if (snapshotResult.isFailure) {
+                logger.warn(
+                    "Skip auto-link for ${result.packageName}: " +
+                        "pre-link snapshot read failed (${snapshotResult.exceptionOrNull()?.message})",
+                )
+                return@forEach
+            }
+            val preSnapshot = snapshotResult.getOrNull()
             val pre = runCatching {
                 installedAppsRepository.getAppByPackage(result.packageName) != null
             }.getOrDefault(false)
