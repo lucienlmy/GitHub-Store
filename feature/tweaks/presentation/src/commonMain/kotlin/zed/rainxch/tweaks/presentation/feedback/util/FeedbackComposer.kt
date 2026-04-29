@@ -64,9 +64,11 @@ object FeedbackComposer {
         append("## ").append(title).append('\n').append(trimmed)
     }
 
-    private fun String.truncateToCap(): String =
-        if (length <= BODY_MAX_CHARS) this
-        else substring(0, BODY_MAX_CHARS) + "\n\n…[truncated]"
+    private fun String.truncateToCap(): String {
+        if (length <= BODY_MAX_CHARS) return this
+        val suffix = "\n\n…[truncated]"
+        return substring(0, BODY_MAX_CHARS - suffix.length) + suffix
+    }
 
     private fun buildMailto(title: String, body: String): String {
         val subject = title.encodeURLParameter()
