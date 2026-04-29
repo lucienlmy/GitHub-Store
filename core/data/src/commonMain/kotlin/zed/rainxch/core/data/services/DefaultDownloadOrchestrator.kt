@@ -16,6 +16,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import zed.rainxch.core.domain.network.DigestVerifier
 import zed.rainxch.core.domain.network.Downloader
+import zed.rainxch.core.domain.network.SlowDownloadDetector
 import zed.rainxch.core.domain.repository.InstalledAppsRepository
 import zed.rainxch.core.domain.system.DownloadOrchestrator
 import zed.rainxch.core.domain.system.DownloadSpec
@@ -78,6 +79,7 @@ class DefaultDownloadOrchestrator(
     private val installer: Installer,
     private val installedAppsRepository: InstalledAppsRepository,
     private val pendingInstallNotifier: PendingInstallNotifier,
+    private val slowDownloadDetector: SlowDownloadDetector,
     private val appScope: CoroutineScope,
 ) : DownloadOrchestrator {
     private companion object {
@@ -227,6 +229,7 @@ class DefaultDownloadOrchestrator(
         }
 
         multiSourceDownloader.download(spec.asset.downloadUrl, scopedName).collect { progress ->
+            slowDownloadDetector.onProgress(progress)
             updateEntry(spec.packageName) {
                 it.copy(
                     progressPercent = progress.percent,

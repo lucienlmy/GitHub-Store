@@ -13,6 +13,7 @@ import org.koin.dsl.module
 import zed.rainxch.core.data.cache.CacheManager
 import zed.rainxch.core.data.data_source.TokenStore
 import zed.rainxch.core.data.download.MultiSourceDownloaderImpl
+import zed.rainxch.core.data.download.SlowDownloadDetectorImpl
 import zed.rainxch.core.data.services.DefaultDownloadOrchestrator
 import zed.rainxch.core.data.data_source.impl.DefaultTokenStore
 import zed.rainxch.core.data.local.db.AppDatabase
@@ -56,6 +57,7 @@ import zed.rainxch.core.domain.model.Platform
 import zed.rainxch.core.domain.model.ProxyConfig
 import zed.rainxch.core.domain.model.ProxyScope
 import zed.rainxch.core.domain.network.ProxyTester
+import zed.rainxch.core.domain.network.SlowDownloadDetector
 import zed.rainxch.core.domain.system.DownloadOrchestrator
 import zed.rainxch.core.domain.system.ExternalAppScanner
 import zed.rainxch.core.domain.system.MultiSourceDownloader
@@ -250,6 +252,13 @@ val coreModule =
             )
         }
 
+        single<SlowDownloadDetector> {
+            SlowDownloadDetectorImpl(
+                preferences = get(),
+                appScope = get(),
+            )
+        }
+
         // Application-scoped download / install orchestrator. Lives
         // for the process lifetime so downloads survive screen
         // navigation. ViewModels are observers, never owners.
@@ -261,6 +270,7 @@ val coreModule =
                 installer = get(),
                 installedAppsRepository = get(),
                 pendingInstallNotifier = get(),
+                slowDownloadDetector = get(),
                 appScope = get(),
             )
         }
