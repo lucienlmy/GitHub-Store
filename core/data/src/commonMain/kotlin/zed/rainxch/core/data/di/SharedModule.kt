@@ -2,6 +2,9 @@ package zed.rainxch.core.data.di
 
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.header
+import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -348,6 +351,9 @@ val networkModule =
                     requestTimeoutMillis = 5_000
                     connectTimeoutMillis = 5_000
                     socketTimeoutMillis = 5_000
+                }
+                defaultRequest {
+                    header(HttpHeaders.UserAgent, "GithubStore/1.0 (KMP)")
                 }
             }
         }
