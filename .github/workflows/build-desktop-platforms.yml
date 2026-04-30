@@ -411,3 +411,117 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+
+  release:
+    name: Draft release with all installers
+    needs: [build-windows, build-macos, build-linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Read project version
+        id: version
+        run: |
+          set -euo pipefail
+          VERSION=$(grep 'projectVersionName' gradle/libs.versions.toml | head -1 | sed 's/.*= *"\(.*\)"/\1/')
+          if [ -z "$VERSION" ]; then
+            echo "ERROR: could not read projectVersionName from gradle/libs.versions.toml"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Resolved release tag: v$VERSION"
+        shell: bash
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Stage release files (rename arch / compat collisions)
+        run: |
+          set -euo pipefail
+          mkdir -p release-files
+
+          stage() {
+            local src="$1"
+            local target_name="$2"
+            if [ -f "$src" ]; then
+              cp "$src" "release-files/$target_name"
+              echo "Staged: $target_name"
+            fi
+          }
+
+          # Windows — names already unique (.exe, .msi)
+          for f in artifacts/windows-installers/*.exe artifacts/windows-installers/*.msi; do
+            [ -f "$f" ] && stage "$f" "$(basename "$f")"
+          done
+
+          # macOS — disambiguate x64 vs arm64 (Compose outputs identical filenames per arch)
+          for f in artifacts/macos-installers-x64/*.dmg artifacts/macos-installers-x64/*.pkg; do
+            [ -f "$f" ] || continue
+            base="$(basename "$f")"
+            ext="${base##*.}"
+            stem="${base%.*}"
+            stage "$f" "${stem}-x64.${ext}"
+          done
+          for f in artifacts/macos-installers-arm64/*.dmg artifacts/macos-installers-arm64/*.pkg; do
+            [ -f "$f" ] || continue
+            base="$(basename "$f")"
+            ext="${base##*.}"
+            stem="${base%.*}"
+            stage "$f" "${stem}-arm64.${ext}"
+          done
+
+          # Linux modern — default Debian/RPM (unprefixed)
+          for f in artifacts/linux-installers-modern/*.deb artifacts/linux-installers-modern/*.rpm; do
+            [ -f "$f" ] && stage "$f" "$(basename "$f")"
+          done
+
+          # Linux debian12-compat — suffix to avoid collision with modern
+          for f in artifacts/linux-installers-debian12-compat/*.deb artifacts/linux-installers-debian12-compat/*.rpm; do
+            [ -f "$f" ] || continue
+            base="$(basename "$f")"
+            ext="${base##*.}"
+            stem="${base%.*}"
+            stage "$f" "${stem}-debian12.${ext}"
+          done
+
+          # Linux AppImage + zsync (filenames already include -x86_64)
+          for f in artifacts/linux-appimage/*.AppImage artifacts/linux-appimage/*.AppImage.zsync; do
+            [ -f "$f" ] && stage "$f" "$(basename "$f")"
+          done
+
+          # Linux Arch (.pkg.tar.zst already has version + arch in filename)
+          for f in artifacts/linux-arch/*.pkg.tar.zst; do
+            [ -f "$f" ] && stage "$f" "$(basename "$f")"
+          done
+
+          echo
+          echo "Final staged files:"
+          ls -la release-files/
+        shell: bash
+
+      - name: Create or update draft release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.version.outputs.tag }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists — uploading/replacing assets via --clobber..."
+            gh release upload "$TAG" release-files/* --clobber
+          else
+            echo "Creating new draft release $TAG..."
+            gh release create "$TAG" \
+              --draft \
+              --title "$VERSION" \
+              --generate-notes \
+              release-files/*
+          fi
+        shell: bash
