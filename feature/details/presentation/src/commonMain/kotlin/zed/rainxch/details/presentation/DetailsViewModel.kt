@@ -1489,11 +1489,11 @@ class DetailsViewModel(
                         } catch (e: Exception) {
                             InstallerType.DEFAULT
                         }
-
                     val policy =
-                        when (installerType) {
-                            InstallerType.SHIZUKU -> InstallPolicy.AlwaysInstall
-                            InstallerType.DEFAULT -> InstallPolicy.InstallWhileForeground
+                        when {
+                            platform != Platform.ANDROID -> InstallPolicy.AlwaysInstall
+                            installerType == InstallerType.SHIZUKU -> InstallPolicy.AlwaysInstall
+                            else -> InstallPolicy.InstallWhileForeground
                         }
 
                     downloadOrchestrator.enqueue(
