@@ -3,9 +3,8 @@ package zed.rainxch.core.data.download
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import zed.rainxch.core.data.network.MirrorRewriter
@@ -34,46 +33,44 @@ class MultiSourceDownloaderImpl(
         mirrorUrl: String,
         suggestedFileName: String?,
     ): Flow<DownloadProgress> =
-        flow {
-            coroutineScope {
-                val winnerSignal = CompletableDeferred<String>()
+        channelFlow {
+            val winnerSignal = CompletableDeferred<String>()
 
-                val directJob =
-                    launch {
-                        try {
-                            downloader
-                                .download(directUrl, suggestedFileName, bypassMirror = true)
-                                .collect { progress ->
-                                    if (winnerSignal.complete("direct") || winnerSignal.getCompleted() == "direct") {
-                                        emit(progress)
-                                    } else {
-                                        return@collect
-                                    }
+            val directJob =
+                launch {
+                    try {
+                        downloader
+                            .download(directUrl, suggestedFileName, bypassMirror = true)
+                            .collect { progress ->
+                                if (winnerSignal.complete("direct") || winnerSignal.getCompleted() == "direct") {
+                                    send(progress)
+                                } else {
+                                    return@collect
                                 }
-                        } catch (t: Throwable) {
-                            if (winnerSignal.isCompleted && winnerSignal.getCompleted() == "direct") throw t
-                        }
+                            }
+                    } catch (t: Throwable) {
+                        if (winnerSignal.isCompleted && winnerSignal.getCompleted() == "direct") throw t
                     }
+                }
 
-                val mirrorJob =
-                    launch {
-                        try {
-                            downloader
-                                .download(mirrorUrl, suggestedFileName)
-                                .collect { progress ->
-                                    if (winnerSignal.complete("mirror") || winnerSignal.getCompleted() == "mirror") {
-                                        emit(progress)
-                                    } else {
-                                        return@collect
-                                    }
+            val mirrorJob =
+                launch {
+                    try {
+                        downloader
+                            .download(mirrorUrl, suggestedFileName)
+                            .collect { progress ->
+                                if (winnerSignal.complete("mirror") || winnerSignal.getCompleted() == "mirror") {
+                                    send(progress)
+                                } else {
+                                    return@collect
                                 }
-                        } catch (t: Throwable) {
-                            if (winnerSignal.isCompleted && winnerSignal.getCompleted() == "mirror") throw t
-                        }
+                            }
+                    } catch (t: Throwable) {
+                        if (winnerSignal.isCompleted && winnerSignal.getCompleted() == "mirror") throw t
                     }
+                }
 
-                val winner = winnerSignal.await()
-                if (winner == "direct") mirrorJob.cancelAndJoin() else directJob.cancelAndJoin()
-            }
+            val winner = winnerSignal.await()
+            if (winner == "direct") mirrorJob.cancelAndJoin() else directJob.cancelAndJoin()
         }.flowOn(Dispatchers.IO)
 }
