@@ -746,4 +746,191 @@
     <string name="pat_error_bad_credentials">यह टोकन अमान्य है या निरस्त कर दिया गया है।</string>
     <string name="pat_error_insufficient_scope">इस टोकन के पास आवश्यक अनुमतियाँ नहीं हैं।</string>
     <string name="pat_error_generic">टोकन सेव नहीं हो सका। कृपया फिर से प्रयास करें।</string>
+
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E10 — Apps sort
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="sort_apps">ऐप्स को क्रमबद्ध करें</string>
+    <string name="sort_updates_first">अपडेट पहले</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Pre-release channel UX (Details screen)
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="channel_chip_include_betas">बीटा शामिल करें</string>
+    <string name="channel_chip_stable_only">केवल स्थिर</string>
+    <string name="channel_toggle_cd">इस ऐप के बीटा रिलीज़ टॉगल करें</string>
+    <string name="action_switch_to_stable">%1$s स्थिर पर स्विच करें</string>
+    <string name="stalled_project_warning_months">%1$d महीनों में कोई स्थिर रिलीज़ नहीं</string>
+    <string name="stalled_project_warning_days">%1$d दिनों में कोई स्थिर रिलीज़ नहीं</string>
+    <string name="stalled_project_warning_description">सक्रिय प्री-रिलीज़ हैं, लेकिन प्रोजेक्ट ने काफी समय से कोई स्थिर बिल्ड नहीं दिया। बीटा स्थिर रिलीज़ में नहीं बदल सकते।</string>
+    <string name="merged_whats_changed_title">%1$s के बाद क्या बदला</string>
+    <string name="merged_release_heading">— %1$s —</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E1 — External import wizard
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="external_import_top_bar_title">इंस्टॉल ऐप्स आयात करें</string>
+    <string name="external_import_top_bar_back">वापस</string>
+    <string name="external_import_overflow_more">अधिक विकल्प</string>
+    <string name="external_import_overflow_skip_remaining">बाकी छोड़ें</string>
+    <string name="external_import_progress_scanning">आपके ऐप्स स्कैन हो रहे हैं…</string>
+    <string name="external_import_progress_auto_importing">मेल आयात हो रहे हैं…</string>
+    <string name="external_import_progress_working">प्रक्रिया चल रही है…</string>
+    <plurals name="external_import_progress_subtitle_count">
+        <item quantity="one">%1$d ऐप देखा गया</item>
+        <item quantity="other">%1$d ऐप देखे गए</item>
+    </plurals>
+    <string name="external_import_card_action_skip">छोड़ें</string>
+    <string name="external_import_card_action_link">लिंक करें</string>
+    <string name="external_import_card_action_more">अधिक मेल</string>
+    <string name="external_import_card_action_less">मेल छुपाएं</string>
+    <string name="external_import_card_installer_chip">%1$s के ज़रिए इंस्टॉल</string>
+    <string name="external_import_card_preselect_known">हमें लगता है यह %1$s है · %2$d</string>
+    <string name="external_import_card_preselect_unknown">रिपो खोजने के लिए टैप करें</string>
+    <string name="external_import_card_expand_label">अन्य मेल देखने के लिए विस्तार करें</string>
+    <string name="external_import_card_collapse_label">कार्ड संकुचित करें</string>
+    <string name="external_import_search_icon_label">GitHub खोजें</string>
+    <string name="external_import_search_empty">कोई मेल नहीं</string>
+    <string name="external_import_search_error_default">खोज विफल</string>
+    <string name="external_import_search_placeholder_url">github.com URL पेस्ट करें या खोजें…</string>
+    <plurals name="external_import_completion_headline">
+        <item quantity="one">अब %1$d ऐप ट्रैक हो रहा है।</item>
+        <item quantity="other">अब %1$d ऐप ट्रैक हो रहे हैं।</item>
+    </plurals>
+    <string name="external_import_completion_skipped_subline">%1$d छोड़े — आप सेटिंग्स से पुनः स्कैन चला सकते हैं।</string>
+    <string name="external_import_completion_action_view_all">सभी देखें</string>
+    <string name="external_import_empty_all_matched">सब लिंक हो गया।\nलिंक करने के लिए कुछ नहीं।</string>
+    <string name="external_import_empty_done">हो गया</string>
+    <string name="external_import_empty_no_apps_title">इस डिवाइस पर कोई GitHub ऐप नहीं मिला।</string>
+    <string name="external_import_empty_no_apps_body">इसका मतलब है कि सब किसी और स्टोर से इंस्टॉल हुआ, या हमें इंस्टॉल ऐप्स की जानकारी नहीं मिल पाई।</string>
+    <string name="external_import_empty_grant_permission">अनुमति दें</string>
+    <string name="external_import_empty_ok">ठीक है</string>
+    <string name="external_import_empty_add_manually">किसी और स्टोर से ऐप जोड़ें</string>
+    <string name="external_import_permission_title">अपने GitHub ऐप्स खोजें</string>
+    <string name="external_import_permission_body">हम आपके इंस्टॉल ऐप्स स्कैन करके GitHub रिलीज़ से मिला सकते हैं, ताकि अपडेट और पहचान अपने आप काम करे।\n\nइसके लिए हमें देखना होगा कि आपके पास कौन से ऐप्स हैं। अनुमति के बिना हम केवल लगभग 5 ऐप्स देख सकते हैं; अनुमति के साथ सभी देख सकते हैं।\n\nहम आपकी अनुमति के बिना आपके ऐप्स की सूची कहीं नहीं भेजते। मिलान आपके डिवाइस पर होता है। वैकल्पिक सर्वर लुकअप केवल पैकेज नाम और ऐप लेबल भेजता है, और उपलब्ध होने पर साइनिंग फिंगरप्रिंट, इंस्टॉल स्रोत और ऐप के मैनिफेस्ट में घोषित GitHub रिपो संकेत भी — कभी भी इंस्टॉल की पूरी सूची नहीं।</string>
+    <string name="external_import_permission_continue">जारी रखें</string>
+    <string name="external_import_permission_not_now">अभी नहीं</string>
+    <plurals name="external_import_proposal_banner_headline">
+        <item quantity="one">GitHub से %1$d ऐप मिला</item>
+        <item quantity="other">GitHub से %1$d ऐप मिले</item>
+    </plurals>
+    <string name="external_import_proposal_banner_body">यहाँ अपडेट ट्रैक करने के लिए समीक्षा करें।</string>
+    <string name="external_import_proposal_banner_review">समीक्षा करें</string>
+    <string name="external_import_proposal_banner_dismiss">हटाएं</string>
+    <string name="external_import_match_confidence_a11y">मिलान विश्वास: %1$d प्रतिशत</string>
+    <string name="external_import_match_confidence_chip">%1$d</string>
+    <string name="external_import_error_link_failed">इस ऐप को लिंक नहीं किया जा सका — फिर कोशिश करें।</string>
+    <string name="external_import_error_link_network">GitHub तक नहीं पहुंचा जा सका। बाद में फिर कोशिश करें।</string>
+    <string name="external_import_error_scan_failed_default">स्कैन विफल</string>
+    <string name="external_import_installer_obtainium">Obtainium</string>
+    <string name="external_import_installer_fdroid">F-Droid</string>
+    <string name="external_import_installer_browser">ब्राउज़र</string>
+    <string name="external_import_installer_sideload">Sideload</string>
+    <string name="external_import_installer_self">GitHub Store</string>
+    <string name="external_import_installer_unknown">अज्ञात स्रोत</string>
+    <string name="external_import_undo_linked">%1$s लिंक किया गया।</string>
+    <string name="external_import_undo_skipped">%1$s छोड़ा गया।</string>
+    <string name="external_import_undo_action">पूर्ववत करें</string>
+    <string name="external_import_undo_failed">पूर्ववत नहीं हो सका — फिर कोशिश करें।</string>
+    <plurals name="external_import_list_remaining">
+        <item quantity="one">%1$d ऐप समीक्षा के लिए</item>
+        <item quantity="other">%1$d ऐप समीक्षा के लिए</item>
+    </plurals>
+    <string name="external_import_list_add_manually">अपना ऐप नहीं दिख रहा? मैन्युअली जोड़ें</string>
+    <plurals name="external_import_auto_summary_headline">
+        <item quantity="one">%1$d ऐप स्वचालित रूप से लिंक किया गया</item>
+        <item quantity="other">%1$d ऐप स्वचालित रूप से लिंक किए गए</item>
+    </plurals>
+    <string name="external_import_auto_summary_body">हमने उन्हें उच्च विश्वास के साथ पहचाना। आप प्रत्येक ऐप की जानकारी से व्यक्तिगत मेल पूर्ववत कर सकते हैं, या अभी सभी पूर्ववत कर सकते हैं।</string>
+    <plurals name="external_import_auto_summary_review_hint">
+        <item quantity="one">%1$d और को आपके इनपुट की ज़रूरत है।</item>
+        <item quantity="other">%1$d और को आपके इनपुट की ज़रूरत है।</item>
+    </plurals>
+    <string name="external_import_auto_summary_continue">जारी रखें</string>
+    <string name="external_import_auto_summary_undo_all">सब पूर्ववत करें</string>
+    <string name="external_import_auto_summary_more_count">+%1$d और</string>
+    <string name="external_import_rescan_menu">GitHub ऐप्स स्कैन करें</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E1 — Details unlink dialog
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="details_unlink_external_app_menu">इस रिपो से अनलिंक करें</string>
+    <string name="details_unlink_external_app_more_options">अधिक विकल्प</string>
+    <string name="details_unlink_external_app_dialog_title">इस ऐप को अनलिंक करें?</string>
+    <string name="details_unlink_external_app_dialog_body">हम %1$s को इस रिपो से इंस्टॉल के रूप में ट्रैक करना बंद कर देंगे। ऐप आपके डिवाइस पर रहेगा — केवल लिंक हटाया जाएगा।</string>
+    <string name="details_unlink_external_app_dialog_confirm">अनलिंक करें</string>
+    <string name="details_unlink_external_app_success">अनलिंक हो गया। अगले स्कैन में हम फिर से मेल सुझाएंगे।</string>
+    <string name="details_unlink_external_app_failure">अनलिंक नहीं हो सका — फिर कोशिश करें।</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Feedback feature
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="feedback_send">फ़ीडबैक भेजें</string>
+    <string name="feedback_title">फ़ीडबैक भेजें</string>
+    <string name="feedback_close">बंद करें</string>
+    <string name="feedback_category_label">श्रेणी</string>
+    <string name="feedback_category_bug">बग</string>
+    <string name="feedback_category_feature">फीचर अनुरोध</string>
+    <string name="feedback_category_change">बदलाव अनुरोध</string>
+    <string name="feedback_category_other">अन्य</string>
+    <string name="feedback_topic_label">विषय</string>
+    <string name="feedback_topic_install_update">इंस्टॉल / अपडेट</string>
+    <string name="feedback_topic_search">खोज &amp; खोज</string>
+    <string name="feedback_topic_details">रिपो विवरण</string>
+    <string name="feedback_topic_auth">प्रमाणीकरण &amp; खाता</string>
+    <string name="feedback_topic_ui">UI / UX</string>
+    <string name="feedback_topic_translation">अनुवाद / भाषा</string>
+    <string name="feedback_topic_performance">प्रदर्शन</string>
+    <string name="feedback_topic_other">अन्य</string>
+    <string name="feedback_field_title">शीर्षक</string>
+    <string name="feedback_field_description">विवरण</string>
+    <string name="feedback_field_steps">पुनः उत्पन्न करने के चरण</string>
+    <string name="feedback_field_expected_actual">अपेक्षित बनाम वास्तविक</string>
+    <string name="feedback_field_use_case">उपयोग का मामला</string>
+    <string name="feedback_field_proposed_solution">प्रस्तावित समाधान</string>
+    <string name="feedback_field_current_behaviour">वर्तमान व्यवहार</string>
+    <string name="feedback_field_desired_behaviour">वांछित व्यवहार</string>
+    <string name="feedback_diagnostics_header">निदान</string>
+    <string name="feedback_diagnostics_include">निदान शामिल करें</string>
+    <string name="feedback_send_via_email">ईमेल भेजें</string>
+    <string name="feedback_send_via_github">GitHub Issue के रूप में खोलें</string>
+    <string name="feedback_send_success_email">धन्यवाद — आपका मेल क्लाइंट खुल रहा है।</string>
+    <string name="feedback_send_success_github">धन्यवाद — आपका ब्राउज़र खुल रहा है।</string>
+    <string name="feedback_send_error">फ़ीडबैक चैनल नहीं खुल सका: %1$s</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E5 — Mirror feature
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="mirror_tweaks_entry_label">डाउनलोड मिरर</string>
+    <string name="mirror_picker_title">डाउनलोड मिरर</string>
+    <string name="mirror_picker_description">रिलीज़ फ़ाइलें डाउनलोड करने के लिए उपयोग किया जाता है। GitHub API कॉल हमेशा सीधे जाते हैं। अधिकांश उपयोगकर्ताओं को इसे Direct GitHub पर छोड़ देना चाहिए।</string>
+    <string name="mirror_section_official">आधिकारिक</string>
+    <string name="mirror_section_community">समुदाय</string>
+    <string name="mirror_status_ok">%1$dms</string>
+    <string name="mirror_status_degraded">%1$dms</string>
+    <string name="mirror_status_down">(बंद)</string>
+    <string name="mirror_status_unknown">?</string>
+    <string name="mirror_custom_label">कस्टम मिरर…</string>
+    <string name="mirror_custom_dialog_title">कस्टम मिरर</string>
+    <string name="mirror_custom_dialog_hint">https://your-mirror.example/{url}</string>
+    <string name="mirror_custom_validation_https">टेम्पलेट https:// से शुरू होना चाहिए</string>
+    <string name="mirror_custom_validation_template">टेम्पलेट में {url} ठीक एक बार होना चाहिए</string>
+    <string name="mirror_custom_save">सहेजें</string>
+    <string name="mirror_test_button">चुने को टेस्ट करें</string>
+    <string name="mirror_test_in_progress">परीक्षण चल रहा है…</string>
+    <string name="mirror_test_success">%1$dms में पहुंचा</string>
+    <string name="mirror_test_http_error">मिरर ने %1$d लौटाया</string>
+    <string name="mirror_test_timeout">5s बाद टाइमआउट</string>
+    <string name="mirror_test_dns_fail">होस्ट हल नहीं हो सका</string>
+    <string name="mirror_test_other">विफल: %1$s</string>
+    <string name="mirror_deploy_your_own_hint">सभी मिरर बंद हैं? आप 5 मिनट में अपना खुद का होस्ट कर सकते हैं — दस्तावेज़ देखें।</string>
+    <string name="mirror_removed_toast">%1$s अब उपलब्ध नहीं है, Direct GitHub पर स्विच किया गया।</string>
+    <string name="mirror_digest_mismatch_error">चेकसम मेल नहीं — फ़ाइल से छेड़छाड़ हो सकती है</string>
+    <string name="mirror_auto_suggest_title">तेज़ मिरर आज़माएं?</string>
+    <string name="mirror_auto_suggest_body">धीमे नेटवर्क पर कुछ उपयोगकर्ताओं को कम्युनिटी प्रॉक्सी से बेहतर परिणाम मिलते हैं।</string>
+    <string name="mirror_auto_suggest_pick_one">एक चुनें</string>
+    <string name="mirror_auto_suggest_maybe_later">शायद बाद में</string>
+    <string name="mirror_auto_suggest_dont_ask_again">दोबारा न पूछें</string>
+
 </resources>

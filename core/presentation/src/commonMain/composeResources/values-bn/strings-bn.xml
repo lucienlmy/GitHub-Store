@@ -747,4 +747,179 @@
     <string name="pat_error_bad_credentials">এই টোকেনটি অবৈধ অথবা বাতিল করা হয়েছে।</string>
     <string name="pat_error_insufficient_scope">এই টোকেনের প্রয়োজনীয় অনুমতি নেই।</string>
     <string name="pat_error_generic">টোকেন সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।</string>
+
+
+    <!-- E10 — Apps sort -->
+    <string name="sort_apps">অ্যাপ সাজান</string>
+    <string name="sort_updates_first">আপডেট আগে</string>
+
+    <!-- Pre-release channel UX -->
+    <string name="channel_chip_include_betas">বেটা অন্তর্ভুক্ত করুন</string>
+    <string name="channel_chip_stable_only">শুধুমাত্র স্থিতিশীল</string>
+    <string name="channel_toggle_cd">এই অ্যাপের জন্য বেটা রিলিজ টগল করুন</string>
+    <string name="action_switch_to_stable">স্থিতিশীল %1$s-এ যান</string>
+    <string name="stalled_project_warning_months">%1$d মাসে কোনো স্থিতিশীল রিলিজ নেই</string>
+    <string name="stalled_project_warning_days">%1$d দিনে কোনো স্থিতিশীল রিলিজ নেই</string>
+    <string name="stalled_project_warning_description">সক্রিয় প্রি-রিলিজ রয়েছে কিন্তু প্রকল্পটি কিছুদিন ধরে স্থিতিশীল বিল্ড প্রকাশ করেনি। বেটা স্থিতিশীল রিলিজে পরিণত নাও হতে পারে।</string>
+    <string name="merged_whats_changed_title">%1$s থেকে কী পরিবর্তন হয়েছে</string>
+    <string name="merged_release_heading">— %1$s —</string>
+
+    <!-- E1 — External import wizard -->
+    <string name="external_import_top_bar_title">ইনস্টল করা অ্যাপ আমদানি করুন</string>
+    <string name="external_import_top_bar_back">পিছনে</string>
+    <string name="external_import_overflow_more">আরও বিকল্প</string>
+    <string name="external_import_overflow_skip_remaining">বাকিগুলো বাদ দিন</string>
+    <string name="external_import_progress_scanning">আপনার অ্যাপ স্ক্যান করা হচ্ছে…</string>
+    <string name="external_import_progress_auto_importing">মিল আমদানি করা হচ্ছে…</string>
+    <string name="external_import_progress_working">কাজ চলছে…</string>
+    <plurals name="external_import_progress_subtitle_count">
+        <item quantity="one">%1$d টি অ্যাপ দেখা হয়েছে</item>
+        <item quantity="other">%1$d টি অ্যাপ দেখা হয়েছে</item>
+    </plurals>
+    <string name="external_import_card_action_skip">বাদ দিন</string>
+    <string name="external_import_card_action_link">লিঙ্ক করুন</string>
+    <string name="external_import_card_action_more">আরও মিল</string>
+    <string name="external_import_card_action_less">মিল লুকান</string>
+    <string name="external_import_card_installer_chip">%1$s দিয়ে ইনস্টল করা</string>
+    <string name="external_import_card_preselect_known">আমরা মনে করি এটি %1$s · %2$d</string>
+    <string name="external_import_card_preselect_unknown">রিপো খুঁজতে ট্যাপ করুন</string>
+    <string name="external_import_card_expand_label">অন্য মিল দেখতে প্রসারিত করুন</string>
+    <string name="external_import_card_collapse_label">কার্ড সংকুচিত করুন</string>
+    <string name="external_import_search_icon_label">GitHub-এ অনুসন্ধান</string>
+    <string name="external_import_search_empty">কোনো মিল নেই</string>
+    <string name="external_import_search_error_default">অনুসন্ধান ব্যর্থ হয়েছে</string>
+    <string name="external_import_search_placeholder_url">github.com URL পেস্ট করুন বা অনুসন্ধান করুন…</string>
+    <plurals name="external_import_completion_headline">
+        <item quantity="one">এখন %1$d টি অ্যাপ ট্র্যাক করা হচ্ছে।</item>
+        <item quantity="other">এখন %1$d টি অ্যাপ ট্র্যাক করা হচ্ছে।</item>
+    </plurals>
+    <string name="external_import_completion_skipped_subline">%1$d টি বাদ দেওয়া হয়েছে — সেটিংস থেকে আবার স্ক্যান করতে পারবেন।</string>
+    <string name="external_import_completion_action_view_all">সব দেখুন</string>
+    <string name="external_import_empty_all_matched">সব মিলেছে।\nলিঙ্ক করার কিছু নেই।</string>
+    <string name="external_import_empty_done">সম্পন্ন</string>
+    <string name="external_import_empty_no_apps_title">এই ডিভাইসে কোনো GitHub অ্যাপ খুঁজে পাওয়া যায়নি।</string>
+    <string name="external_import_empty_no_apps_body">এর মানে হয় সবকিছু অন্য স্টোর থেকে ইনস্টল করা হয়েছে, অথবা কী ইনস্টল আছে তা আমরা দেখতে পাচ্ছি না।</string>
+    <string name="external_import_empty_grant_permission">অনুমতি দিন</string>
+    <string name="external_import_empty_ok">ঠিক আছে</string>
+    <string name="external_import_empty_add_manually">অন্য স্টোর থেকে অ্যাপ যোগ করুন</string>
+    <string name="external_import_permission_title">আপনার GitHub অ্যাপ খুঁজুন</string>
+    <string name="external_import_permission_body">আমরা আপনার ইনস্টল করা অ্যাপ স্ক্যান করে GitHub রিলিজের সাথে মিলাতে পারি — যাতে আপডেট ও শনাক্তকরণ স্বয়ংক্রিয়ভাবে কাজ করে।\n\nএর জন্য আপনার কাছে কোন অ্যাপ আছে তা জানতে হবে। অনুমতি ছাড়া আমরা প্রায় ৫টি অ্যাপ দেখতে পারি; অনুমতি দিলে সব দেখতে পারব।\n\nআপনার অনুমতি ছাড়া আমরা আপনার অ্যাপের তালিকা কোথাও পাঠাই না। মিলানো আপনার ডিভাইসে হয়। ঐচ্ছিক ব্যাকএন্ড লুকআপ শুধু প্যাকেজের নাম ও অ্যাপ লেবেল পাঠায়, এবং পাওয়া গেলে সাইনিং ফিঙ্গারপ্রিন্ট, ইনস্টল সোর্স ও অ্যাপের ম্যানিফেস্টে ঘোষিত যেকোনো GitHub-রিপো হিন্ট — কখনো ইনস্টল করা সব অ্যাপের পুরো তালিকা নয়।</string>
+    <string name="external_import_permission_continue">চালিয়ে যান</string>
+    <string name="external_import_permission_not_now">এখন না</string>
+    <plurals name="external_import_proposal_banner_headline">
+        <item quantity="one">GitHub থেকে %1$d টি অ্যাপ পাওয়া গেছে</item>
+        <item quantity="other">GitHub থেকে %1$d টি অ্যাপ পাওয়া গেছে</item>
+    </plurals>
+    <string name="external_import_proposal_banner_body">এখানে আপডেট ট্র্যাক করতে পর্যালোচনা করুন।</string>
+    <string name="external_import_proposal_banner_review">পর্যালোচনা</string>
+    <string name="external_import_proposal_banner_dismiss">খারিজ করুন</string>
+    <string name="external_import_match_confidence_a11y">মিলের আত্মবিশ্বাস: %1$d শতাংশ</string>
+    <string name="external_import_match_confidence_chip">%1$d</string>
+    <string name="external_import_error_link_failed">এই অ্যাপ লিঙ্ক করা যায়নি — আবার চেষ্টা করুন।</string>
+    <string name="external_import_error_link_network">GitHub-এ পৌঁছানো যায়নি। পরে আবার চেষ্টা করুন।</string>
+    <string name="external_import_error_scan_failed_default">স্ক্যান ব্যর্থ হয়েছে</string>
+    <string name="external_import_installer_obtainium">Obtainium</string>
+    <string name="external_import_installer_fdroid">F-Droid</string>
+    <string name="external_import_installer_browser">ব্রাউজার</string>
+    <string name="external_import_installer_sideload">Sideload</string>
+    <string name="external_import_installer_self">GitHub Store</string>
+    <string name="external_import_installer_unknown">অজানা উৎস</string>
+    <string name="external_import_undo_linked">%1$s লিঙ্ক করা হয়েছে।</string>
+    <string name="external_import_undo_skipped">%1$s বাদ দেওয়া হয়েছে।</string>
+    <string name="external_import_undo_action">পূর্বাবস্থায় ফেরান</string>
+    <string name="external_import_undo_failed">পূর্বাবস্থায় ফেরানো যায়নি — আবার চেষ্টা করুন।</string>
+    <plurals name="external_import_list_remaining">
+        <item quantity="one">পর্যালোচনার জন্য %1$d টি অ্যাপ</item>
+        <item quantity="other">পর্যালোচনার জন্য %1$d টি অ্যাপ</item>
+    </plurals>
+    <string name="external_import_list_add_manually">আপনার অ্যাপ দেখছেন না? ম্যানুয়ালি যোগ করুন</string>
+    <plurals name="external_import_auto_summary_headline">
+        <item quantity="one">স্বয়ংক্রিয়ভাবে %1$d টি অ্যাপ লিঙ্ক করা হয়েছে</item>
+        <item quantity="other">স্বয়ংক্রিয়ভাবে %1$d টি অ্যাপ লিঙ্ক করা হয়েছে</item>
+    </plurals>
+    <string name="external_import_auto_summary_body">আমরা উচ্চ আত্মবিশ্বাসে এগুলো চিনেছি। প্রতিটি অ্যাপের বিস্তারিত থেকে পৃথক মিল পূর্বাবস্থায় ফেরাতে পারবেন, অথবা এখনই সব পূর্বাবস্থায় ফেরান।</string>
+    <plurals name="external_import_auto_summary_review_hint">
+        <item quantity="one">%1$d টি আরও আপনার ইনপুট প্রয়োজন।</item>
+        <item quantity="other">%1$d টি আরও আপনার ইনপুট প্রয়োজন।</item>
+    </plurals>
+    <string name="external_import_auto_summary_continue">চালিয়ে যান</string>
+    <string name="external_import_auto_summary_undo_all">সব পূর্বাবস্থায় ফেরান</string>
+    <string name="external_import_auto_summary_more_count">+%1$d আরও</string>
+    <string name="external_import_rescan_menu">GitHub অ্যাপ স্ক্যান করুন</string>
+
+    <!-- E1 — Details unlink dialog -->
+    <string name="details_unlink_external_app_menu">এই রিপো থেকে আনলিঙ্ক করুন</string>
+    <string name="details_unlink_external_app_more_options">আরও বিকল্প</string>
+    <string name="details_unlink_external_app_dialog_title">এই অ্যাপ আনলিঙ্ক করবেন?</string>
+    <string name="details_unlink_external_app_dialog_body">এই রিপো থেকে ইনস্টল হিসেবে %1$s ট্র্যাক করা বন্ধ করব। অ্যাপটি আপনার ডিভাইসে থাকবে — শুধু লিঙ্ক সরানো হবে।</string>
+    <string name="details_unlink_external_app_dialog_confirm">আনলিঙ্ক করুন</string>
+    <string name="details_unlink_external_app_success">আনলিঙ্ক করা হয়েছে। পরবর্তী স্ক্যানে আবার মিল সাজেস্ট করব।</string>
+    <string name="details_unlink_external_app_failure">আনলিঙ্ক করা যায়নি — আবার চেষ্টা করুন।</string>
+
+    <!-- Feedback feature -->
+    <string name="feedback_send">ফিডব্যাক পাঠান</string>
+    <string name="feedback_title">ফিডব্যাক পাঠান</string>
+    <string name="feedback_close">বন্ধ করুন</string>
+    <string name="feedback_category_label">বিভাগ</string>
+    <string name="feedback_category_bug">বাগ</string>
+    <string name="feedback_category_feature">ফিচার অনুরোধ</string>
+    <string name="feedback_category_change">পরিবর্তন অনুরোধ</string>
+    <string name="feedback_category_other">অন্যান্য</string>
+    <string name="feedback_topic_label">বিষয়</string>
+    <string name="feedback_topic_install_update">ইনস্টল / আপডেট</string>
+    <string name="feedback_topic_search">অনুসন্ধান &amp; আবিষ্কার</string>
+    <string name="feedback_topic_details">রিপো বিবরণ</string>
+    <string name="feedback_topic_auth">অথ &amp; অ্যাকাউন্ট</string>
+    <string name="feedback_topic_ui">UI / UX</string>
+    <string name="feedback_topic_translation">অনুবাদ / ভাষা</string>
+    <string name="feedback_topic_performance">পারফরম্যান্স</string>
+    <string name="feedback_topic_other">অন্যান্য</string>
+    <string name="feedback_field_title">শিরোনাম</string>
+    <string name="feedback_field_description">বিবরণ</string>
+    <string name="feedback_field_steps">পুনরুৎপাদনের পদক্ষেপ</string>
+    <string name="feedback_field_expected_actual">প্রত্যাশিত বনাম বাস্তব</string>
+    <string name="feedback_field_use_case">ব্যবহারের ক্ষেত্র</string>
+    <string name="feedback_field_proposed_solution">প্রস্তাবিত সমাধান</string>
+    <string name="feedback_field_current_behaviour">বর্তমান আচরণ</string>
+    <string name="feedback_field_desired_behaviour">কাঙ্ক্ষিত আচরণ</string>
+    <string name="feedback_diagnostics_header">ডায়াগনস্টিক্স</string>
+    <string name="feedback_diagnostics_include">ডায়াগনস্টিক্স অন্তর্ভুক্ত করুন</string>
+    <string name="feedback_send_via_email">ইমেইল পাঠান</string>
+    <string name="feedback_send_via_github">GitHub ইস্যু হিসেবে খুলুন</string>
+    <string name="feedback_send_success_email">ধন্যবাদ — মেইল ক্লায়েন্ট খোলা হচ্ছে।</string>
+    <string name="feedback_send_success_github">ধন্যবাদ — ব্রাউজার খোলা হচ্ছে।</string>
+    <string name="feedback_send_error">ফিডব্যাক চ্যানেল খোলা যায়নি: %1$s</string>
+
+    <!-- E5 — Mirror feature -->
+    <string name="mirror_tweaks_entry_label">ডাউনলোড মিরর</string>
+    <string name="mirror_picker_title">ডাউনলোড মিরর</string>
+    <string name="mirror_picker_description">রিলিজ অ্যাসেট ডাউনলোড করতে ব্যবহৃত। GitHub API কল সবসময় সরাসরি যায়। বেশিরভাগ ব্যবহারকারীর Direct GitHub-এ রাখা উচিত।</string>
+    <string name="mirror_section_official">অফিসিয়াল</string>
+    <string name="mirror_section_community">কমিউনিটি</string>
+    <string name="mirror_status_ok">%1$dms</string>
+    <string name="mirror_status_degraded">%1$dms</string>
+    <string name="mirror_status_down">(বন্ধ)</string>
+    <string name="mirror_status_unknown">?</string>
+    <string name="mirror_custom_label">কাস্টম মিরর…</string>
+    <string name="mirror_custom_dialog_title">কাস্টম মিরর</string>
+    <string name="mirror_custom_dialog_hint">https://your-mirror.example/{url}</string>
+    <string name="mirror_custom_validation_https">টেমপ্লেট অবশ্যই https:// দিয়ে শুরু হতে হবে</string>
+    <string name="mirror_custom_validation_template">টেমপ্লেটে {url} ঠিক একবার থাকতে হবে</string>
+    <string name="mirror_custom_save">সংরক্ষণ করুন</string>
+    <string name="mirror_test_button">নির্বাচিত পরীক্ষা করুন</string>
+    <string name="mirror_test_in_progress">পরীক্ষা চলছে…</string>
+    <string name="mirror_test_success">%1$dms-এ পৌঁছানো হয়েছে</string>
+    <string name="mirror_test_http_error">মিরর %1$d ফেরত দিয়েছে</string>
+    <string name="mirror_test_timeout">5 সেকেন্ড পরে টাইমআউট</string>
+    <string name="mirror_test_dns_fail">হোস্ট রিসলভ করা যায়নি</string>
+    <string name="mirror_test_other">ব্যর্থ: %1$s</string>
+    <string name="mirror_deploy_your_own_hint">সব মিরর নষ্ট? ৫ মিনিটে নিজের মিরর হোস্ট করুন — ডক্স দেখুন।</string>
+    <string name="mirror_removed_toast">%1$s আর পাওয়া যাচ্ছে না, Direct GitHub-এ স্যুইচ করা হয়েছে।</string>
+    <string name="mirror_digest_mismatch_error">চেকসাম মিলছে না — ফাইলটি হয়তো পরিবর্তন করা হয়েছে</string>
+    <string name="mirror_auto_suggest_title">আরও দ্রুত মিরর চেষ্টা করবেন?</string>
+    <string name="mirror_auto_suggest_body">ধীর নেটওয়ার্কে কিছু ব্যবহারকারী কমিউনিটি প্রক্সিতে ভালো ফলাফল পান।</string>
+    <string name="mirror_auto_suggest_pick_one">একটি বেছে নিন</string>
+    <string name="mirror_auto_suggest_maybe_later">পরে হয়তো</string>
+    <string name="mirror_auto_suggest_dont_ask_again">আর জিজ্ঞেস করবেন না</string>
+
 </resources>

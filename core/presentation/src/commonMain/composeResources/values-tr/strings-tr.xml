@@ -745,4 +745,191 @@
     <string name="pat_error_bad_credentials">Bu token geçersiz veya iptal edilmiş.</string>
     <string name="pat_error_insufficient_scope">Bu token gerekli izinlere sahip değil.</string>
     <string name="pat_error_generic">Token kaydedilemedi. Lütfen tekrar deneyin.</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     E10 — Apps sort
+     ═══════════════════════════════════════════════════════════════ -->
+    <string name="sort_apps">Uygulamaları sırala</string>
+    <string name="sort_updates_first">Güncellemeler önce</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Pre-release channel UX (Details screen)
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="channel_chip_include_betas">Beta sürümleri dahil et</string>
+    <string name="channel_chip_stable_only">Yalnızca kararlı</string>
+    <string name="channel_toggle_cd">Bu uygulama için beta sürümlerini aç/kapat</string>
+    <string name="action_switch_to_stable">%1$s kararlı sürümüne geç</string>
+    <string name="stalled_project_warning_months">%1$d aydır kararlı sürüm yok</string>
+    <string name="stalled_project_warning_days">%1$d gündür kararlı sürüm yok</string>
+    <string name="stalled_project_warning_description">Etkin ön sürümler mevcut, ancak proje bir süredir kararlı bir derleme yayınlamadı. Beta sürümler kararlı bir sürüme ulaşmayabilir.</string>
+    <string name="merged_whats_changed_title">%1$s sürümünden bu yana değişenler</string>
+    <string name="merged_release_heading">— %1$s —</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E1 — External import wizard
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="external_import_top_bar_title">Yüklü uygulamaları içe aktar</string>
+    <string name="external_import_top_bar_back">Geri</string>
+    <string name="external_import_overflow_more">Daha fazla seçenek</string>
+    <string name="external_import_overflow_skip_remaining">Kalanları atla</string>
+    <string name="external_import_progress_scanning">Uygulamalarınız taranıyor…</string>
+    <string name="external_import_progress_auto_importing">Eşleşmeler içe aktarılıyor…</string>
+    <string name="external_import_progress_working">İşleniyor…</string>
+    <plurals name="external_import_progress_subtitle_count">
+        <item quantity="one">%1$d uygulama incelendi</item>
+        <item quantity="other">%1$d uygulama incelendi</item>
+    </plurals>
+    <string name="external_import_card_action_skip">Atla</string>
+    <string name="external_import_card_action_link">Bağla</string>
+    <string name="external_import_card_action_more">Daha fazla eşleşme</string>
+    <string name="external_import_card_action_less">Eşleşmeleri gizle</string>
+    <string name="external_import_card_installer_chip">%1$s aracılığıyla yüklendi</string>
+    <string name="external_import_card_preselect_known">Bunun %1$s olduğunu düşünüyoruz · %2$d</string>
+    <string name="external_import_card_preselect_unknown">Depo bulmak için dokun</string>
+    <string name="external_import_card_expand_label">Diğer eşleşmeleri görmek için genişlet</string>
+    <string name="external_import_card_collapse_label">Kartı daralt</string>
+    <string name="external_import_search_icon_label">GitHub'da ara</string>
+    <string name="external_import_search_empty">Eşleşme yok</string>
+    <string name="external_import_search_error_default">Arama başarısız</string>
+    <string name="external_import_search_placeholder_url">Bir github.com URL'si yapıştırın veya arayın…</string>
+    <plurals name="external_import_completion_headline">
+        <item quantity="one">%1$d uygulama artık takip ediliyor.</item>
+        <item quantity="other">%1$d uygulama artık takip ediliyor.</item>
+    </plurals>
+    <string name="external_import_completion_skipped_subline">%1$d atlandı — Ayarlar'dan yeniden tarama yapabilirsiniz.</string>
+    <string name="external_import_completion_action_view_all">Tümünü görüntüle</string>
+    <string name="external_import_empty_all_matched">Tümü eşleşti.\nBağlanacak bir şey yok.</string>
+    <string name="external_import_empty_done">Tamam</string>
+    <string name="external_import_empty_no_apps_title">Bu cihazda GitHub uygulaması bulunamadı.</string>
+    <string name="external_import_empty_no_apps_body">Bu, her şeyin farklı bir mağaza aracılığıyla yüklendiği ya da yüklü uygulamalara erişimimizin olmadığı anlamına gelir.</string>
+    <string name="external_import_empty_grant_permission">İzin ver</string>
+    <string name="external_import_empty_ok">Tamam</string>
+    <string name="external_import_empty_add_manually">Başka bir mağazadan uygulama ekle</string>
+    <string name="external_import_permission_title">GitHub uygulamalarınızı bulun</string>
+    <string name="external_import_permission_body">Yüklü uygulamalarınızı tarayıp GitHub sürümleriyle eşleştirebiliriz; böylece güncellemeler ve algılama otomatik çalışır.\n\nBunun için hangi uygulamaların yüklü olduğunu görmemiz gerekiyor. İzin vermeden yalnızca yaklaşık 5 uygulama görebiliriz; izinle tümünü görebiliriz.\n\nUygulama listenizi izniniz olmadan hiçbir yere göndermiyoruz. Eşleştirme işlemi cihazınızda gerçekleşir. İsteğe bağlı sunucu araması yalnızca paket adını ve uygulama etiketini, varsa imza parmak izini, kurulum kaynağını ve uygulama manifest'inde belirtilen GitHub depo ipucunu gönderir; yüklü uygulamaların tam listesini asla göndermez.</string>
+    <string name="external_import_permission_continue">Devam et</string>
+    <string name="external_import_permission_not_now">Şimdi değil</string>
+    <plurals name="external_import_proposal_banner_headline">
+        <item quantity="one">GitHub'dan %1$d uygulama bulundu</item>
+        <item quantity="other">GitHub'dan %1$d uygulama bulundu</item>
+    </plurals>
+    <string name="external_import_proposal_banner_body">Güncellemeleri burada takip etmek için inceleyin.</string>
+    <string name="external_import_proposal_banner_review">İncele</string>
+    <string name="external_import_proposal_banner_dismiss">Kapat</string>
+    <string name="external_import_match_confidence_a11y">Eşleşme güveni: yüzde %1$d</string>
+    <string name="external_import_match_confidence_chip">%1$d</string>
+    <string name="external_import_error_link_failed">Bu uygulama bağlanamadı — tekrar deneyin.</string>
+    <string name="external_import_error_link_network">GitHub'a ulaşılamadı. Daha sonra tekrar deneyin.</string>
+    <string name="external_import_error_scan_failed_default">Tarama başarısız</string>
+    <string name="external_import_installer_obtainium">Obtainium</string>
+    <string name="external_import_installer_fdroid">F-Droid</string>
+    <string name="external_import_installer_browser">Tarayıcı</string>
+    <string name="external_import_installer_sideload">Sideload</string>
+    <string name="external_import_installer_self">GitHub Store</string>
+    <string name="external_import_installer_unknown">Bilinmeyen kaynak</string>
+    <string name="external_import_undo_linked">%1$s bağlandı.</string>
+    <string name="external_import_undo_skipped">%1$s atlandı.</string>
+    <string name="external_import_undo_action">Geri al</string>
+    <string name="external_import_undo_failed">Geri alınamadı — tekrar deneyin.</string>
+    <plurals name="external_import_list_remaining">
+        <item quantity="one">İncelenecek %1$d uygulama</item>
+        <item quantity="other">İncelenecek %1$d uygulama</item>
+    </plurals>
+    <string name="external_import_list_add_manually">Uygulamanızı görmüyor musunuz? Manuel olarak ekleyin</string>
+    <plurals name="external_import_auto_summary_headline">
+        <item quantity="one">%1$d uygulama otomatik olarak bağlandı</item>
+        <item quantity="other">%1$d uygulama otomatik olarak bağlandı</item>
+    </plurals>
+    <string name="external_import_auto_summary_body">Yüksek güvenle tanındılar. Bireysel eşleşmeleri her uygulamanın detaylarından geri alabilir ya da hepsini şimdi geri alabilirsiniz.</string>
+    <plurals name="external_import_auto_summary_review_hint">
+        <item quantity="one">%1$d tanesi daha incelemenizi bekliyor.</item>
+        <item quantity="other">%1$d tanesi daha incelemenizi bekliyor.</item>
+    </plurals>
+    <string name="external_import_auto_summary_continue">Devam et</string>
+    <string name="external_import_auto_summary_undo_all">Tümünü geri al</string>
+    <string name="external_import_auto_summary_more_count">+%1$d daha</string>
+    <string name="external_import_rescan_menu">GitHub uygulamalarını tara</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E1 — Details unlink dialog
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="details_unlink_external_app_menu">Bu depodan bağlantıyı kes</string>
+    <string name="details_unlink_external_app_more_options">Daha fazla seçenek</string>
+    <string name="details_unlink_external_app_dialog_title">Bu uygulamanın bağlantısı kesilsin mi?</string>
+    <string name="details_unlink_external_app_dialog_body">%1$s uygulamasını bu depodan yüklü olarak takip etmeyi bırakacağız. Uygulama cihazınızda kalır — yalnızca bağlantı kaldırılır.</string>
+    <string name="details_unlink_external_app_dialog_confirm">Bağlantıyı kes</string>
+    <string name="details_unlink_external_app_success">Bağlantı kesildi. Bir sonraki taramada eşleşme önereceğiz.</string>
+    <string name="details_unlink_external_app_failure">Bağlantı kesilemedi — tekrar deneyin.</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Feedback feature
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="feedback_send">Geri bildirim gönder</string>
+    <string name="feedback_title">Geri bildirim gönder</string>
+    <string name="feedback_close">Kapat</string>
+    <string name="feedback_category_label">Kategori</string>
+    <string name="feedback_category_bug">Hata</string>
+    <string name="feedback_category_feature">Özellik isteği</string>
+    <string name="feedback_category_change">Değişiklik isteği</string>
+    <string name="feedback_category_other">Diğer</string>
+    <string name="feedback_topic_label">Konu</string>
+    <string name="feedback_topic_install_update">Kurulum / Güncelleme</string>
+    <string name="feedback_topic_search">Arama &amp; Keşif</string>
+    <string name="feedback_topic_details">Depo ayrıntıları</string>
+    <string name="feedback_topic_auth">Kimlik Doğrulama &amp; Hesap</string>
+    <string name="feedback_topic_ui">Arayüz / UX</string>
+    <string name="feedback_topic_translation">Çeviri / Dil</string>
+    <string name="feedback_topic_performance">Performans</string>
+    <string name="feedback_topic_other">Diğer</string>
+    <string name="feedback_field_title">Başlık</string>
+    <string name="feedback_field_description">Açıklama</string>
+    <string name="feedback_field_steps">Yeniden oluşturma adımları</string>
+    <string name="feedback_field_expected_actual">Beklenen ve gerçekleşen</string>
+    <string name="feedback_field_use_case">Kullanım senaryosu</string>
+    <string name="feedback_field_proposed_solution">Önerilen çözüm</string>
+    <string name="feedback_field_current_behaviour">Mevcut davranış</string>
+    <string name="feedback_field_desired_behaviour">İstenen davranış</string>
+    <string name="feedback_diagnostics_header">Tanılama</string>
+    <string name="feedback_diagnostics_include">Tanılama bilgilerini dahil et</string>
+    <string name="feedback_send_via_email">E-posta gönder</string>
+    <string name="feedback_send_via_github">GitHub Issue olarak aç</string>
+    <string name="feedback_send_success_email">Teşekkürler — posta istemciniz açılıyor.</string>
+    <string name="feedback_send_success_github">Teşekkürler — tarayıcınız açılıyor.</string>
+    <string name="feedback_send_error">Geri bildirim kanalı açılamadı: %1$s</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E5 — Mirror feature
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="mirror_tweaks_entry_label">İndirme Aynası</string>
+    <string name="mirror_picker_title">İndirme Aynası</string>
+    <string name="mirror_picker_description">Sürüm dosyalarını indirmek için kullanılır. GitHub API çağrıları her zaman doğrudan gider. Çoğu kullanıcı bunu Doğrudan GitHub olarak bırakmalıdır.</string>
+    <string name="mirror_section_official">Resmi</string>
+    <string name="mirror_section_community">Topluluk</string>
+    <string name="mirror_status_ok">%1$dms</string>
+    <string name="mirror_status_degraded">%1$dms</string>
+    <string name="mirror_status_down">(kapalı)</string>
+    <string name="mirror_status_unknown">?</string>
+    <string name="mirror_custom_label">Özel ayna…</string>
+    <string name="mirror_custom_dialog_title">Özel ayna</string>
+    <string name="mirror_custom_dialog_hint">https://ayaniniz.ornek/{url}</string>
+    <string name="mirror_custom_validation_https">Şablon https:// ile başlamalıdır</string>
+    <string name="mirror_custom_validation_template">Şablon {url} ifadesini tam olarak bir kez içermelidir</string>
+    <string name="mirror_custom_save">Kaydet</string>
+    <string name="mirror_test_button">Seçileni test et</string>
+    <string name="mirror_test_in_progress">Test ediliyor…</string>
+    <string name="mirror_test_success">%1$dms'de ulaşıldı</string>
+    <string name="mirror_test_http_error">Ayna %1$d döndürdü</string>
+    <string name="mirror_test_timeout">5s sonra zaman aşımı</string>
+    <string name="mirror_test_dns_fail">Ana bilgisayar çözümlenemedi</string>
+    <string name="mirror_test_other">Başarısız: %1$s</string>
+    <string name="mirror_deploy_your_own_hint">Tüm aynalar mı çöktü? 5 dakikada kendinizinkini barındırabilirsiniz — belgelere bakın.</string>
+    <string name="mirror_removed_toast">%1$s artık kullanılamıyor, Doğrudan GitHub'a geçildi.</string>
+    <string name="mirror_digest_mismatch_error">Sağlama toplamı uyumsuzluğu — dosya değiştirilmiş olabilir</string>
+    <string name="mirror_auto_suggest_title">Daha hızlı bir ayna deneyin mi?</string>
+    <string name="mirror_auto_suggest_body">Yavaş ağlardaki bazı kullanıcılar topluluk proxy'siyle daha iyi sonuç alıyor.</string>
+    <string name="mirror_auto_suggest_pick_one">Birini seç</string>
+    <string name="mirror_auto_suggest_maybe_later">Belki daha sonra</string>
+    <string name="mirror_auto_suggest_dont_ask_again">Bir daha sorma</string>
+
+
 </resources>

@@ -743,4 +743,185 @@
     <string name="pat_error_bad_credentials">이 토큰은 유효하지 않거나 취소되었습니다.</string>
     <string name="pat_error_insufficient_scope">이 토큰에는 필요한 권한이 없습니다.</string>
     <string name="pat_error_generic">토큰을 저장할 수 없습니다. 다시 시도해 주세요.</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     E10 — Apps sort
+     ═══════════════════════════════════════════════════════════════ -->
+    <string name="sort_apps">앱 정렬</string>
+    <string name="sort_updates_first">업데이트 우선</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Pre-release channel UX (Details screen)
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="channel_chip_include_betas">베타 포함</string>
+    <string name="channel_chip_stable_only">안정 버전만</string>
+    <string name="channel_toggle_cd">이 앱의 베타 릴리스 전환</string>
+    <string name="action_switch_to_stable">%1$s 안정 버전으로 전환</string>
+    <string name="stalled_project_warning_months">%1$d개월간 안정 릴리스 없음</string>
+    <string name="stalled_project_warning_days">%1$d일간 안정 릴리스 없음</string>
+    <string name="stalled_project_warning_description">사전 릴리스가 활발하지만 프로젝트가 한동안 안정 빌드를 출시하지 않았습니다. 베타가 안정 릴리스로 이어지지 않을 수 있습니다.</string>
+    <string name="merged_whats_changed_title">%1$s 이후 변경 사항</string>
+    <string name="merged_release_heading">— %1$s —</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E1 — External import wizard
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="external_import_top_bar_title">설치된 앱 가져오기</string>
+    <string name="external_import_top_bar_back">뒤로</string>
+    <string name="external_import_overflow_more">더 많은 옵션</string>
+    <string name="external_import_overflow_skip_remaining">나머지 건너뛰기</string>
+    <string name="external_import_progress_scanning">앱을 스캔하는 중…</string>
+    <string name="external_import_progress_auto_importing">일치 항목을 가져오는 중…</string>
+    <string name="external_import_progress_working">처리 중…</string>
+    <!-- Korean uses "other" only -->
+    <plurals name="external_import_progress_subtitle_count">
+        <item quantity="other">%1$d개 앱 확인됨</item>
+    </plurals>
+    <string name="external_import_card_action_skip">건너뛰기</string>
+    <string name="external_import_card_action_link">연결</string>
+    <string name="external_import_card_action_more">더 많은 일치 항목</string>
+    <string name="external_import_card_action_less">일치 항목 숨기기</string>
+    <string name="external_import_card_installer_chip">%1$s를 통해 설치됨</string>
+    <string name="external_import_card_preselect_known">%1$s(으)로 추정됩니다 · %2$d</string>
+    <string name="external_import_card_preselect_unknown">저장소를 찾으려면 탭하세요</string>
+    <string name="external_import_card_expand_label">다른 일치 항목을 보려면 펼치기</string>
+    <string name="external_import_card_collapse_label">카드 접기</string>
+    <string name="external_import_search_icon_label">GitHub 검색</string>
+    <string name="external_import_search_empty">일치 항목 없음</string>
+    <string name="external_import_search_error_default">검색 실패</string>
+    <string name="external_import_search_placeholder_url">github.com URL을 붙여넣거나 검색하세요…</string>
+    <plurals name="external_import_completion_headline">
+        <item quantity="other">%1$d개 앱을 추적 중입니다.</item>
+    </plurals>
+    <string name="external_import_completion_skipped_subline">%1$d개 건너뜀 — 설정에서 다시 스캔할 수 있습니다.</string>
+    <string name="external_import_completion_action_view_all">모두 보기</string>
+    <string name="external_import_empty_all_matched">모두 연결되었습니다.\n연결할 항목이 없습니다.</string>
+    <string name="external_import_empty_done">완료</string>
+    <string name="external_import_empty_no_apps_title">이 기기에서 GitHub 앱을 찾을 수 없습니다.</string>
+    <string name="external_import_empty_no_apps_body">다른 스토어를 통해 설치되었거나 설치된 앱을 확인할 수 없는 상태입니다.</string>
+    <string name="external_import_empty_grant_permission">권한 허용</string>
+    <string name="external_import_empty_ok">확인</string>
+    <string name="external_import_empty_add_manually">다른 스토어에서 앱 추가</string>
+    <string name="external_import_permission_title">GitHub 앱 찾기</string>
+    <string name="external_import_permission_body">설치된 앱을 스캔하여 GitHub 릴리스와 매칭할 수 있습니다. 이렇게 하면 업데이트 감지가 자동으로 동작합니다.\n\n그러려면 어떤 앱이 설치되어 있는지 확인해야 합니다. 권한 없이는 약 5개의 앱만 볼 수 있고, 권한이 있으면 모두 볼 수 있습니다.\n\n귀하의 허가 없이 앱 목록을 어디에도 전송하지 않습니다. 매칭은 기기에서 이루어집니다. 선택적 서버 조회는 패키지 이름과 앱 레이블만 전송하며, 사용 가능한 경우 서명 지문, 설치 출처, 앱 매니페스트에 선언된 GitHub 저장소 힌트도 포함합니다. 설치된 앱의 전체 목록은 절대 전송하지 않습니다.</string>
+    <string name="external_import_permission_continue">계속</string>
+    <string name="external_import_permission_not_now">나중에</string>
+    <plurals name="external_import_proposal_banner_headline">
+        <item quantity="other">GitHub에서 %1$d개 앱을 찾았습니다</item>
+    </plurals>
+    <string name="external_import_proposal_banner_body">여기에서 업데이트를 추적하려면 검토하세요.</string>
+    <string name="external_import_proposal_banner_review">검토</string>
+    <string name="external_import_proposal_banner_dismiss">닫기</string>
+    <string name="external_import_match_confidence_a11y">일치 신뢰도: %1$d퍼센트</string>
+    <string name="external_import_match_confidence_chip">%1$d</string>
+    <string name="external_import_error_link_failed">이 앱을 연결할 수 없습니다 — 다시 시도하세요.</string>
+    <string name="external_import_error_link_network">GitHub에 연결할 수 없습니다. 나중에 다시 시도하세요.</string>
+    <string name="external_import_error_scan_failed_default">스캔 실패</string>
+    <string name="external_import_installer_obtainium">Obtainium</string>
+    <string name="external_import_installer_fdroid">F-Droid</string>
+    <string name="external_import_installer_browser">브라우저</string>
+    <string name="external_import_installer_sideload">Sideload</string>
+    <string name="external_import_installer_self">GitHub Store</string>
+    <string name="external_import_installer_unknown">알 수 없는 출처</string>
+    <string name="external_import_undo_linked">%1$s이(가) 연결되었습니다.</string>
+    <string name="external_import_undo_skipped">%1$s이(가) 건너뛰어졌습니다.</string>
+    <string name="external_import_undo_action">실행 취소</string>
+    <string name="external_import_undo_failed">실행 취소에 실패했습니다 — 다시 시도하세요.</string>
+    <plurals name="external_import_list_remaining">
+        <item quantity="other">검토할 앱 %1$d개</item>
+    </plurals>
+    <string name="external_import_list_add_manually">앱이 보이지 않나요? 수동으로 추가</string>
+    <plurals name="external_import_auto_summary_headline">
+        <item quantity="other">%1$d개 앱이 자동으로 연결되었습니다</item>
+    </plurals>
+    <string name="external_import_auto_summary_body">높은 신뢰도로 인식되었습니다. 각 앱의 세부 정보에서 개별 매칭을 취소하거나 지금 모두 취소할 수 있습니다.</string>
+    <plurals name="external_import_auto_summary_review_hint">
+        <item quantity="other">%1$d개가 더 검토를 필요로 합니다.</item>
+    </plurals>
+    <string name="external_import_auto_summary_continue">계속</string>
+    <string name="external_import_auto_summary_undo_all">모두 실행 취소</string>
+    <string name="external_import_auto_summary_more_count">+%1$d개 더</string>
+    <string name="external_import_rescan_menu">GitHub 앱 스캔</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E1 — Details unlink dialog
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="details_unlink_external_app_menu">이 저장소에서 연결 해제</string>
+    <string name="details_unlink_external_app_more_options">더 많은 옵션</string>
+    <string name="details_unlink_external_app_dialog_title">이 앱의 연결을 해제하시겠습니까?</string>
+    <string name="details_unlink_external_app_dialog_body">이 저장소에서 설치된 앱으로 %1$s 추적을 중단합니다. 앱은 기기에 그대로 남습니다 — 연결만 제거됩니다.</string>
+    <string name="details_unlink_external_app_dialog_confirm">연결 해제</string>
+    <string name="details_unlink_external_app_success">연결 해제되었습니다. 다음 스캔에서 매칭을 다시 제안합니다.</string>
+    <string name="details_unlink_external_app_failure">연결 해제에 실패했습니다 — 다시 시도하세요.</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Feedback feature
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="feedback_send">피드백 보내기</string>
+    <string name="feedback_title">피드백 보내기</string>
+    <string name="feedback_close">닫기</string>
+    <string name="feedback_category_label">카테고리</string>
+    <string name="feedback_category_bug">버그</string>
+    <string name="feedback_category_feature">기능 요청</string>
+    <string name="feedback_category_change">변경 요청</string>
+    <string name="feedback_category_other">기타</string>
+    <string name="feedback_topic_label">주제</string>
+    <string name="feedback_topic_install_update">설치 / 업데이트</string>
+    <string name="feedback_topic_search">검색 &amp; 탐색</string>
+    <string name="feedback_topic_details">저장소 세부 정보</string>
+    <string name="feedback_topic_auth">인증 &amp; 계정</string>
+    <string name="feedback_topic_ui">UI / UX</string>
+    <string name="feedback_topic_translation">번역 / 언어</string>
+    <string name="feedback_topic_performance">성능</string>
+    <string name="feedback_topic_other">기타</string>
+    <string name="feedback_field_title">제목</string>
+    <string name="feedback_field_description">설명</string>
+    <string name="feedback_field_steps">재현 단계</string>
+    <string name="feedback_field_expected_actual">예상 결과 vs 실제 결과</string>
+    <string name="feedback_field_use_case">사용 사례</string>
+    <string name="feedback_field_proposed_solution">제안된 해결책</string>
+    <string name="feedback_field_current_behaviour">현재 동작</string>
+    <string name="feedback_field_desired_behaviour">원하는 동작</string>
+    <string name="feedback_diagnostics_header">진단</string>
+    <string name="feedback_diagnostics_include">진단 포함</string>
+    <string name="feedback_send_via_email">이메일로 보내기</string>
+    <string name="feedback_send_via_github">GitHub Issue로 열기</string>
+    <string name="feedback_send_success_email">감사합니다 — 메일 클라이언트를 열고 있습니다.</string>
+    <string name="feedback_send_success_github">감사합니다 — 브라우저를 열고 있습니다.</string>
+    <string name="feedback_send_error">피드백 채널을 열 수 없습니다: %1$s</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E5 — Mirror feature
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="mirror_tweaks_entry_label">다운로드 미러</string>
+    <string name="mirror_picker_title">다운로드 미러</string>
+    <string name="mirror_picker_description">릴리스 파일 다운로드에 사용됩니다. GitHub API 호출은 항상 직접 이루어집니다. 대부분의 사용자는 GitHub 직접으로 두는 것이 좋습니다.</string>
+    <string name="mirror_section_official">공식</string>
+    <string name="mirror_section_community">커뮤니티</string>
+    <string name="mirror_status_ok">%1$dms</string>
+    <string name="mirror_status_degraded">%1$dms</string>
+    <string name="mirror_status_down">(다운)</string>
+    <string name="mirror_status_unknown">?</string>
+    <string name="mirror_custom_label">사용자 정의 미러…</string>
+    <string name="mirror_custom_dialog_title">사용자 정의 미러</string>
+    <string name="mirror_custom_dialog_hint">https://your-mirror.example/{url}</string>
+    <string name="mirror_custom_validation_https">템플릿은 https://로 시작해야 합니다</string>
+    <string name="mirror_custom_validation_template">템플릿에는 {url}이 정확히 한 번 포함되어야 합니다</string>
+    <string name="mirror_custom_save">저장</string>
+    <string name="mirror_test_button">선택한 항목 테스트</string>
+    <string name="mirror_test_in_progress">테스트 중…</string>
+    <string name="mirror_test_success">%1$dms에 도달</string>
+    <string name="mirror_test_http_error">미러가 %1$d를 반환했습니다</string>
+    <string name="mirror_test_timeout">5s 후 타임아웃</string>
+    <string name="mirror_test_dns_fail">호스트를 확인할 수 없습니다</string>
+    <string name="mirror_test_other">실패: %1$s</string>
+    <string name="mirror_deploy_your_own_hint">모든 미러가 다운되었나요? 5분 안에 직접 호스팅할 수 있습니다 — 문서를 참조하세요.</string>
+    <string name="mirror_removed_toast">%1$s를 더 이상 사용할 수 없어 GitHub 직접으로 전환했습니다.</string>
+    <string name="mirror_digest_mismatch_error">체크섬 불일치 — 파일이 변조되었을 수 있습니다</string>
+    <string name="mirror_auto_suggest_title">더 빠른 미러를 사용해 볼까요?</string>
+    <string name="mirror_auto_suggest_body">느린 네트워크에서 일부 사용자는 커뮤니티 프록시를 사용할 때 더 나은 경험을 합니다.</string>
+    <string name="mirror_auto_suggest_pick_one">선택하기</string>
+    <string name="mirror_auto_suggest_maybe_later">나중에</string>
+    <string name="mirror_auto_suggest_dont_ask_again">다시 묻지 않기</string>
+
 </resources>

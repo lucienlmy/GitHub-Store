@@ -709,4 +709,187 @@
     <string name="pat_error_bad_credentials">该令牌无效或已被吊销。</string>
     <string name="pat_error_insufficient_scope">该令牌缺少所需权限。</string>
     <string name="pat_error_generic">保存令牌失败。请重试。</string>
+
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E10 — Apps sort
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="sort_apps">应用排序</string>
+    <string name="sort_updates_first">更新优先</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Pre-release channel UX (Details screen)
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="channel_chip_include_betas">包含测试版</string>
+    <string name="channel_chip_stable_only">仅稳定版</string>
+    <string name="channel_toggle_cd">切换此应用的测试版发布</string>
+    <string name="action_switch_to_stable">切换到 %1$s 稳定版</string>
+    <string name="stalled_project_warning_months">%1$d 个月内无稳定版发布</string>
+    <string name="stalled_project_warning_days">%1$d 天内无稳定版发布</string>
+    <string name="stalled_project_warning_description">目前有活跃的预发布版本，但该项目已有一段时间未发布稳定版。测试版可能不会收敛为稳定版。</string>
+    <string name="merged_whats_changed_title">自 %1$s 以来的变更</string>
+    <string name="merged_release_heading">— %1$s —</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E1 — External import wizard
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="external_import_top_bar_title">导入已安装的应用</string>
+    <string name="external_import_top_bar_back">返回</string>
+    <string name="external_import_overflow_more">更多选项</string>
+    <string name="external_import_overflow_skip_remaining">跳过剩余</string>
+    <string name="external_import_progress_scanning">正在扫描您的应用…</string>
+    <string name="external_import_progress_auto_importing">正在导入匹配项…</string>
+    <string name="external_import_progress_working">处理中…</string>
+    <!-- Chinese uses "other" only -->
+    <plurals name="external_import_progress_subtitle_count">
+        <item quantity="other">已检查 %1$d 个应用</item>
+    </plurals>
+    <string name="external_import_card_action_skip">跳过</string>
+    <string name="external_import_card_action_link">关联</string>
+    <string name="external_import_card_action_more">更多匹配</string>
+    <string name="external_import_card_action_less">隐藏匹配</string>
+    <string name="external_import_card_installer_chip">通过 %1$s 安装</string>
+    <string name="external_import_card_preselect_known">我们认为这是 %1$s · %2$d</string>
+    <string name="external_import_card_preselect_unknown">点击查找仓库</string>
+    <string name="external_import_card_expand_label">展开以查看其他匹配</string>
+    <string name="external_import_card_collapse_label">收起卡片</string>
+    <string name="external_import_search_icon_label">搜索 GitHub</string>
+    <string name="external_import_search_empty">无匹配结果</string>
+    <string name="external_import_search_error_default">搜索失败</string>
+    <string name="external_import_search_placeholder_url">粘贴 github.com URL 或搜索…</string>
+    <plurals name="external_import_completion_headline">
+        <item quantity="other">现在正在追踪 %1$d 个应用。</item>
+    </plurals>
+    <string name="external_import_completion_skipped_subline">已跳过 %1$d 个 — 您可以在设置中重新扫描。</string>
+    <string name="external_import_completion_action_view_all">查看全部</string>
+    <string name="external_import_empty_all_matched">全部已关联。\n没有需要关联的内容。</string>
+    <string name="external_import_empty_done">完成</string>
+    <string name="external_import_empty_no_apps_title">在此设备上未找到 GitHub 应用。</string>
+    <string name="external_import_empty_no_apps_body">这意味着所有应用都通过其他商店安装，或者我们无法获取已安装应用的信息。</string>
+    <string name="external_import_empty_grant_permission">授予权限</string>
+    <string name="external_import_empty_ok">确定</string>
+    <string name="external_import_empty_add_manually">从其他商店添加应用</string>
+    <string name="external_import_permission_title">找到您的 GitHub 应用</string>
+    <string name="external_import_permission_body">我们可以扫描您已安装的应用并将其与 GitHub 发布版本匹配，让更新检测自动运行。\n\n为此，我们需要查看您安装了哪些应用。没有权限时我们只能看到约 5 个应用；有权限时可以看到全部。\n\n未经您的许可，我们绝不会将您的应用列表发送到任何地方。匹配过程在您的设备上进行。可选的后端查询仅发送包名和应用标签，以及（如有）签名指纹、安装来源和应用 manifest 中声明的 GitHub 仓库提示，绝不发送完整的已安装应用列表。</string>
+    <string name="external_import_permission_continue">继续</string>
+    <string name="external_import_permission_not_now">暂不</string>
+    <plurals name="external_import_proposal_banner_headline">
+        <item quantity="other">从 GitHub 找到 %1$d 个应用</item>
+    </plurals>
+    <string name="external_import_proposal_banner_body">审阅它们以在此追踪更新。</string>
+    <string name="external_import_proposal_banner_review">审阅</string>
+    <string name="external_import_proposal_banner_dismiss">关闭</string>
+    <string name="external_import_match_confidence_a11y">匹配置信度：%1$d 百分比</string>
+    <string name="external_import_match_confidence_chip">%1$d</string>
+    <string name="external_import_error_link_failed">无法关联此应用 — 请重试。</string>
+    <string name="external_import_error_link_network">无法连接到 GitHub，请稍后重试。</string>
+    <string name="external_import_error_scan_failed_default">扫描失败</string>
+    <string name="external_import_installer_obtainium">Obtainium</string>
+    <string name="external_import_installer_fdroid">F-Droid</string>
+    <string name="external_import_installer_browser">浏览器</string>
+    <string name="external_import_installer_sideload">Sideload</string>
+    <string name="external_import_installer_self">GitHub Store</string>
+    <string name="external_import_installer_unknown">未知来源</string>
+    <string name="external_import_undo_linked">%1$s 已关联。</string>
+    <string name="external_import_undo_skipped">%1$s 已跳过。</string>
+    <string name="external_import_undo_action">撤销</string>
+    <string name="external_import_undo_failed">无法撤销 — 请重试。</string>
+    <plurals name="external_import_list_remaining">
+        <item quantity="other">%1$d 个应用待审阅</item>
+    </plurals>
+    <string name="external_import_list_add_manually">未看到您的应用？手动添加</string>
+    <plurals name="external_import_auto_summary_headline">
+        <item quantity="other">已自动关联 %1$d 个应用</item>
+    </plurals>
+    <string name="external_import_auto_summary_body">我们以高置信度识别了这些应用。您可以在每个应用的详情中撤销单个匹配，或立即全部撤销。</string>
+    <plurals name="external_import_auto_summary_review_hint">
+        <item quantity="other">还有 %1$d 个需要您的确认。</item>
+    </plurals>
+    <string name="external_import_auto_summary_continue">继续</string>
+    <string name="external_import_auto_summary_undo_all">全部撤销</string>
+    <string name="external_import_auto_summary_more_count">+%1$d 更多</string>
+    <string name="external_import_rescan_menu">扫描 GitHub 应用</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E1 — Details unlink dialog
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="details_unlink_external_app_menu">从此仓库取消关联</string>
+    <string name="details_unlink_external_app_more_options">更多选项</string>
+    <string name="details_unlink_external_app_dialog_title">取消关联此应用？</string>
+    <string name="details_unlink_external_app_dialog_body">我们将停止追踪 %1$s 作为从此仓库安装的应用。该应用仍保留在您的设备上 — 仅删除关联。</string>
+    <string name="details_unlink_external_app_dialog_confirm">取消关联</string>
+    <string name="details_unlink_external_app_success">已取消关联。下次扫描时将重新建议匹配。</string>
+    <string name="details_unlink_external_app_failure">无法取消关联 — 请重试。</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Feedback feature
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="feedback_send">发送反馈</string>
+    <string name="feedback_title">发送反馈</string>
+    <string name="feedback_close">关闭</string>
+    <string name="feedback_category_label">类别</string>
+    <string name="feedback_category_bug">缺陷</string>
+    <string name="feedback_category_feature">功能请求</string>
+    <string name="feedback_category_change">变更请求</string>
+    <string name="feedback_category_other">其他</string>
+    <string name="feedback_topic_label">主题</string>
+    <string name="feedback_topic_install_update">安装 / 更新</string>
+    <string name="feedback_topic_search">搜索 &amp; 发现</string>
+    <string name="feedback_topic_details">仓库详情</string>
+    <string name="feedback_topic_auth">认证 &amp; 账户</string>
+    <string name="feedback_topic_ui">界面 / UX</string>
+    <string name="feedback_topic_translation">翻译 / 语言</string>
+    <string name="feedback_topic_performance">性能</string>
+    <string name="feedback_topic_other">其他</string>
+    <string name="feedback_field_title">标题</string>
+    <string name="feedback_field_description">描述</string>
+    <string name="feedback_field_steps">重现步骤</string>
+    <string name="feedback_field_expected_actual">预期与实际</string>
+    <string name="feedback_field_use_case">使用场景</string>
+    <string name="feedback_field_proposed_solution">建议解决方案</string>
+    <string name="feedback_field_current_behaviour">当前行为</string>
+    <string name="feedback_field_desired_behaviour">期望行为</string>
+    <string name="feedback_diagnostics_header">诊断信息</string>
+    <string name="feedback_diagnostics_include">包含诊断信息</string>
+    <string name="feedback_send_via_email">通过邮件发送</string>
+    <string name="feedback_send_via_github">作为 GitHub Issue 打开</string>
+    <string name="feedback_send_success_email">感谢您 — 正在打开邮件客户端。</string>
+    <string name="feedback_send_success_github">感谢您 — 正在打开浏览器。</string>
+    <string name="feedback_send_error">无法打开反馈渠道：%1$s</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E5 — Mirror feature
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="mirror_tweaks_entry_label">下载镜像</string>
+    <string name="mirror_picker_title">下载镜像</string>
+    <string name="mirror_picker_description">用于下载发布资源。GitHub API 调用始终直接进行。大多数用户应保持"直连 GitHub"设置。</string>
+    <string name="mirror_section_official">官方</string>
+    <string name="mirror_section_community">社区</string>
+    <string name="mirror_status_ok">%1$dms</string>
+    <string name="mirror_status_degraded">%1$dms</string>
+    <string name="mirror_status_down">(不可用)</string>
+    <string name="mirror_status_unknown">?</string>
+    <string name="mirror_custom_label">自定义镜像…</string>
+    <string name="mirror_custom_dialog_title">自定义镜像</string>
+    <string name="mirror_custom_dialog_hint">https://your-mirror.example/{url}</string>
+    <string name="mirror_custom_validation_https">模板必须以 https:// 开头</string>
+    <string name="mirror_custom_validation_template">模板必须恰好包含一次 {url}</string>
+    <string name="mirror_custom_save">保存</string>
+    <string name="mirror_test_button">测试所选</string>
+    <string name="mirror_test_in_progress">测试中…</string>
+    <string name="mirror_test_success">已在 %1$dms 内到达</string>
+    <string name="mirror_test_http_error">镜像返回 %1$d</string>
+    <string name="mirror_test_timeout">5s 后超时</string>
+    <string name="mirror_test_dns_fail">无法解析主机</string>
+    <string name="mirror_test_other">失败：%1$s</string>
+    <string name="mirror_deploy_your_own_hint">所有镜像都无法使用？您可以在 5 分钟内自行托管 — 请参阅文档。</string>
+    <string name="mirror_removed_toast">%1$s 已不再可用，已切换到直连 GitHub。</string>
+    <string name="mirror_digest_mismatch_error">校验和不匹配 — 文件可能已被篡改</string>
+    <string name="mirror_auto_suggest_title">尝试更快的镜像？</string>
+    <string name="mirror_auto_suggest_body">网络较慢的部分用户使用社区代理效果更好。</string>
+    <string name="mirror_auto_suggest_pick_one">选择一个</string>
+    <string name="mirror_auto_suggest_maybe_later">稍后再说</string>
+    <string name="mirror_auto_suggest_dont_ask_again">不再询问</string>
+
+
 </resources>

@@ -708,4 +708,191 @@
     <string name="pat_error_bad_credentials">Ese token no es válido o ha sido revocado.</string>
     <string name="pat_error_insufficient_scope">Ese token no tiene los permisos necesarios.</string>
     <string name="pat_error_generic">No se pudo guardar el token. Inténtalo de nuevo.</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+     E10 — Apps sort
+     ═══════════════════════════════════════════════════════════════ -->
+    <string name="sort_apps">Ordenar aplicaciones</string>
+    <string name="sort_updates_first">Actualizaciones primero</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Pre-release channel UX (Details screen)
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="channel_chip_include_betas">Incluir betas</string>
+    <string name="channel_chip_stable_only">Solo estable</string>
+    <string name="channel_toggle_cd">Alternar versiones beta de esta aplicación</string>
+    <string name="action_switch_to_stable">Cambiar a %1$s estable</string>
+    <string name="stalled_project_warning_months">Sin versión estable en %1$d meses</string>
+    <string name="stalled_project_warning_days">Sin versión estable en %1$d días</string>
+    <string name="stalled_project_warning_description">Hay versiones previas activas, pero el proyecto no ha lanzado una versión estable en un tiempo. Las betas podrían no derivar en una versión estable.</string>
+    <string name="merged_whats_changed_title">Novedades desde %1$s</string>
+    <string name="merged_release_heading">— %1$s —</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E1 — External import wizard
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="external_import_top_bar_title">Importar aplicaciones instaladas</string>
+    <string name="external_import_top_bar_back">Atrás</string>
+    <string name="external_import_overflow_more">Más opciones</string>
+    <string name="external_import_overflow_skip_remaining">Omitir restantes</string>
+    <string name="external_import_progress_scanning">Analizando tus aplicaciones…</string>
+    <string name="external_import_progress_auto_importing">Importando coincidencias…</string>
+    <string name="external_import_progress_working">Procesando…</string>
+    <plurals name="external_import_progress_subtitle_count">
+        <item quantity="one">Se revisó %1$d aplicación</item>
+        <item quantity="other">Se revisaron %1$d aplicaciones</item>
+    </plurals>
+    <string name="external_import_card_action_skip">Omitir</string>
+    <string name="external_import_card_action_link">Vincular</string>
+    <string name="external_import_card_action_more">Más coincidencias</string>
+    <string name="external_import_card_action_less">Ocultar coincidencias</string>
+    <string name="external_import_card_installer_chip">Instalado a través de %1$s</string>
+    <string name="external_import_card_preselect_known">Creemos que es %1$s · %2$d</string>
+    <string name="external_import_card_preselect_unknown">Toca para buscar un repositorio</string>
+    <string name="external_import_card_expand_label">Expandir para ver otras coincidencias</string>
+    <string name="external_import_card_collapse_label">Contraer tarjeta</string>
+    <string name="external_import_search_icon_label">Buscar en GitHub</string>
+    <string name="external_import_search_empty">Sin coincidencias</string>
+    <string name="external_import_search_error_default">Error de búsqueda</string>
+    <string name="external_import_search_placeholder_url">Pega una URL de github.com o busca…</string>
+    <plurals name="external_import_completion_headline">
+        <item quantity="one">Ahora se rastrea %1$d aplicación.</item>
+        <item quantity="other">Ahora se rastrean %1$d aplicaciones.</item>
+    </plurals>
+    <string name="external_import_completion_skipped_subline">Se omitieron %1$d — puedes volver a escanear desde Ajustes.</string>
+    <string name="external_import_completion_action_view_all">Ver todas</string>
+    <string name="external_import_empty_all_matched">Todo vinculado.\nNada que vincular.</string>
+    <string name="external_import_empty_done">Listo</string>
+    <string name="external_import_empty_no_apps_title">No se encontraron aplicaciones de GitHub en este dispositivo.</string>
+    <string name="external_import_empty_no_apps_body">Esto significa que todo fue instalado a través de otra tienda, o que no tenemos visibilidad de lo que está instalado.</string>
+    <string name="external_import_empty_grant_permission">Conceder permiso</string>
+    <string name="external_import_empty_ok">Aceptar</string>
+    <string name="external_import_empty_add_manually">Añadir una aplicación de otra tienda</string>
+    <string name="external_import_permission_title">Encuentra tus aplicaciones de GitHub</string>
+    <string name="external_import_permission_body">Podemos analizar tus aplicaciones instaladas y vincularlas a versiones de GitHub, para que las actualizaciones y la detección funcionen solas.\n\nPara eso, necesitamos ver qué aplicaciones tienes. Sin permiso solo podemos ver unas 5 aplicaciones; con él, podemos verlas todas.\n\nNunca enviamos la lista de tus aplicaciones a ningún lugar sin tu permiso. La comparación se ejecuta en tu dispositivo. La búsqueda opcional en el servidor solo envía el nombre del paquete y la etiqueta de la aplicación, y cuando esté disponible, la huella de firma, el origen de instalación y cualquier indicación de repositorio de GitHub declarada en el manifiesto de la aplicación; nunca una lista completa de lo instalado.</string>
+    <string name="external_import_permission_continue">Continuar</string>
+    <string name="external_import_permission_not_now">Ahora no</string>
+    <plurals name="external_import_proposal_banner_headline">
+        <item quantity="one">Se encontró %1$d aplicación de GitHub</item>
+        <item quantity="other">Se encontraron %1$d aplicaciones de GitHub</item>
+    </plurals>
+    <string name="external_import_proposal_banner_body">Revísalas para rastrear actualizaciones aquí.</string>
+    <string name="external_import_proposal_banner_review">Revisar</string>
+    <string name="external_import_proposal_banner_dismiss">Descartar</string>
+    <string name="external_import_match_confidence_a11y">Confianza de coincidencia: %1$d por ciento</string>
+    <string name="external_import_match_confidence_chip">%1$d</string>
+    <string name="external_import_error_link_failed">No se pudo vincular esta aplicación — inténtalo de nuevo.</string>
+    <string name="external_import_error_link_network">No se pudo conectar a GitHub. Inténtalo más tarde.</string>
+    <string name="external_import_error_scan_failed_default">Error de análisis</string>
+    <string name="external_import_installer_obtainium">Obtainium</string>
+    <string name="external_import_installer_fdroid">F-Droid</string>
+    <string name="external_import_installer_browser">Navegador</string>
+    <string name="external_import_installer_sideload">Sideload</string>
+    <string name="external_import_installer_self">GitHub Store</string>
+    <string name="external_import_installer_unknown">Fuente desconocida</string>
+    <string name="external_import_undo_linked">%1$s vinculado.</string>
+    <string name="external_import_undo_skipped">%1$s omitido.</string>
+    <string name="external_import_undo_action">Deshacer</string>
+    <string name="external_import_undo_failed">No se pudo deshacer — inténtalo de nuevo.</string>
+    <plurals name="external_import_list_remaining">
+        <item quantity="one">%1$d aplicación para revisar</item>
+        <item quantity="other">%1$d aplicaciones para revisar</item>
+    </plurals>
+    <string name="external_import_list_add_manually">¿No ves tu aplicación? Añadir manualmente</string>
+    <plurals name="external_import_auto_summary_headline">
+        <item quantity="one">%1$d aplicación vinculada automáticamente</item>
+        <item quantity="other">%1$d aplicaciones vinculadas automáticamente</item>
+    </plurals>
+    <string name="external_import_auto_summary_body">Las reconocimos con alta confianza. Puedes deshacer coincidencias individuales desde los detalles de cada aplicación, o deshacer todas ahora.</string>
+    <plurals name="external_import_auto_summary_review_hint">
+        <item quantity="one">%1$d más necesita tu revisión.</item>
+        <item quantity="other">%1$d más necesitan tu revisión.</item>
+    </plurals>
+    <string name="external_import_auto_summary_continue">Continuar</string>
+    <string name="external_import_auto_summary_undo_all">Deshacer todo</string>
+    <string name="external_import_auto_summary_more_count">+%1$d más</string>
+    <string name="external_import_rescan_menu">Buscar aplicaciones de GitHub</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E1 — Details unlink dialog
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="details_unlink_external_app_menu">Desvincular de este repositorio</string>
+    <string name="details_unlink_external_app_more_options">Más opciones</string>
+    <string name="details_unlink_external_app_dialog_title">¿Desvincular esta aplicación?</string>
+    <string name="details_unlink_external_app_dialog_body">Dejaremos de rastrear %1$s como instalada desde este repositorio. La aplicación permanece en tu dispositivo — solo se elimina el vínculo.</string>
+    <string name="details_unlink_external_app_dialog_confirm">Desvincular</string>
+    <string name="details_unlink_external_app_success">Desvinculado. Sugeriremos una coincidencia en el próximo análisis.</string>
+    <string name="details_unlink_external_app_failure">No se pudo desvincular — inténtalo de nuevo.</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Feedback feature
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="feedback_send">Enviar comentarios</string>
+    <string name="feedback_title">Enviar comentarios</string>
+    <string name="feedback_close">Cerrar</string>
+    <string name="feedback_category_label">Categoría</string>
+    <string name="feedback_category_bug">Error</string>
+    <string name="feedback_category_feature">Solicitud de función</string>
+    <string name="feedback_category_change">Solicitud de cambio</string>
+    <string name="feedback_category_other">Otro</string>
+    <string name="feedback_topic_label">Tema</string>
+    <string name="feedback_topic_install_update">Instalación / Actualización</string>
+    <string name="feedback_topic_search">Búsqueda &amp; Descubrimiento</string>
+    <string name="feedback_topic_details">Detalles del repositorio</string>
+    <string name="feedback_topic_auth">Autenticación &amp; Cuenta</string>
+    <string name="feedback_topic_ui">Interfaz / UX</string>
+    <string name="feedback_topic_translation">Traducción / Idioma</string>
+    <string name="feedback_topic_performance">Rendimiento</string>
+    <string name="feedback_topic_other">Otro</string>
+    <string name="feedback_field_title">Título</string>
+    <string name="feedback_field_description">Descripción</string>
+    <string name="feedback_field_steps">Pasos para reproducir</string>
+    <string name="feedback_field_expected_actual">Esperado vs actual</string>
+    <string name="feedback_field_use_case">Caso de uso</string>
+    <string name="feedback_field_proposed_solution">Solución propuesta</string>
+    <string name="feedback_field_current_behaviour">Comportamiento actual</string>
+    <string name="feedback_field_desired_behaviour">Comportamiento deseado</string>
+    <string name="feedback_diagnostics_header">Diagnósticos</string>
+    <string name="feedback_diagnostics_include">Incluir diagnósticos</string>
+    <string name="feedback_send_via_email">Enviar por correo</string>
+    <string name="feedback_send_via_github">Abrir como Issue en GitHub</string>
+    <string name="feedback_send_success_email">Gracias — abriendo tu cliente de correo.</string>
+    <string name="feedback_send_success_github">Gracias — abriendo tu navegador.</string>
+    <string name="feedback_send_error">No se pudo abrir el canal de comentarios: %1$s</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E5 — Mirror feature
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="mirror_tweaks_entry_label">Espejo de descarga</string>
+    <string name="mirror_picker_title">Espejo de descarga</string>
+    <string name="mirror_picker_description">Se usa para descargar archivos de versiones. Las llamadas a la API de GitHub siempre van directas. La mayoría de los usuarios debería dejarlo en GitHub directo.</string>
+    <string name="mirror_section_official">Oficial</string>
+    <string name="mirror_section_community">Comunidad</string>
+    <string name="mirror_status_ok">%1$dms</string>
+    <string name="mirror_status_degraded">%1$dms</string>
+    <string name="mirror_status_down">(caído)</string>
+    <string name="mirror_status_unknown">?</string>
+    <string name="mirror_custom_label">Espejo personalizado…</string>
+    <string name="mirror_custom_dialog_title">Espejo personalizado</string>
+    <string name="mirror_custom_dialog_hint">https://tu-espejo.ejemplo/{url}</string>
+    <string name="mirror_custom_validation_https">La plantilla debe comenzar con https://</string>
+    <string name="mirror_custom_validation_template">La plantilla debe contener {url} exactamente una vez</string>
+    <string name="mirror_custom_save">Guardar</string>
+    <string name="mirror_test_button">Probar seleccionado</string>
+    <string name="mirror_test_in_progress">Probando…</string>
+    <string name="mirror_test_success">Alcanzado en %1$dms</string>
+    <string name="mirror_test_http_error">El espejo devolvió %1$d</string>
+    <string name="mirror_test_timeout">Tiempo de espera agotado tras 5s</string>
+    <string name="mirror_test_dns_fail">No se pudo resolver el host</string>
+    <string name="mirror_test_other">Error: %1$s</string>
+    <string name="mirror_deploy_your_own_hint">¿Todos los espejos caídos? Puedes alojar el tuyo en 5 minutos — consulta la documentación.</string>
+    <string name="mirror_removed_toast">%1$s ya no está disponible; cambiado a GitHub directo.</string>
+    <string name="mirror_digest_mismatch_error">Error de suma de verificación — el archivo puede haber sido manipulado</string>
+    <string name="mirror_auto_suggest_title">¿Probar un espejo más rápido?</string>
+    <string name="mirror_auto_suggest_body">Algunos usuarios en redes lentas tienen mejor suerte con un proxy de la comunidad.</string>
+    <string name="mirror_auto_suggest_pick_one">Elegir uno</string>
+    <string name="mirror_auto_suggest_maybe_later">Quizás más tarde</string>
+    <string name="mirror_auto_suggest_dont_ask_again">No preguntar de nuevo</string>
+
+
 </resources>

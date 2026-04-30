@@ -715,4 +715,205 @@
     <string name="pat_error_bad_credentials">Этот токен недействителен или отозван.</string>
     <string name="pat_error_insufficient_scope">У этого токена нет необходимых прав.</string>
     <string name="pat_error_generic">Не удалось сохранить токен. Попробуйте снова.</string>
+
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E10 — Apps sort
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="sort_apps">Сортировка приложений</string>
+    <string name="sort_updates_first">Сначала обновления</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Pre-release channel UX (Details screen)
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="channel_chip_include_betas">Включить бета-версии</string>
+    <string name="channel_chip_stable_only">Только стабильные</string>
+    <string name="channel_toggle_cd">Переключить бета-релизы для этого приложения</string>
+    <string name="action_switch_to_stable">Перейти на стабильную %1$s</string>
+    <string name="stalled_project_warning_months">Нет стабильного релиза уже %1$d месяцев</string>
+    <string name="stalled_project_warning_days">Нет стабильного релиза уже %1$d дней</string>
+    <string name="stalled_project_warning_description">Есть активные предварительные версии, но проект давно не выпускал стабильную сборку. Бета-версии могут так и не перейти в стабильный релиз.</string>
+    <string name="merged_whats_changed_title">Что изменилось с %1$s</string>
+    <string name="merged_release_heading">— %1$s —</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E1 — External import wizard
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="external_import_top_bar_title">Импорт установленных приложений</string>
+    <string name="external_import_top_bar_back">Назад</string>
+    <string name="external_import_overflow_more">Другие параметры</string>
+    <string name="external_import_overflow_skip_remaining">Пропустить оставшиеся</string>
+    <string name="external_import_progress_scanning">Сканирование приложений…</string>
+    <string name="external_import_progress_auto_importing">Импорт совпадений…</string>
+    <string name="external_import_progress_working">Обработка…</string>
+    <!-- Russian plurals: one (ends in 1 not 11), few (ends in 2-4 not 12-14), many (rest), other (fractions) -->
+    <plurals name="external_import_progress_subtitle_count">
+        <item quantity="one">Проверено %1$d приложение</item>
+        <item quantity="few">Проверено %1$d приложения</item>
+        <item quantity="many">Проверено %1$d приложений</item>
+        <item quantity="other">Проверено %1$d приложения</item>
+    </plurals>
+    <string name="external_import_card_action_skip">Пропустить</string>
+    <string name="external_import_card_action_link">Связать</string>
+    <string name="external_import_card_action_more">Другие совпадения</string>
+    <string name="external_import_card_action_less">Скрыть совпадения</string>
+    <string name="external_import_card_installer_chip">Установлено через %1$s</string>
+    <string name="external_import_card_preselect_known">Мы думаем, это %1$s · %2$d</string>
+    <string name="external_import_card_preselect_unknown">Нажмите, чтобы найти репозиторий</string>
+    <string name="external_import_card_expand_label">Развернуть для просмотра других совпадений</string>
+    <string name="external_import_card_collapse_label">Свернуть карточку</string>
+    <string name="external_import_search_icon_label">Поиск в GitHub</string>
+    <string name="external_import_search_empty">Нет совпадений</string>
+    <string name="external_import_search_error_default">Ошибка поиска</string>
+    <string name="external_import_search_placeholder_url">Вставьте URL github.com или выполните поиск…</string>
+    <plurals name="external_import_completion_headline">
+        <item quantity="one">Отслеживается %1$d приложение.</item>
+        <item quantity="few">Отслеживается %1$d приложения.</item>
+        <item quantity="many">Отслеживается %1$d приложений.</item>
+        <item quantity="other">Отслеживается %1$d приложения.</item>
+    </plurals>
+    <string name="external_import_completion_skipped_subline">Пропущено %1$d — повторите сканирование в Настройках.</string>
+    <string name="external_import_completion_action_view_all">Посмотреть все</string>
+    <string name="external_import_empty_all_matched">Всё связано.\nНечего связывать.</string>
+    <string name="external_import_empty_done">Готово</string>
+    <string name="external_import_empty_no_apps_title">На этом устройстве не найдено приложений GitHub.</string>
+    <string name="external_import_empty_no_apps_body">Это означает, что всё установлено через другой магазин или у нас нет доступа к списку установленных приложений.</string>
+    <string name="external_import_empty_grant_permission">Предоставить разрешение</string>
+    <string name="external_import_empty_ok">ОК</string>
+    <string name="external_import_empty_add_manually">Добавить приложение из другого магазина</string>
+    <string name="external_import_permission_title">Найдите ваши приложения GitHub</string>
+    <string name="external_import_permission_body">Мы можем просканировать установленные приложения и сопоставить их с релизами GitHub, чтобы обновления и обнаружение работали автоматически.\n\nДля этого нам нужно видеть, какие приложения у вас установлены. Без разрешения мы можем видеть только около 5 приложений; с ним — все.\n\nМы никогда не отправляем список ваших приложений без вашего согласия. Сопоставление выполняется на вашем устройстве. Необязательный серверный поиск передаёт только имя пакета и метку приложения, а при наличии — отпечаток подписи, источник установки и любую подсказку о репозитории GitHub, указанную в манифесте приложения; полный список установленных приложений никогда не передаётся.</string>
+    <string name="external_import_permission_continue">Продолжить</string>
+    <string name="external_import_permission_not_now">Не сейчас</string>
+    <plurals name="external_import_proposal_banner_headline">
+        <item quantity="one">Найдено %1$d приложение из GitHub</item>
+        <item quantity="few">Найдено %1$d приложения из GitHub</item>
+        <item quantity="many">Найдено %1$d приложений из GitHub</item>
+        <item quantity="other">Найдено %1$d приложения из GitHub</item>
+    </plurals>
+    <string name="external_import_proposal_banner_body">Просмотрите их, чтобы отслеживать обновления здесь.</string>
+    <string name="external_import_proposal_banner_review">Просмотреть</string>
+    <string name="external_import_proposal_banner_dismiss">Закрыть</string>
+    <string name="external_import_match_confidence_a11y">Достоверность совпадения: %1$d процентов</string>
+    <string name="external_import_match_confidence_chip">%1$d</string>
+    <string name="external_import_error_link_failed">Не удалось связать это приложение — попробуйте ещё раз.</string>
+    <string name="external_import_error_link_network">Не удалось подключиться к GitHub. Попробуйте позже.</string>
+    <string name="external_import_error_scan_failed_default">Ошибка сканирования</string>
+    <string name="external_import_installer_obtainium">Obtainium</string>
+    <string name="external_import_installer_fdroid">F-Droid</string>
+    <string name="external_import_installer_browser">Браузер</string>
+    <string name="external_import_installer_sideload">Sideload</string>
+    <string name="external_import_installer_self">GitHub Store</string>
+    <string name="external_import_installer_unknown">Неизвестный источник</string>
+    <string name="external_import_undo_linked">%1$s связано.</string>
+    <string name="external_import_undo_skipped">%1$s пропущено.</string>
+    <string name="external_import_undo_action">Отменить</string>
+    <string name="external_import_undo_failed">Не удалось отменить — попробуйте ещё раз.</string>
+    <plurals name="external_import_list_remaining">
+        <item quantity="one">%1$d приложение для просмотра</item>
+        <item quantity="few">%1$d приложения для просмотра</item>
+        <item quantity="many">%1$d приложений для просмотра</item>
+        <item quantity="other">%1$d приложения для просмотра</item>
+    </plurals>
+    <string name="external_import_list_add_manually">Не видите своё приложение? Добавить вручную</string>
+    <plurals name="external_import_auto_summary_headline">
+        <item quantity="one">%1$d приложение связано автоматически</item>
+        <item quantity="few">%1$d приложения связано автоматически</item>
+        <item quantity="many">%1$d приложений связано автоматически</item>
+        <item quantity="other">%1$d приложения связано автоматически</item>
+    </plurals>
+    <string name="external_import_auto_summary_body">Мы распознали их с высокой точностью. Вы можете отменить отдельные совпадения в деталях каждого приложения или отменить все сейчас.</string>
+    <plurals name="external_import_auto_summary_review_hint">
+        <item quantity="one">Ещё %1$d требует вашего внимания.</item>
+        <item quantity="few">Ещё %1$d требуют вашего внимания.</item>
+        <item quantity="many">Ещё %1$d требуют вашего внимания.</item>
+        <item quantity="other">Ещё %1$d требуют вашего внимания.</item>
+    </plurals>
+    <string name="external_import_auto_summary_continue">Продолжить</string>
+    <string name="external_import_auto_summary_undo_all">Отменить все</string>
+    <string name="external_import_auto_summary_more_count">+%1$d ещё</string>
+    <string name="external_import_rescan_menu">Сканировать приложения GitHub</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E1 — Details unlink dialog
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="details_unlink_external_app_menu">Отвязать от этого репозитория</string>
+    <string name="details_unlink_external_app_more_options">Другие параметры</string>
+    <string name="details_unlink_external_app_dialog_title">Отвязать это приложение?</string>
+    <string name="details_unlink_external_app_dialog_body">Мы перестанем отслеживать %1$s как установленное из этого репозитория. Приложение останется на устройстве — удаляется только связь.</string>
+    <string name="details_unlink_external_app_dialog_confirm">Отвязать</string>
+    <string name="details_unlink_external_app_success">Отвязано. При следующем сканировании мы предложим совпадение.</string>
+    <string name="details_unlink_external_app_failure">Не удалось отвязать — попробуйте ещё раз.</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         Feedback feature
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="feedback_send">Отправить отзыв</string>
+    <string name="feedback_title">Отправить отзыв</string>
+    <string name="feedback_close">Закрыть</string>
+    <string name="feedback_category_label">Категория</string>
+    <string name="feedback_category_bug">Ошибка</string>
+    <string name="feedback_category_feature">Запрос функции</string>
+    <string name="feedback_category_change">Запрос на изменение</string>
+    <string name="feedback_category_other">Другое</string>
+    <string name="feedback_topic_label">Тема</string>
+    <string name="feedback_topic_install_update">Установка / Обновление</string>
+    <string name="feedback_topic_search">Поиск &amp; Обнаружение</string>
+    <string name="feedback_topic_details">Детали репозитория</string>
+    <string name="feedback_topic_auth">Авторизация &amp; Аккаунт</string>
+    <string name="feedback_topic_ui">Интерфейс / UX</string>
+    <string name="feedback_topic_translation">Перевод / Язык</string>
+    <string name="feedback_topic_performance">Производительность</string>
+    <string name="feedback_topic_other">Другое</string>
+    <string name="feedback_field_title">Заголовок</string>
+    <string name="feedback_field_description">Описание</string>
+    <string name="feedback_field_steps">Шаги для воспроизведения</string>
+    <string name="feedback_field_expected_actual">Ожидаемое и фактическое</string>
+    <string name="feedback_field_use_case">Сценарий использования</string>
+    <string name="feedback_field_proposed_solution">Предлагаемое решение</string>
+    <string name="feedback_field_current_behaviour">Текущее поведение</string>
+    <string name="feedback_field_desired_behaviour">Желаемое поведение</string>
+    <string name="feedback_diagnostics_header">Диагностика</string>
+    <string name="feedback_diagnostics_include">Включить диагностику</string>
+    <string name="feedback_send_via_email">Отправить по e-mail</string>
+    <string name="feedback_send_via_github">Открыть как Issue на GitHub</string>
+    <string name="feedback_send_success_email">Спасибо — открываем почтовый клиент.</string>
+    <string name="feedback_send_success_github">Спасибо — открываем браузер.</string>
+    <string name="feedback_send_error">Не удалось открыть канал обратной связи: %1$s</string>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         E5 — Mirror feature
+         ═══════════════════════════════════════════════════════════════ -->
+    <string name="mirror_tweaks_entry_label">Зеркало для загрузки</string>
+    <string name="mirror_picker_title">Зеркало для загрузки</string>
+    <string name="mirror_picker_description">Используется для загрузки файлов релизов. Обращения к API GitHub всегда идут напрямую. Большинству пользователей следует оставить настройку «Напрямую через GitHub».</string>
+    <string name="mirror_section_official">Официальное</string>
+    <string name="mirror_section_community">Сообщество</string>
+    <string name="mirror_status_ok">%1$dms</string>
+    <string name="mirror_status_degraded">%1$dms</string>
+    <string name="mirror_status_down">(недоступно)</string>
+    <string name="mirror_status_unknown">?</string>
+    <string name="mirror_custom_label">Своё зеркало…</string>
+    <string name="mirror_custom_dialog_title">Своё зеркало</string>
+    <string name="mirror_custom_dialog_hint">https://vashezerkalo.primer/{url}</string>
+    <string name="mirror_custom_validation_https">Шаблон должен начинаться с https://</string>
+    <string name="mirror_custom_validation_template">Шаблон должен содержать {url} ровно один раз</string>
+    <string name="mirror_custom_save">Сохранить</string>
+    <string name="mirror_test_button">Проверить выбранное</string>
+    <string name="mirror_test_in_progress">Проверка…</string>
+    <string name="mirror_test_success">Достигнуто за %1$dms</string>
+    <string name="mirror_test_http_error">Зеркало вернуло %1$d</string>
+    <string name="mirror_test_timeout">Превышено время ожидания (5s)</string>
+    <string name="mirror_test_dns_fail">Не удалось разрешить имя хоста</string>
+    <string name="mirror_test_other">Ошибка: %1$s</string>
+    <string name="mirror_deploy_your_own_hint">Все зеркала недоступны? За 5 минут можно развернуть своё — смотрите документацию.</string>
+    <string name="mirror_removed_toast">%1$s больше недоступно, выполнен переход на прямой доступ через GitHub.</string>
+    <string name="mirror_digest_mismatch_error">Несоответствие контрольной суммы — файл мог быть изменён</string>
+    <string name="mirror_auto_suggest_title">Попробовать более быстрое зеркало?</string>
+    <string name="mirror_auto_suggest_body">Некоторым пользователям с медленным соединением лучше подходит прокси сообщества.</string>
+    <string name="mirror_auto_suggest_pick_one">Выбрать</string>
+    <string name="mirror_auto_suggest_maybe_later">Может быть, позже</string>
+    <string name="mirror_auto_suggest_dont_ask_again">Больше не спрашивать</string>
+
+
 </resources>

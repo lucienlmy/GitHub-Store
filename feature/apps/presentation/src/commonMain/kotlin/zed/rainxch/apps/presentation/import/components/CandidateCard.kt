@@ -273,7 +273,7 @@ private fun PreselectedRow(suggestion: RepoSuggestionUi?) {
                         Res.string.external_import_card_preselect_known,
                         suggestion.ownerSlashRepo,
                         percent,
-                    ),
+                    ) + "%",
                 style = MaterialTheme.typography.bodyMedium,
                 color = contentColor,
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),

@@ -784,7 +784,7 @@
     <string name="external_import_card_action_skip">Skip</string>
     <string name="external_import_card_action_link">Link</string>
     <string name="external_import_card_installer_chip">Installed via %1$s</string>
-    <string name="external_import_card_preselect_known">We think this is %1$s · %2$d%%</string>
+    <string name="external_import_card_preselect_known">We think this is %1$s · %2$d</string>
     <string name="external_import_card_preselect_unknown">Tap to find a repo</string>
     <string name="external_import_card_expand_label">Expand to see other matches</string>
     <string name="external_import_card_collapse_label">Collapse card</string>
@@ -816,7 +816,7 @@
     <string name="external_import_proposal_banner_review">Review</string>
     <string name="external_import_proposal_banner_dismiss">Dismiss</string>
     <string name="external_import_match_confidence_a11y">Match confidence: %1$d percent</string>
-    <string name="external_import_match_confidence_chip">%1$d%%</string>
+    <string name="external_import_match_confidence_chip">%1$d</string>
     <string name="external_import_error_link_failed">Couldn't link this app — try again.</string>
     <string name="external_import_error_link_network">Couldn't reach GitHub. Try again later.</string>
     <string name="external_import_error_scan_failed_default">Scan failed</string>

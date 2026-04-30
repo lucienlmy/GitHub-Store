@@ -748,4 +748,202 @@
     <string name="pat_error_bad_credentials">هذا الرمز غير صالح أو تم إلغاؤه.</string>
     <string name="pat_error_insufficient_scope">هذا الرمز لا يمتلك الصلاحيات المطلوبة.</string>
     <string name="pat_error_generic">تعذّر حفظ الرمز. يرجى المحاولة مرة أخرى.</string>
+
+    <!-- E10 — Apps sort -->
+    <string name="sort_apps">ترتيب التطبيقات</string>
+    <string name="sort_updates_first">التحديثات أولاً</string>
+
+    <!-- Pre-release channel UX -->
+    <string name="channel_chip_include_betas">تضمين الإصدارات التجريبية</string>
+    <string name="channel_chip_stable_only">الإصدار المستقر فقط</string>
+    <string name="channel_toggle_cd">تبديل الإصدارات التجريبية لهذا التطبيق</string>
+    <string name="action_switch_to_stable">التبديل إلى الإصدار المستقر %1$s</string>
+    <string name="stalled_project_warning_months">لا يوجد إصدار مستقر منذ %1$d أشهر</string>
+    <string name="stalled_project_warning_days">لا يوجد إصدار مستقر منذ %1$d أيام</string>
+    <string name="stalled_project_warning_description">إصدارات تجريبية نشطة لكن المشروع لم يُصدر بناءً مستقراً منذ فترة. قد لا تتقارب الإصدارات التجريبية إلى إصدار مستقر.</string>
+    <string name="merged_whats_changed_title">ما الذي تغيّر منذ %1$s</string>
+    <string name="merged_release_heading">— %1$s —</string>
+
+    <!-- E1 — External import wizard -->
+    <string name="external_import_top_bar_title">استيراد التطبيقات المثبّتة</string>
+    <string name="external_import_top_bar_back">رجوع</string>
+    <string name="external_import_overflow_more">خيارات أخرى</string>
+    <string name="external_import_overflow_skip_remaining">تخطي الباقي</string>
+    <string name="external_import_progress_scanning">جارٍ فحص تطبيقاتك…</string>
+    <string name="external_import_progress_auto_importing">جارٍ استيراد التطابقات…</string>
+    <string name="external_import_progress_working">جارٍ العمل…</string>
+    <plurals name="external_import_progress_subtitle_count">
+        <item quantity="zero">لم نفحص أي تطبيق</item>
+        <item quantity="one">فحصنا تطبيقاً واحداً</item>
+        <item quantity="two">فحصنا تطبيقين</item>
+        <item quantity="few">فحصنا %1$d تطبيقات</item>
+        <item quantity="many">فحصنا %1$d تطبيقاً</item>
+        <item quantity="other">فحصنا %1$d تطبيق</item>
+    </plurals>
+    <string name="external_import_card_action_skip">تخطي</string>
+    <string name="external_import_card_action_link">ربط</string>
+    <string name="external_import_card_action_more">المزيد من التطابقات</string>
+    <string name="external_import_card_action_less">إخفاء التطابقات</string>
+    <string name="external_import_card_installer_chip">مثبّت عبر %1$s</string>
+    <string name="external_import_card_preselect_known">نعتقد أن هذا هو %1$s · %2$d</string>
+    <string name="external_import_card_preselect_unknown">اضغط للبحث عن مستودع</string>
+    <string name="external_import_card_expand_label">توسيع لرؤية تطابقات أخرى</string>
+    <string name="external_import_card_collapse_label">طي البطاقة</string>
+    <string name="external_import_search_icon_label">البحث في GitHub</string>
+    <string name="external_import_search_empty">لا توجد تطابقات</string>
+    <string name="external_import_search_error_default">فشل البحث</string>
+    <string name="external_import_search_placeholder_url">الصق رابط github.com أو ابحث…</string>
+    <plurals name="external_import_completion_headline">
+        <item quantity="zero">لا يوجد تطبيق يتم تتبعه الآن.</item>
+        <item quantity="one">يتم تتبع تطبيق واحد الآن.</item>
+        <item quantity="two">يتم تتبع تطبيقين الآن.</item>
+        <item quantity="few">يتم تتبع %1$d تطبيقات الآن.</item>
+        <item quantity="many">يتم تتبع %1$d تطبيقاً الآن.</item>
+        <item quantity="other">يتم تتبع %1$d تطبيق الآن.</item>
+    </plurals>
+    <string name="external_import_completion_skipped_subline">تم تخطي %1$d — يمكنك إعادة تشغيل الفحص من الإعدادات.</string>
+    <string name="external_import_completion_action_view_all">عرض الكل</string>
+    <string name="external_import_empty_all_matched">تمت مطابقة الكل.\nلا يوجد شيء للربط.</string>
+    <string name="external_import_empty_done">تم</string>
+    <string name="external_import_empty_no_apps_title">لم نتمكن من العثور على أي تطبيقات GitHub على هذا الجهاز.</string>
+    <string name="external_import_empty_no_apps_body">هذا يعني إما أن كل شيء تم تثبيته عبر متجر مختلف، أو أننا لا نملك صلاحية رؤية ما هو مثبّت.</string>
+    <string name="external_import_empty_grant_permission">منح الإذن</string>
+    <string name="external_import_empty_ok">حسناً</string>
+    <string name="external_import_empty_add_manually">إضافة تطبيق من متجر آخر</string>
+    <string name="external_import_permission_title">ابحث عن تطبيقات GitHub الخاصة بك</string>
+    <string name="external_import_permission_body">يمكننا فحص تطبيقاتك المثبّتة ومطابقتها مع إصدارات GitHub — حتى تعمل التحديثات والكشف تلقائياً.\n\nللقيام بذلك، نحتاج إلى معرفة التطبيقات التي لديك. بدون الإذن يمكننا رؤية نحو 5 تطبيقات فقط؛ معه يمكننا رؤية جميعها.\n\nنحن لا نرسل قائمة تطبيقاتك إلى أي مكان دون إذنك. تعمل المطابقة على جهازك. البحث الاختياري في الخادم يرسل فقط اسم الحزمة وتسمية التطبيق، وعند توفرها بصمة التوقيع ومصدر التثبيت وأي تلميح لمستودع GitHub مُعلَن في بيان التطبيق — وليس قائمة كاملة بما هو مثبّت.</string>
+    <string name="external_import_permission_continue">متابعة</string>
+    <string name="external_import_permission_not_now">ليس الآن</string>
+    <plurals name="external_import_proposal_banner_headline">
+        <item quantity="zero">لم نجد أي تطبيق من GitHub</item>
+        <item quantity="one">وجدنا تطبيقاً واحداً من GitHub</item>
+        <item quantity="two">وجدنا تطبيقين من GitHub</item>
+        <item quantity="few">وجدنا %1$d تطبيقات من GitHub</item>
+        <item quantity="many">وجدنا %1$d تطبيقاً من GitHub</item>
+        <item quantity="other">وجدنا %1$d تطبيق من GitHub</item>
+    </plurals>
+    <string name="external_import_proposal_banner_body">راجعها لتتبع التحديثات هنا.</string>
+    <string name="external_import_proposal_banner_review">مراجعة</string>
+    <string name="external_import_proposal_banner_dismiss">تجاهل</string>
+    <string name="external_import_match_confidence_a11y">درجة ثقة التطابق: %1$d بالمئة</string>
+    <string name="external_import_match_confidence_chip">%1$d</string>
+    <string name="external_import_error_link_failed">تعذّر ربط هذا التطبيق — حاول مجدداً.</string>
+    <string name="external_import_error_link_network">تعذّر الوصول إلى GitHub. حاول مجدداً لاحقاً.</string>
+    <string name="external_import_error_scan_failed_default">فشل الفحص</string>
+    <string name="external_import_installer_obtainium">Obtainium</string>
+    <string name="external_import_installer_fdroid">F-Droid</string>
+    <string name="external_import_installer_browser">المتصفح</string>
+    <string name="external_import_installer_sideload">Sideload</string>
+    <string name="external_import_installer_self">GitHub Store</string>
+    <string name="external_import_installer_unknown">مصدر غير معروف</string>
+    <string name="external_import_undo_linked">تم ربط %1$s.</string>
+    <string name="external_import_undo_skipped">تم تخطي %1$s.</string>
+    <string name="external_import_undo_action">تراجع</string>
+    <string name="external_import_undo_failed">تعذّر التراجع — حاول مجدداً.</string>
+    <plurals name="external_import_list_remaining">
+        <item quantity="zero">لا يوجد تطبيق للمراجعة</item>
+        <item quantity="one">تطبيق واحد للمراجعة</item>
+        <item quantity="two">تطبيقان للمراجعة</item>
+        <item quantity="few">%1$d تطبيقات للمراجعة</item>
+        <item quantity="many">%1$d تطبيقاً للمراجعة</item>
+        <item quantity="other">%1$d تطبيق للمراجعة</item>
+    </plurals>
+    <string name="external_import_list_add_manually">لا ترى تطبيقك؟ أضفه يدوياً</string>
+    <plurals name="external_import_auto_summary_headline">
+        <item quantity="zero">لم يتم ربط أي تطبيق تلقائياً</item>
+        <item quantity="one">تم ربط تطبيق واحد تلقائياً</item>
+        <item quantity="two">تم ربط تطبيقين تلقائياً</item>
+        <item quantity="few">تم ربط %1$d تطبيقات تلقائياً</item>
+        <item quantity="many">تم ربط %1$d تطبيقاً تلقائياً</item>
+        <item quantity="other">تم ربط %1$d تطبيق تلقائياً</item>
+    </plurals>
+    <string name="external_import_auto_summary_body">لقد تعرّفنا عليها بثقة عالية. يمكنك التراجع عن تطابقات فردية من تفاصيل كل تطبيق، أو التراجع عن الكل الآن.</string>
+    <plurals name="external_import_auto_summary_review_hint">
+        <item quantity="zero">لا يوجد المزيد يحتاج إلى مدخلاتك.</item>
+        <item quantity="one">يحتاج %1$d آخر إلى مدخلاتك.</item>
+        <item quantity="two">يحتاج %1$d آخران إلى مدخلاتك.</item>
+        <item quantity="few">تحتاج %1$d أخرى إلى مدخلاتك.</item>
+        <item quantity="many">يحتاج %1$d آخر إلى مدخلاتك.</item>
+        <item quantity="other">يحتاج %1$d إلى مدخلاتك.</item>
+    </plurals>
+    <string name="external_import_auto_summary_continue">متابعة</string>
+    <string name="external_import_auto_summary_undo_all">التراجع عن الكل</string>
+    <string name="external_import_auto_summary_more_count">+%1$d أخرى</string>
+    <string name="external_import_rescan_menu">فحص تطبيقات GitHub</string>
+
+    <!-- E1 — Details unlink dialog -->
+    <string name="details_unlink_external_app_menu">إلغاء الربط بهذا المستودع</string>
+    <string name="details_unlink_external_app_more_options">المزيد من الخيارات</string>
+    <string name="details_unlink_external_app_dialog_title">إلغاء ربط هذا التطبيق؟</string>
+    <string name="details_unlink_external_app_dialog_body">سنتوقف عن تتبع %1$s كمثبّت من هذا المستودع. يبقى التطبيق على جهازك — يُزال الرابط فقط.</string>
+    <string name="details_unlink_external_app_dialog_confirm">إلغاء الربط</string>
+    <string name="details_unlink_external_app_success">تم إلغاء الربط. سنقترح تطابقاً مجدداً في الفحص التالي.</string>
+    <string name="details_unlink_external_app_failure">تعذّر إلغاء الربط — حاول مجدداً.</string>
+
+    <!-- Feedback feature -->
+    <string name="feedback_send">إرسال ملاحظات</string>
+    <string name="feedback_title">إرسال ملاحظات</string>
+    <string name="feedback_close">إغلاق</string>
+    <string name="feedback_category_label">الفئة</string>
+    <string name="feedback_category_bug">خطأ</string>
+    <string name="feedback_category_feature">طلب ميزة</string>
+    <string name="feedback_category_change">طلب تغيير</string>
+    <string name="feedback_category_other">أخرى</string>
+    <string name="feedback_topic_label">الموضوع</string>
+    <string name="feedback_topic_install_update">التثبيت / التحديث</string>
+    <string name="feedback_topic_search">البحث &amp; الاكتشاف</string>
+    <string name="feedback_topic_details">تفاصيل المستودع</string>
+    <string name="feedback_topic_auth">المصادقة &amp; الحساب</string>
+    <string name="feedback_topic_ui">واجهة / تجربة المستخدم</string>
+    <string name="feedback_topic_translation">الترجمة / اللغة</string>
+    <string name="feedback_topic_performance">الأداء</string>
+    <string name="feedback_topic_other">أخرى</string>
+    <string name="feedback_field_title">العنوان</string>
+    <string name="feedback_field_description">الوصف</string>
+    <string name="feedback_field_steps">خطوات إعادة الإنتاج</string>
+    <string name="feedback_field_expected_actual">المتوقع مقابل الفعلي</string>
+    <string name="feedback_field_use_case">حالة الاستخدام</string>
+    <string name="feedback_field_proposed_solution">الحل المقترح</string>
+    <string name="feedback_field_current_behaviour">السلوك الحالي</string>
+    <string name="feedback_field_desired_behaviour">السلوك المطلوب</string>
+    <string name="feedback_diagnostics_header">التشخيصات</string>
+    <string name="feedback_diagnostics_include">تضمين التشخيصات</string>
+    <string name="feedback_send_via_email">إرسال بريد إلكتروني</string>
+    <string name="feedback_send_via_github">فتح كمشكلة GitHub</string>
+    <string name="feedback_send_success_email">شكراً — جارٍ فتح عميل البريد.</string>
+    <string name="feedback_send_success_github">شكراً — جارٍ فتح المتصفح.</string>
+    <string name="feedback_send_error">تعذّر فتح قناة الملاحظات: %1$s</string>
+
+    <!-- E5 — Mirror feature -->
+    <string name="mirror_tweaks_entry_label">مرآة التنزيل</string>
+    <string name="mirror_picker_title">مرآة التنزيل</string>
+    <string name="mirror_picker_description">تُستخدم لتنزيل أصول الإصدار. تتجه مكالمات GitHub API دائماً مباشرة. يجب على معظم المستخدمين إبقاء هذا على GitHub المباشر.</string>
+    <string name="mirror_section_official">رسمي</string>
+    <string name="mirror_section_community">مجتمع</string>
+    <string name="mirror_status_ok">%1$dms</string>
+    <string name="mirror_status_degraded">%1$dms</string>
+    <string name="mirror_status_down">(متوقف)</string>
+    <string name="mirror_status_unknown">?</string>
+    <string name="mirror_custom_label">مرآة مخصصة…</string>
+    <string name="mirror_custom_dialog_title">مرآة مخصصة</string>
+    <string name="mirror_custom_dialog_hint">https://your-mirror.example/{url}</string>
+    <string name="mirror_custom_validation_https">يجب أن يبدأ القالب بـ https://</string>
+    <string name="mirror_custom_validation_template">يجب أن يحتوي القالب على {url} مرة واحدة بالضبط</string>
+    <string name="mirror_custom_save">حفظ</string>
+    <string name="mirror_test_button">اختبار المحدد</string>
+    <string name="mirror_test_in_progress">جارٍ الاختبار…</string>
+    <string name="mirror_test_success">تم الوصول في %1$dms</string>
+    <string name="mirror_test_http_error">أرجعت المرآة %1$d</string>
+    <string name="mirror_test_timeout">انتهت المهلة بعد 5 ثوانٍ</string>
+    <string name="mirror_test_dns_fail">تعذّر حل اسم المضيف</string>
+    <string name="mirror_test_other">فشل: %1$s</string>
+    <string name="mirror_deploy_your_own_hint">كل المرايا معطّلة؟ يمكنك استضافة مرآتك الخاصة في 5 دقائق — راجع الوثائق.</string>
+    <string name="mirror_removed_toast">%1$s لم يعد متاحاً، تم التبديل إلى GitHub المباشر.</string>
+    <string name="mirror_digest_mismatch_error">عدم تطابق المجموع الاختباري — قد يكون الملف قد تم التلاعب به</string>
+    <string name="mirror_auto_suggest_title">هل تجرب مرآة أسرع؟</string>
+    <string name="mirror_auto_suggest_body">يُفضّل بعض المستخدمين على الشبكات البطيئة استخدام وكيل مجتمعي.</string>
+    <string name="mirror_auto_suggest_pick_one">اختر واحدة</string>
+    <string name="mirror_auto_suggest_maybe_later">ربما لاحقاً</string>
+    <string name="mirror_auto_suggest_dont_ask_again">لا تسأل مجدداً</string>
+
 </resources>

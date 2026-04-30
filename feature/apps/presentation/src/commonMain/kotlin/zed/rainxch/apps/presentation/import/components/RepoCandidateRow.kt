@@ -110,7 +110,7 @@ fun RepoCandidateRow(
                 },
         ) {
             Text(
-                text = stringResource(Res.string.external_import_match_confidence_chip, percent),
+                text = stringResource(Res.string.external_import_match_confidence_chip, percent) + "%",
                 style = MaterialTheme.typography.labelMedium,
                 color = chipFg,
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
