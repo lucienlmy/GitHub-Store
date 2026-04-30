@@ -1,5 +1,7 @@
 package zed.rainxch.core.data.di
 
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpTimeout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -9,7 +11,9 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import zed.rainxch.core.data.network.createPlatformHttpClient
 import zed.rainxch.core.data.cache.CacheManager
 import zed.rainxch.core.data.data_source.TokenStore
 import zed.rainxch.core.data.download.MultiSourceDownloaderImpl
@@ -336,6 +340,16 @@ val networkModule =
 
         single<RateLimitRepository> {
             RateLimitRepositoryImpl()
+        }
+
+        single<HttpClient>(qualifier = named("test")) {
+            createPlatformHttpClient(ProxyConfig.System).config {
+                install(HttpTimeout) {
+                    requestTimeoutMillis = 5_000
+                    connectTimeoutMillis = 5_000
+                    socketTimeoutMillis = 5_000
+                }
+            }
         }
     }
 

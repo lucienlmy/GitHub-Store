@@ -45,6 +45,7 @@ import zed.rainxch.search.presentation.SearchRoot
 import zed.rainxch.starred.presentation.StarredReposRoot
 import zed.rainxch.tweaks.presentation.TweaksRoot
 import zed.rainxch.tweaks.presentation.mirror.AutoSuggestMirrorViewModel
+import zed.rainxch.tweaks.presentation.mirror.MirrorPickerRoot
 import zed.rainxch.tweaks.presentation.mirror.components.AutoSuggestMirrorSheet
 
 // Cross-screen "return result" key: set by the external-import wizard's
@@ -300,6 +301,12 @@ fun AppNavigation(
                     )
                 }
 
+                composable<GithubStoreGraph.MirrorPickerScreen> {
+                    MirrorPickerRoot(
+                        onNavigateBack = { navController.popBackStack() },
+                    )
+                }
+
                 composable<GithubStoreGraph.TweaksScreen> {
                     TweaksRoot()
                 }
@@ -402,7 +409,7 @@ fun AppNavigation(
                     onDismiss = autoSuggestVm::dismiss,
                     onPickOne = {
                         autoSuggestVm.onPickOneClicked()
-                        // TODO Task 18: navController.navigate(GithubStoreGraph.MirrorPickerScreen)
+                        navController.navigate(GithubStoreGraph.MirrorPickerScreen)
                     },
                     onMaybeLater = autoSuggestVm::onMaybeLater,
                     onDontAskAgain = autoSuggestVm::onDontAskAgain,

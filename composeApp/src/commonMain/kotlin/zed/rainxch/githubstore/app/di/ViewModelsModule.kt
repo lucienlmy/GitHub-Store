@@ -16,6 +16,7 @@ import zed.rainxch.search.presentation.SearchViewModel
 import zed.rainxch.starred.presentation.StarredReposViewModel
 import zed.rainxch.tweaks.presentation.TweaksViewModel
 import zed.rainxch.tweaks.presentation.mirror.AutoSuggestMirrorViewModel
+import zed.rainxch.tweaks.presentation.mirror.MirrorPickerViewModel
 
 val viewModelsModule =
     module {
@@ -63,4 +64,15 @@ val viewModelsModule =
         viewModelOf(::TweaksViewModel)
         viewModelOf(::StarredReposViewModel)
         viewModelOf(::AutoSuggestMirrorViewModel)
+        viewModel {
+            MirrorPickerViewModel(
+                mirrorRepository = get(),
+                testHttpClient =
+                    get(
+                        qualifier =
+                            org.koin.core.qualifier
+                                .named("test"),
+                    ),
+            )
+        }
     }
