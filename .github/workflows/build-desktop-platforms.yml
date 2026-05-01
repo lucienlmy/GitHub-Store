@@ -450,6 +450,16 @@ jobs:
           set -euo pipefail
           mkdir -p release-files
 
+          # Snapshot of what download-artifact@v4 actually produced —
+          # useful when build-output paths drift in the future.
+          # upload-artifact@v4 strips the longest common prefix, so paths
+          # like main/exe/*.exe + main/msi/*.msi land as exe/*.exe and
+          # msi/*.msi inside the artifact. Fixed shallow globs miss them;
+          # we use `find` below for resilience.
+          echo "=== Downloaded artifact tree ==="
+          find artifacts -maxdepth 4 -type f 2>/dev/null | sort
+          echo
+
           # stage() returns 0 on a successful copy, 1 if the source is missing.
           # Callers use the exit status to increment per-group counters so the
           # completeness guard at the end can detect missing groups.
@@ -473,53 +483,54 @@ jobs:
           linux_arch_count=0
 
           # Windows — names already unique (.exe, .msi)
-          for f in artifacts/windows-installers/*.exe artifacts/windows-installers/*.msi; do
-            [ -f "$f" ] || continue
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
             stage "$f" "$(basename "$f")" && windows_count=$((windows_count + 1)) || true
-          done
+          done < <(find artifacts/windows-installers -type f \( -name '*.exe' -o -name '*.msi' \) 2>/dev/null)
 
           # macOS — disambiguate x64 vs arm64 (Compose outputs identical filenames per arch)
-          for f in artifacts/macos-installers-x64/*.dmg artifacts/macos-installers-x64/*.pkg; do
-            [ -f "$f" ] || continue
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
             base="$(basename "$f")"
             ext="${base##*.}"
             stem="${base%.*}"
             stage "$f" "${stem}-x64.${ext}" && macos_x64_count=$((macos_x64_count + 1)) || true
-          done
-          for f in artifacts/macos-installers-arm64/*.dmg artifacts/macos-installers-arm64/*.pkg; do
-            [ -f "$f" ] || continue
+          done < <(find artifacts/macos-installers-x64 -type f \( -name '*.dmg' -o -name '*.pkg' \) 2>/dev/null)
+
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
             base="$(basename "$f")"
             ext="${base##*.}"
             stem="${base%.*}"
             stage "$f" "${stem}-arm64.${ext}" && macos_arm64_count=$((macos_arm64_count + 1)) || true
-          done
+          done < <(find artifacts/macos-installers-arm64 -type f \( -name '*.dmg' -o -name '*.pkg' \) 2>/dev/null)
 
           # Linux modern — default Debian/RPM (unprefixed)
-          for f in artifacts/linux-installers-modern/*.deb artifacts/linux-installers-modern/*.rpm; do
-            [ -f "$f" ] || continue
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
             stage "$f" "$(basename "$f")" && linux_modern_count=$((linux_modern_count + 1)) || true
-          done
+          done < <(find artifacts/linux-installers-modern -type f \( -name '*.deb' -o -name '*.rpm' \) 2>/dev/null)
 
           # Linux debian12-compat — suffix to avoid collision with modern
-          for f in artifacts/linux-installers-debian12-compat/*.deb artifacts/linux-installers-debian12-compat/*.rpm; do
-            [ -f "$f" ] || continue
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
             base="$(basename "$f")"
             ext="${base##*.}"
             stem="${base%.*}"
             stage "$f" "${stem}-debian12.${ext}" && linux_debian12_count=$((linux_debian12_count + 1)) || true
-          done
+          done < <(find artifacts/linux-installers-debian12-compat -type f \( -name '*.deb' -o -name '*.rpm' \) 2>/dev/null)
 
           # Linux AppImage + zsync (filenames already include -x86_64)
-          for f in artifacts/linux-appimage/*.AppImage artifacts/linux-appimage/*.AppImage.zsync; do
-            [ -f "$f" ] || continue
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
             stage "$f" "$(basename "$f")" && linux_appimage_count=$((linux_appimage_count + 1)) || true
-          done
+          done < <(find artifacts/linux-appimage -type f \( -name '*.AppImage' -o -name '*.AppImage.zsync' \) 2>/dev/null)
 
           # Linux Arch (.pkg.tar.zst already has version + arch in filename)
-          for f in artifacts/linux-arch/*.pkg.tar.zst; do
-            [ -f "$f" ] || continue
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
             stage "$f" "$(basename "$f")" && linux_arch_count=$((linux_arch_count + 1)) || true
-          done
+          done < <(find artifacts/linux-arch -type f -name '*.pkg.tar.zst' 2>/dev/null)
 
           echo
           echo "Final staged files:"
