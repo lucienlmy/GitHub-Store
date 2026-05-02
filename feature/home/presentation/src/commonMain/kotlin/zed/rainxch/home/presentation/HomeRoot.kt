@@ -1,10 +1,7 @@
 package zed.rainxch.home.presentation
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -65,12 +62,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupPositionProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.fletchmckee.liquid.LiquidState
 import io.github.fletchmckee.liquid.liquefiable
@@ -233,11 +236,7 @@ fun HomeScreen(
             ) {
                 CollapsibleHeader(scrollBehavior = scrollBehavior) {
                     HomeTopAppBar(
-                        currentPlatform = state.currentPlatform,
-                        onChangePlatform = {
-                            onAction(HomeAction.SwitchDiscoveryPlatform(it))
-                        },
-                        isPlatformPopupVisible = state.isPlatformPopupVisible,
+                        selectedPlatforms = state.selectedPlatforms,
                         onTogglePlatformPopup = {
                             onAction(HomeAction.OnTogglePlatformPopup)
                         },
@@ -246,7 +245,7 @@ fun HomeScreen(
                     FilterChips(state, onAction)
 
                     TopicChips(
-                        selectedTopic = state.selectedTopic,
+                        selectedTopics = state.selectedTopics,
                         onTopicSelected = { topic ->
                             onAction(HomeAction.SwitchTopic(topic))
                         },
@@ -268,6 +267,26 @@ fun HomeScreen(
                         homeTopBarLiquidState = homeTopbarLiquidState,
                     )
                 }
+            }
+
+            // Popup is hoisted out of the TopAppBar so its parent's
+            // `LayoutCoordinates` are the (stable) Scaffold root rather
+            // than the (resizing) icons row. Without this, every icon
+            // count change during multi-select toggles the parent layout
+            // pass and the Popup window briefly tears down and re-creates.
+            if (state.isPlatformPopupVisible) {
+                PlatformsPopup(
+                    onTogglePlatformPopup = {
+                        onAction(HomeAction.OnTogglePlatformPopup)
+                    },
+                    onTogglePlatform = {
+                        onAction(HomeAction.TogglePlatform(it))
+                    },
+                    onSelectAllPlatforms = {
+                        onAction(HomeAction.OnSelectAllPlatforms)
+                    },
+                    selectedPlatforms = state.selectedPlatforms,
+                )
             }
         }
     }
@@ -320,7 +339,7 @@ private fun CollapsibleHeader(
 
 @Composable
 private fun TopicChips(
-    selectedTopic: TopicCategory?,
+    selectedTopics: Set<TopicCategory>,
     onTopicSelected: (TopicCategory) -> Unit,
 ) {
     Row(
@@ -332,7 +351,7 @@ private fun TopicChips(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         TopicCategory.entries.forEach { topic ->
-            val isSelected = selectedTopic == topic
+            val isSelected = topic in selectedTopics
 
             val containerColor by animateColorAsState(
                 targetValue =
@@ -588,9 +607,7 @@ private fun FilterChips(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun HomeTopAppBar(
-    currentPlatform: DiscoveryPlatform,
-    onChangePlatform: (DiscoveryPlatform) -> Unit,
-    isPlatformPopupVisible: Boolean,
+    selectedPlatforms: Set<DiscoveryPlatform>,
     onTogglePlatformPopup: () -> Unit,
 ) {
     TopAppBar(
@@ -620,7 +637,7 @@ private fun HomeTopAppBar(
             )
         },
         actions = {
-            val icons = currentPlatform.toIcons()
+            val icons = selectedPlatformsIcons(selectedPlatforms)
 
             Row(
                 modifier =
@@ -641,20 +658,6 @@ private fun HomeTopAppBar(
                     )
                 }
             }
-
-            AnimatedVisibility(
-                visible = isPlatformPopupVisible,
-                enter = slideInVertically(),
-                exit = slideOutVertically(),
-            ) {
-                Box {
-                    PlatformsPopup(
-                        onTogglePlatformPopup = onTogglePlatformPopup,
-                        onChangePlatform = onChangePlatform,
-                        currentPlatform = currentPlatform,
-                    )
-                }
-            }
         },
         modifier = Modifier.padding(12.dp),
         contentPadding = PaddingValues(),
@@ -662,14 +665,34 @@ private fun HomeTopAppBar(
     )
 }
 
+@Composable
+private fun selectedPlatformsIcons(
+    selectedPlatforms: Set<DiscoveryPlatform>,
+) = if (selectedPlatforms.isEmpty()) {
+    DiscoveryPlatform.All.toIcons()
+} else {
+    DiscoveryPlatform.selectablePlatforms
+        .filter { it in selectedPlatforms }
+        .flatMap { it.toIcons() }
+}
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PlatformsPopup(
     onTogglePlatformPopup: () -> Unit,
-    onChangePlatform: (DiscoveryPlatform) -> Unit,
-    currentPlatform: DiscoveryPlatform,
+    onTogglePlatform: (DiscoveryPlatform) -> Unit,
+    onSelectAllPlatforms: () -> Unit,
+    selectedPlatforms: Set<DiscoveryPlatform>,
 ) {
+    val density = LocalDensity.current
+    val positionProvider = remember(density) {
+        WindowAnchoredTopEndPopupPositionProvider(
+            topPaddingPx = with(density) { 80.dp.roundToPx() },
+            endPaddingPx = with(density) { 16.dp.roundToPx() },
+        )
+    }
     Popup(
+        popupPositionProvider = positionProvider,
         onDismissRequest = onTogglePlatformPopup,
     ) {
         Column(
@@ -679,43 +702,84 @@ private fun PlatformsPopup(
                     .clip(RoundedCornerShape(24.dp))
                     .background(MaterialTheme.colorScheme.surfaceContainerHighest),
         ) {
-            DiscoveryPlatform.entries.forEach { platform ->
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = {
-                                onChangePlatform(platform)
-                                onTogglePlatformPopup()
-                            })
-                            .padding(horizontal = 24.dp, vertical = 8.dp),
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement =
-                            Arrangement.spacedBy(
-                                6.dp,
-                                Alignment.Start,
-                            ),
-                    ) {
-                        if (currentPlatform == platform) {
-                            Icon(
-                                imageVector = Icons.Default.Done,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(20.dp),
-                            )
-                        }
+            PlatformPopupRow(
+                label = DiscoveryPlatform.All.toLabel(),
+                isSelected = selectedPlatforms.isEmpty(),
+                onClick = onSelectAllPlatforms,
+            )
 
-                        Text(
-                            text = platform.toLabel(),
-                            style = MaterialTheme.typography.titleMediumEmphasized,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                }
+            DiscoveryPlatform.selectablePlatforms.forEach { platform ->
+                PlatformPopupRow(
+                    label = platform.toLabel(),
+                    isSelected = platform in selectedPlatforms,
+                    onClick = { onTogglePlatform(platform) },
+                )
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun PlatformPopupRow(
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(horizontal = 24.dp, vertical = 8.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement =
+                Arrangement.spacedBy(
+                    6.dp,
+                    Alignment.Start,
+                ),
+        ) {
+            if (isSelected) {
+                Icon(
+                    imageVector = Icons.Default.Done,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+
+            Text(
+                text = label,
+                style = MaterialTheme.typography.titleMediumEmphasized,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+    }
+}
+
+// Pins the popup to the window's top-end corner instead of anchoring to its
+// parent's `LayoutCoordinates`. The default Compose anchor jitters when the
+// parent (here, the platform-icons Row inside the TopAppBar action slot)
+// resizes during multi-select toggles, causing the popup to flicker.
+private class WindowAnchoredTopEndPopupPositionProvider(
+    private val topPaddingPx: Int,
+    private val endPaddingPx: Int,
+) : PopupPositionProvider {
+    override fun calculatePosition(
+        anchorBounds: IntRect,
+        windowSize: IntSize,
+        layoutDirection: LayoutDirection,
+        popupContentSize: IntSize,
+    ): IntOffset {
+        val x =
+            if (layoutDirection == LayoutDirection.Ltr) {
+                windowSize.width - popupContentSize.width - endPaddingPx
+            } else {
+                endPaddingPx
+            }
+        return IntOffset(x.coerceAtLeast(0), topPaddingPx)
     }
 }
 

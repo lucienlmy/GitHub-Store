@@ -7,28 +7,28 @@ import zed.rainxch.home.domain.model.TopicCategory
 
 interface HomeRepository {
     fun getTrendingRepositories(
-        platform: DiscoveryPlatform,
+        platforms: Set<DiscoveryPlatform>,
         page: Int,
     ): Flow<PaginatedDiscoveryRepositories>
 
     fun getHotReleaseRepositories(
-        platform: DiscoveryPlatform,
+        platforms: Set<DiscoveryPlatform>,
         page: Int,
     ): Flow<PaginatedDiscoveryRepositories>
 
     fun getMostPopular(
-        platform: DiscoveryPlatform,
+        platforms: Set<DiscoveryPlatform>,
         page: Int,
     ): Flow<PaginatedDiscoveryRepositories>
 
     fun searchByTopic(
         searchKeywords: String,
-        platform: DiscoveryPlatform,
+        platforms: Set<DiscoveryPlatform>,
         page: Int,
     ): Flow<PaginatedDiscoveryRepositories>
 
     fun getTopicRepositories(
         topic: TopicCategory,
-        platform: DiscoveryPlatform,
+        platforms: Set<DiscoveryPlatform>,
     ): Flow<PaginatedDiscoveryRepositories>
 }

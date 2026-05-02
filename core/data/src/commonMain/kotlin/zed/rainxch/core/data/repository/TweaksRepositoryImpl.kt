@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import zed.rainxch.core.domain.model.AppLanguages
@@ -148,15 +149,29 @@ class TweaksRepositoryImpl(
         }
     }
 
-    override fun getDiscoveryPlatform(): Flow<DiscoveryPlatform> =
+    override fun getDiscoveryPlatforms(): Flow<Set<DiscoveryPlatform>> =
         preferences.data.map { prefs ->
-            val platform = prefs[DISCOVERY_PLATFORM_KEY]
-            DiscoveryPlatform.fromName(platform)
+            val stored = prefs[DISCOVERY_PLATFORMS_KEY]
+            if (stored != null) {
+                stored
+                    .mapNotNull { name ->
+                        DiscoveryPlatform.entries.find { it.name == name && it != DiscoveryPlatform.All }
+                    }.toSet()
+            } else {
+                // Legacy single-platform key migration: map old `All` to empty set.
+                val legacy = prefs[DISCOVERY_PLATFORM_KEY]?.let { DiscoveryPlatform.fromName(it) }
+                if (legacy != null && legacy != DiscoveryPlatform.All) setOf(legacy) else emptySet()
+            }
         }
 
-    override suspend fun setDiscoveryPlatform(platform: DiscoveryPlatform) {
+    override suspend fun setDiscoveryPlatforms(platforms: Set<DiscoveryPlatform>) {
         preferences.edit { prefs ->
-            prefs[DISCOVERY_PLATFORM_KEY] = platform.name
+            val sanitized =
+                platforms
+                    .filter { it != DiscoveryPlatform.All }
+                    .map { it.name }
+                    .toSet()
+            prefs[DISCOVERY_PLATFORMS_KEY] = sanitized
         }
     }
 
@@ -272,6 +287,7 @@ class TweaksRepositoryImpl(
         private val IS_DARK_THEME_KEY = booleanPreferencesKey("is_dark_theme")
         private val FONT_KEY = stringPreferencesKey("font_theme")
         private val DISCOVERY_PLATFORM_KEY = stringPreferencesKey("discovery_platform")
+        private val DISCOVERY_PLATFORMS_KEY = stringSetPreferencesKey("discovery_platforms")
         private val AUTO_DETECT_CLIPBOARD_KEY = booleanPreferencesKey("auto_detect_clipboard_links")
         private val INSTALLER_TYPE_KEY = stringPreferencesKey("installer_type")
         private val AUTO_UPDATE_KEY = booleanPreferencesKey("auto_update_enabled")

@@ -52,9 +52,9 @@ interface TweaksRepository {
 
     suspend fun setHideSeenEnabled(enabled: Boolean)
 
-    fun getDiscoveryPlatform(): Flow<DiscoveryPlatform>
+    fun getDiscoveryPlatforms(): Flow<Set<DiscoveryPlatform>>
 
-    suspend fun setDiscoveryPlatform(platform: DiscoveryPlatform)
+    suspend fun setDiscoveryPlatforms(platforms: Set<DiscoveryPlatform>)
 
     fun getScrollbarEnabled(): Flow<Boolean>
 

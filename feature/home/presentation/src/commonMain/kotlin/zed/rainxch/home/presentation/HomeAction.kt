@@ -20,6 +20,8 @@ sealed interface HomeAction {
 
     data object OnTogglePlatformPopup : HomeAction
 
+    data object OnSelectAllPlatforms : HomeAction
+
     data class OnShareClick(
         val repo: GithubRepoSummaryUi,
     ) : HomeAction
@@ -29,10 +31,10 @@ sealed interface HomeAction {
     ) : HomeAction
 
     data class SwitchTopic(
-        val topic: TopicCategory?,
+        val topic: TopicCategory,
     ) : HomeAction
 
-    data class SwitchDiscoveryPlatform(
+    data class TogglePlatform(
         val platform: DiscoveryPlatform,
     ) : HomeAction
 

@@ -7,10 +7,13 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -69,7 +72,7 @@ class HomeViewModel(
                     observeStarredRepos()
                     observeLiquidGlassEnabled()
                     observeSeenRepos()
-                    observeDiscoveryPlatform()
+                    observeDiscoveryPlatforms()
                     observeHideSeenEnabled()
 
                     hasLoadedInitialData = true
@@ -124,12 +127,12 @@ class HomeViewModel(
         }
     }
 
-    private fun observeDiscoveryPlatform() {
+    private fun observeDiscoveryPlatforms() {
         viewModelScope.launch {
-            tweaksRepository.getDiscoveryPlatform().collect { platform ->
+            tweaksRepository.getDiscoveryPlatforms().collect { platforms ->
                 _state.update {
                     it.copy(
-                        currentPlatform = platform,
+                        selectedPlatforms = platforms,
                     )
                 }
             }
@@ -139,9 +142,9 @@ class HomeViewModel(
     private fun loadRepos(
         isInitial: Boolean = false,
         category: HomeCategory? = null,
-        platform: DiscoveryPlatform? = null,
-        topic: TopicCategory? = null,
-        topicExplicitlySet: Boolean = false,
+        platforms: Set<DiscoveryPlatform>? = null,
+        topics: Set<TopicCategory>? = null,
+        topicsExplicitlySet: Boolean = false,
     ): Job? {
         currentJob?.cancel()
         topicSupplementJob?.cancel()
@@ -156,20 +159,20 @@ class HomeViewModel(
         }
 
         val targetCategory = category ?: _state.value.currentCategory
-        val targetPlatformDeffered =
+        val targetPlatformsDeferred =
             viewModelScope.async {
-                tweaksRepository.getDiscoveryPlatform().first()
+                tweaksRepository.getDiscoveryPlatforms().first()
             }
-        val targetTopic = if (topicExplicitlySet) topic else _state.value.selectedTopic
+        val targetTopics = if (topicsExplicitlySet) topics.orEmpty() else _state.value.selectedTopics
 
-        logger.debug("Loading repos: category=$targetCategory, topic=$targetTopic, page=$nextPageIndex, isInitial=$isInitial")
+        logger.debug("Loading repos: category=$targetCategory, topics=$targetTopics, page=$nextPageIndex, isInitial=$isInitial")
 
         return viewModelScope
             .launch {
-                val targetPlatform = platform ?: targetPlatformDeffered.await()
+                val targetPlatforms = platforms ?: targetPlatformsDeferred.await()
 
-                if (platform != null) {
-                    tweaksRepository.setDiscoveryPlatform(targetPlatform)
+                if (platforms != null) {
+                    tweaksRepository.setDiscoveryPlatforms(targetPlatforms)
                 }
 
                 _state.update {
@@ -177,9 +180,9 @@ class HomeViewModel(
                         isLoading = isInitial,
                         isLoadingMore = !isInitial,
                         errorMessage = null,
-                        currentPlatform = targetPlatform,
+                        selectedPlatforms = targetPlatforms,
                         currentCategory = targetCategory,
-                        selectedTopic = targetTopic,
+                        selectedTopics = targetTopics,
                         repos = if (isInitial) persistentListOf() else it.repos,
                     )
                 }
@@ -189,21 +192,21 @@ class HomeViewModel(
                         when (targetCategory) {
                             HomeCategory.TRENDING -> {
                                 homeRepository.getTrendingRepositories(
-                                    platform = targetPlatform,
+                                    platforms = targetPlatforms,
                                     page = nextPageIndex,
                                 )
                             }
 
                             HomeCategory.HOT_RELEASE -> {
                                 homeRepository.getHotReleaseRepositories(
-                                    platform = targetPlatform,
+                                    platforms = targetPlatforms,
                                     page = nextPageIndex,
                                 )
                             }
 
                             HomeCategory.MOST_POPULAR -> {
                                 homeRepository.getMostPopular(
-                                    platform = targetPlatform,
+                                    platforms = targetPlatforms,
                                     page = nextPageIndex,
                                 )
                             }
@@ -217,12 +220,14 @@ class HomeViewModel(
                         this@HomeViewModel.nextPageIndex = paginatedRepos.nextPageIndex
 
                         val repos =
-                            if (targetTopic != null) {
-                                paginatedRepos.repos.filter { repo ->
-                                    targetTopic.matchesRepo(repo.topics, repo.description, repo.name)
-                                }
-                            } else {
+                            if (targetTopics.isEmpty()) {
                                 paginatedRepos.repos
+                            } else {
+                                paginatedRepos.repos.filter { repo ->
+                                    targetTopics.any { topic ->
+                                        topic.matchesRepo(repo.topics, repo.description, repo.name)
+                                    }
+                                }
                             }
 
                         val newReposWithStatus = mapReposToUi(repos)
@@ -249,8 +254,8 @@ class HomeViewModel(
                         it.copy(isLoading = false, isLoadingMore = false)
                     }
 
-                    if (targetTopic != null && isInitial) {
-                        loadTopicSupplement(targetTopic, targetPlatform)
+                    if (targetTopics.isNotEmpty() && isInitial) {
+                        loadTopicSupplement(targetTopics, targetPlatforms)
                     }
                 } catch (t: Throwable) {
                     if (t is CancellationException) {
@@ -275,8 +280,8 @@ class HomeViewModel(
     }
 
     private fun loadTopicSupplement(
-        topic: TopicCategory,
-        platform: DiscoveryPlatform,
+        topics: Set<TopicCategory>,
+        platforms: Set<DiscoveryPlatform>,
     ) {
         topicSupplementJob?.cancel()
         topicSupplementJob =
@@ -284,49 +289,55 @@ class HomeViewModel(
                 _state.update { it.copy(isLoadingTopicSupplement = true) }
 
                 try {
-                    // Phase 1: Load pre-fetched cached topic repos (instant, no API cost)
-                    homeRepository
-                        .getTopicRepositories(
-                            topic = topic,
-                            platform = platform,
-                        ).collect { paginatedRepos ->
-                            if (paginatedRepos.repos.isNotEmpty()) {
-                                val cachedReposWithStatus = mapReposToUi(paginatedRepos.repos)
+                    // Phase 1: Pre-fetched cached topic repos (instant, no API cost).
+                    // Run mirror fetches per selected topic in parallel, merge once.
+                    val cachedRepos =
+                        coroutineScope {
+                            topics.map { topic ->
+                                async {
+                                    homeRepository
+                                        .getTopicRepositories(topic = topic, platforms = platforms)
+                                        .firstOrNull()
+                                        ?.repos
+                                        .orEmpty()
+                                }
+                            }.awaitAll().flatten()
+                        }
+                    if (cachedRepos.isNotEmpty()) {
+                        val cachedReposWithStatus = mapReposToUi(cachedRepos)
+                        _state.update { currentState ->
+                            val merged =
+                                (currentState.repos + cachedReposWithStatus)
+                                    .distinctBy { it.repository.fullName }
+                            currentState.copy(repos = merged.toImmutableList())
+                        }
+                        logger.debug("Loaded ${cachedRepos.size} cached topic repos for $topics")
+                    }
+
+                    // Phase 2: Live GitHub search (fills gaps). One search per selected
+                    // topic so each topic's keywords AND together correctly inside its
+                    // own query, while results from different topics OR via merge.
+                    topics.forEach { topic ->
+                        homeRepository
+                            .searchByTopic(
+                                searchKeywords = topic.searchKeywords,
+                                platforms = platforms,
+                                page = 1,
+                            ).collect { paginatedRepos ->
+                                val newReposWithStatus = mapReposToUi(paginatedRepos.repos)
 
                                 _state.update { currentState ->
                                     val merged =
-                                        (currentState.repos + cachedReposWithStatus)
+                                        (currentState.repos + newReposWithStatus)
                                             .distinctBy { it.repository.fullName }
 
                                     currentState.copy(
                                         repos = merged.toImmutableList(),
+                                        hasMorePages = currentState.hasMorePages || paginatedRepos.hasMore,
                                     )
                                 }
-
-                                logger.debug("Loaded ${paginatedRepos.repos.size} cached topic repos for ${topic.name}")
                             }
-                        }
-
-                    // Phase 2: Supplement with live GitHub search (fills gaps)
-                    homeRepository
-                        .searchByTopic(
-                            searchKeywords = topic.searchKeywords,
-                            platform = platform,
-                            page = 1,
-                        ).collect { paginatedRepos ->
-                            val newReposWithStatus = mapReposToUi(paginatedRepos.repos)
-
-                            _state.update { currentState ->
-                                val merged =
-                                    (currentState.repos + newReposWithStatus)
-                                        .distinctBy { it.repository.fullName }
-
-                                currentState.copy(
-                                    repos = merged.toImmutableList(),
-                                    hasMorePages = currentState.hasMorePages || paginatedRepos.hasMore,
-                                )
-                            }
-                        }
+                    }
                 } catch (t: Throwable) {
                     if (t is CancellationException) throw t
                     logger.warn("Topic supplement search failed: ${t.message}")
@@ -399,16 +410,18 @@ class HomeViewModel(
             }
 
             is HomeAction.SwitchTopic -> {
-                val newTopic = if (_state.value.selectedTopic == action.topic) null else action.topic
-                if (_state.value.selectedTopic != newTopic) {
+                val current = _state.value.selectedTopics
+                val target =
+                    if (action.topic in current) current - action.topic else current + action.topic
+                if (target != current) {
                     nextPageIndex = 1
                     switchCategoryJob?.cancel()
                     switchCategoryJob =
                         viewModelScope.launch {
                             loadRepos(
                                 isInitial = true,
-                                topic = newTopic,
-                                topicExplicitlySet = true,
+                                topics = target,
+                                topicsExplicitlySet = true,
                             )?.join() ?: return@launch
                             _events.send(HomeEvent.OnScrollToListTop)
                         }
@@ -446,13 +459,34 @@ class HomeViewModel(
                 }
             }
 
-            is HomeAction.SwitchDiscoveryPlatform -> {
-                if (_state.value.currentPlatform != action.platform) {
+            is HomeAction.TogglePlatform -> {
+                val current = _state.value.selectedPlatforms
+                val target = current.toggle(action.platform)
+                if (target != current) {
                     nextPageIndex = 1
                     switchCategoryJob?.cancel()
                     switchCategoryJob =
                         viewModelScope.launch {
-                            loadRepos(isInitial = true, platform = action.platform)?.join()
+                            loadRepos(isInitial = true, platforms = target)?.join()
+                                ?: return@launch
+                            _events.send(OnScrollToListTop)
+                        }
+                }
+            }
+
+            HomeAction.OnSelectAllPlatforms -> {
+                val target =
+                    if (_state.value.selectedPlatforms.isEmpty()) {
+                        setOf(devicePlatformAsDiscovery())
+                    } else {
+                        emptySet()
+                    }
+                if (target != _state.value.selectedPlatforms) {
+                    nextPageIndex = 1
+                    switchCategoryJob?.cancel()
+                    switchCategoryJob =
+                        viewModelScope.launch {
+                            loadRepos(isInitial = true, platforms = target)?.join()
                                 ?: return@launch
                             _events.send(OnScrollToListTop)
                         }
@@ -488,6 +522,37 @@ class HomeViewModel(
             }
         }
     }
+
+    /**
+     * Tap-from-`All` (empty selection) selects only the tapped platform —
+     * not "every other platform" — which is what users intuit from the
+     * popup. Tapping the only remaining platform deselects it and falls
+     * back to the device's own platform so the home feed never ends up
+     * empty. Reaching every selectable platform collapses to the `All`
+     * representation (empty set) to keep the chip row tidy.
+     */
+    private fun Set<DiscoveryPlatform>.toggle(platform: DiscoveryPlatform): Set<DiscoveryPlatform> {
+        if (platform == DiscoveryPlatform.All) return emptySet()
+
+        if (isEmpty()) return setOf(platform)
+
+        val mutated =
+            if (platform in this) this - platform else this + platform
+
+        return when {
+            mutated.size == DiscoveryPlatform.selectablePlatforms.size -> emptySet()
+            mutated.isEmpty() -> setOf(devicePlatformAsDiscovery())
+            else -> mutated
+        }
+    }
+
+    private fun devicePlatformAsDiscovery(): DiscoveryPlatform =
+        when (platform) {
+            Platform.ANDROID -> DiscoveryPlatform.Android
+            Platform.WINDOWS -> DiscoveryPlatform.Windows
+            Platform.MACOS -> DiscoveryPlatform.Macos
+            Platform.LINUX -> DiscoveryPlatform.Linux
+        }
 
     private fun observeLiquidGlassEnabled() {
         viewModelScope.launch {
