@@ -17,10 +17,15 @@ data class HomeState(
     val errorMessage: String? = null,
     val hasMorePages: Boolean = true,
     val currentCategory: HomeCategory = HomeCategory.TRENDING,
-    val selectedTopic: TopicCategory? = null,
+    /** Empty set means "no topic filter" (show all topics). */
+    val selectedTopics: Set<TopicCategory> = emptySet(),
     val isAppsSectionVisible: Boolean = false,
     val isUpdateAvailable: Boolean = false,
-    val currentPlatform: DiscoveryPlatform = DiscoveryPlatform.All,
+    /**
+     * Empty set means "all platforms" (no filter). Anything else is the
+     * subset the user explicitly opted into via the platform popup.
+     */
+    val selectedPlatforms: Set<DiscoveryPlatform> = emptySet(),
     val isPlatformPopupVisible: Boolean = false,
     val isLiquidGlassEnabled: Boolean = true,
     val isHideSeenEnabled: Boolean = false,

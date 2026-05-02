@@ -10,5 +10,8 @@ enum class DiscoveryPlatform {
 
     companion object {
         fun fromName(name: String?): DiscoveryPlatform = DiscoveryPlatform.entries.find { it.name == name } ?: All
+
+        val selectablePlatforms: List<DiscoveryPlatform> =
+            listOf(Android, Macos, Windows, Linux)
     }
 }

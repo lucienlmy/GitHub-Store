@@ -96,10 +96,10 @@ class PackageEventReceiver() :
             }
             ?: return
 
-        Logger.d { "PackageEventReceiver: ${intent.action} for $packageName" }
+        Logger.d { "PackageEventReceiver: ${intent?.action} for $packageName" }
 
         try {
-            when (intent.action) {
+            when (intent?.action) {
                 Intent.ACTION_PACKAGE_ADDED,
                 Intent.ACTION_PACKAGE_REPLACED,
                 Intent.ACTION_MY_PACKAGE_REPLACED,
@@ -112,7 +112,7 @@ class PackageEventReceiver() :
                 }
             }
         } catch (e: Exception) {
-            Logger.e { "PackageEventReceiver: Failed to handle ${intent.action}: ${e.message}" }
+            Logger.e { "PackageEventReceiver: Failed to handle ${intent?.action}: ${e.message}" }
         }
     }
 
