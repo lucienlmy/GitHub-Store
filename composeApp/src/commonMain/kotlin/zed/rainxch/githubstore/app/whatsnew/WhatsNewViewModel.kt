@@ -27,12 +27,7 @@ class WhatsNewViewModel(
 
     private suspend fun evaluate() {
         val current = appVersionInfo.versionCode
-        val lastSeen = tweaksRepository.getLastSeenWhatsNewVersionCode().first()
-
-        if (lastSeen == null) {
-            tweaksRepository.setLastSeenWhatsNewVersionCode(current)
-            return
-        }
+        val lastSeen = tweaksRepository.getLastSeenWhatsNewVersionCode().first() ?: Int.MIN_VALUE
 
         if (lastSeen >= current) return
 
@@ -51,6 +46,15 @@ class WhatsNewViewModel(
         viewModelScope.launch {
             tweaksRepository.setLastSeenWhatsNewVersionCode(entry.versionCode)
         }
+    }
+
+    fun forceShowLatest() {
+        val current = appVersionInfo.versionCode
+        val entry =
+            WhatsNewEntries.forVersionCode(current)
+                ?: WhatsNewEntries.all.firstOrNull()
+                ?: return
+        _pendingEntry.value = entry
     }
 
     val hasHistory: Boolean
