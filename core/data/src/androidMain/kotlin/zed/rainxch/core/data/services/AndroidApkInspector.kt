@@ -38,13 +38,25 @@ class AndroidApkInspector(
                 sourceDir = filePath
                 publicSourceDir = filePath
             }
-            buildInspection(
-                info = info,
-                source = ApkInspection.Source.FILE,
-                filePath = filePath,
-                fileSizeBytes = file.length(),
-                packageNameForGrantState = null,
-            )
+            // Wide catch by design: PackageManager / Resources reads
+            // can throw a long tail of unchecked exceptions
+            // (DeadObjectException, SecurityException, NPE on exotic
+            // signing layouts, etc.) that are all ultimately the same
+            // outcome from the caller's perspective — "inspection
+            // failed". Letting them escape leaves the sheet stuck on
+            // its loading spinner because the VM never updates state.
+            try {
+                buildInspection(
+                    info = info,
+                    source = ApkInspection.Source.FILE,
+                    filePath = filePath,
+                    fileSizeBytes = file.length(),
+                    packageNameForGrantState = null,
+                )
+            } catch (t: Throwable) {
+                Logger.w(TAG) { "inspectFile: failed to extract APK metadata for $filePath: $t" }
+                null
+            }
         }
 
     override suspend fun inspectInstalled(packageName: String): ApkInspection? =
@@ -61,13 +73,18 @@ class AndroidApkInspector(
             }
             val sourceDir = info.applicationInfo?.sourceDir
             val sizeBytes = sourceDir?.let { runCatching { File(it).length() }.getOrNull() }
-            buildInspection(
-                info = info,
-                source = ApkInspection.Source.INSTALLED,
-                filePath = sourceDir,
-                fileSizeBytes = sizeBytes,
-                packageNameForGrantState = packageName,
-            )
+            try {
+                buildInspection(
+                    info = info,
+                    source = ApkInspection.Source.INSTALLED,
+                    filePath = sourceDir,
+                    fileSizeBytes = sizeBytes,
+                    packageNameForGrantState = packageName,
+                )
+            } catch (t: Throwable) {
+                Logger.w(TAG) { "inspectInstalled: failed to extract metadata for $packageName: $t" }
+                null
+            }
         }
 
     private fun buildInspection(
