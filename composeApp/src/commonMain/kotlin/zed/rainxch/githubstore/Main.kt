@@ -4,10 +4,15 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
+import zed.rainxch.core.presentation.components.whatsnew.WhatsNewSheet
 import zed.rainxch.core.presentation.theme.GithubStoreTheme
 import zed.rainxch.core.presentation.utils.ApplyAndroidSystemBars
 import zed.rainxch.core.presentation.utils.ObserveAsEvents
@@ -20,6 +25,7 @@ import zed.rainxch.githubstore.app.desktop.KeyboardNavigationEvent
 import zed.rainxch.githubstore.app.navigation.AppNavigation
 import zed.rainxch.githubstore.app.navigation.GithubStoreGraph
 import zed.rainxch.githubstore.app.navigation.getCurrentScreen
+import zed.rainxch.githubstore.app.whatsnew.WhatsNewViewModel
 
 @Composable
 fun App(deepLinkUri: String? = null) {
@@ -130,5 +136,35 @@ fun App(deepLinkUri: String? = null) {
             isLiquidGlassEnabled = state.isLiquidGlassEnabled,
             isScrollbarEnabled = state.isScrollbarEnabled,
         )
+
+        val whatsNewViewModel: WhatsNewViewModel = koinViewModel()
+        val pendingEntry by whatsNewViewModel.pendingEntry.collectAsStateWithLifecycle()
+        val onHomeScreen = currentScreen is GithubStoreGraph.HomeScreen
+        val authSettled = !state.showSessionExpiredDialog && !onAuthScreen
+        val rateLimitCleared = !state.showRateLimitDialog
+        val canShowWhatsNew = onHomeScreen && authSettled && rateLimitCleared
+
+        var debouncedReady by remember { mutableStateOf(false) }
+        LaunchedEffect(canShowWhatsNew) {
+            if (canShowWhatsNew) {
+                delay(600)
+                debouncedReady = true
+            } else {
+                debouncedReady = false
+            }
+        }
+
+        val entryToShow = pendingEntry
+        if (entryToShow != null && canShowWhatsNew && debouncedReady) {
+            WhatsNewSheet(
+                entry = entryToShow,
+                showHistoryAction = whatsNewViewModel.hasHistory,
+                onDismiss = { whatsNewViewModel.markSeen() },
+                onViewHistory = {
+                    whatsNewViewModel.markSeen()
+                    navController.navigate(GithubStoreGraph.WhatsNewHistoryScreen)
+                },
+            )
+        }
     }
 }

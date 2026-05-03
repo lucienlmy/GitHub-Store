@@ -31,6 +31,7 @@ import zed.rainxch.apps.presentation.AppsRoot
 import zed.rainxch.apps.presentation.AppsViewModel
 import zed.rainxch.apps.presentation.import.ExternalImportRoot
 import zed.rainxch.auth.presentation.AuthenticationRoot
+import zed.rainxch.core.presentation.components.whatsnew.WhatsNewHistoryScreen
 import zed.rainxch.core.presentation.locals.LocalBottomNavigationHeight
 import zed.rainxch.core.presentation.locals.LocalBottomNavigationLiquid
 import zed.rainxch.core.presentation.locals.LocalScrollbarEnabled
@@ -268,6 +269,9 @@ fun AppNavigation(
                         onNavigateToSponsor = {
                             navController.navigate(GithubStoreGraph.SponsorScreen)
                         },
+                        onNavigateToWhatsNew = {
+                            navController.navigate(GithubStoreGraph.WhatsNewHistoryScreen)
+                        },
                     )
                 }
 
@@ -304,6 +308,12 @@ fun AppNavigation(
                 composable<GithubStoreGraph.MirrorPickerScreen> {
                     MirrorPickerRoot(
                         onNavigateBack = { navController.popBackStack() },
+                    )
+                }
+
+                composable<GithubStoreGraph.WhatsNewHistoryScreen> {
+                    WhatsNewHistoryScreen(
+                        onNavigateBack = { navController.navigateUp() },
                     )
                 }
 

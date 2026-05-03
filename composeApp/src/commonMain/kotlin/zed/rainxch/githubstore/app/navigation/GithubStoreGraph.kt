@@ -52,4 +52,7 @@ sealed interface GithubStoreGraph {
 
     @Serializable
     data object MirrorPickerScreen : GithubStoreGraph
+
+    @Serializable
+    data object WhatsNewHistoryScreen : GithubStoreGraph
 }
