@@ -10,6 +10,7 @@ val whatsNewModule =
         single<WhatsNewLoader> {
             WhatsNewLoaderImpl(
                 knownVersionCodes = KnownWhatsNewVersionCodes.ALL,
+                localizationManager = get(),
                 logger = get(),
             )
         }

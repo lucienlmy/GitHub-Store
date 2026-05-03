@@ -7,16 +7,25 @@ history screen.
 ## File layout
 
 ```
-files/whatsnew/<versionCode>.json              # default (English)
-files-zh-rCN/whatsnew/<versionCode>.json       # zh-CN translation
-files-ja/whatsnew/<versionCode>.json           # ja translation
-files-<qualifier>/whatsnew/<versionCode>.json  # any other locale
+files/whatsnew/<versionCode>.json                  # default (English)
+files/whatsnew/<locale>/<versionCode>.json         # localized translation
 ```
 
-Compose Multiplatform Resources resolves `files-<qualifier>` directories the
-same way it resolves `values-<qualifier>` for strings, so the loader picks the
-locale-matched variant automatically and falls back to the default English file
-when a translation is missing.
+Compose Multiplatform Resources does not extend its `values-<qualifier>` /
+`drawable-<qualifier>` resolution to the raw `files` directory, so locale
+variants live as plain subfolders and `WhatsNewLoaderImpl` performs the lookup
+manually. For each requested `versionCode`, the loader tries:
+
+1. `files/whatsnew/<full-locale>/<versionCode>.json` (e.g. `zh-CN`, `pt-BR`)
+2. `files/whatsnew/<primary-locale>/<versionCode>.json` (e.g. `zh`, `pt`)
+3. `files/whatsnew/<versionCode>.json` (English fallback)
+
+The current locale is supplied by `LocalizationManager.getCurrentLanguageCode()`
+/ `getPrimaryLanguageCode()`, so the resolution honours the in-app language
+override exposed in Tweaks, not just the OS locale.
+
+Existing locale folders: `ar`, `bn`, `es`, `fr`, `hi`, `it`, `ja`, `ko`, `pl`,
+`ru`, `tr`, `zh-CN`.
 
 ## Schema
 
@@ -62,7 +71,8 @@ next real release.
 ## Translator workflow
 
 1. Copy `files/whatsnew/<versionCode>.json` to
-   `files-<your-locale-qualifier>/whatsnew/<versionCode>.json`.
+   `files/whatsnew/<your-locale>/<versionCode>.json`. Use a BCP-47 code such as
+   `de`, `pt-BR`, or `zh-CN`.
 2. Translate the bullet text only. Leave `versionCode`, `versionName`,
    `releaseDate`, `showAsSheet`, and the section `type` values untouched.
 3. Open a PR — translations land independently of the release that introduced
