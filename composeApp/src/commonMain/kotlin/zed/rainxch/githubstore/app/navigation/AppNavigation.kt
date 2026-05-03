@@ -31,6 +31,7 @@ import zed.rainxch.apps.presentation.AppsRoot
 import zed.rainxch.apps.presentation.AppsViewModel
 import zed.rainxch.apps.presentation.import.ExternalImportRoot
 import zed.rainxch.auth.presentation.AuthenticationRoot
+import zed.rainxch.core.presentation.components.announcements.AnnouncementsRoot
 import zed.rainxch.core.presentation.components.whatsnew.WhatsNewHistoryScreen
 import zed.rainxch.core.presentation.locals.LocalBottomNavigationHeight
 import zed.rainxch.core.presentation.locals.LocalBottomNavigationLiquid
@@ -38,6 +39,7 @@ import zed.rainxch.core.presentation.locals.LocalScrollbarEnabled
 import zed.rainxch.details.presentation.DetailsRoot
 import zed.rainxch.devprofile.presentation.DeveloperProfileRoot
 import zed.rainxch.favourites.presentation.FavouritesRoot
+import zed.rainxch.githubstore.app.announcements.AnnouncementsViewModel
 import zed.rainxch.githubstore.app.whatsnew.WhatsNewViewModel
 import zed.rainxch.home.presentation.HomeRoot
 import zed.rainxch.profile.presentation.ProfileRoot
@@ -68,6 +70,7 @@ fun AppNavigation(
     val appsState by appsViewModel.state.collectAsStateWithLifecycle()
 
     val whatsNewViewModel = koinViewModel<WhatsNewViewModel>()
+    val announcementsViewModel = koinViewModel<AnnouncementsViewModel>()
 
     CompositionLocalProvider(
         LocalBottomNavigationLiquid provides liquidState,
@@ -279,6 +282,9 @@ fun AppNavigation(
                             whatsNewViewModel.forceShowLatest()
                             navController.navigateUp()
                         },
+                        onNavigateToAnnouncements = {
+                            navController.navigate(GithubStoreGraph.AnnouncementsScreen)
+                        },
                     )
                 }
 
@@ -321,6 +327,23 @@ fun AppNavigation(
                 composable<GithubStoreGraph.WhatsNewHistoryScreen> {
                     WhatsNewHistoryScreen(
                         onNavigateBack = { navController.navigateUp() },
+                    )
+                }
+
+                composable<GithubStoreGraph.AnnouncementsScreen> {
+                    val feed by announcementsViewModel.feed.collectAsStateWithLifecycle()
+                    AnnouncementsRoot(
+                        items = feed.visibleItems,
+                        acknowledgedIds = feed.acknowledgedIds,
+                        mutedCategories = feed.mutedCategories,
+                        refreshFailed = feed.lastRefreshFailed,
+                        onNavigateBack = { navController.navigateUp() },
+                        onCtaClick = { announcementsViewModel.openCta(it) },
+                        onDismissClick = { announcementsViewModel.dismiss(it) },
+                        onAcknowledgeClick = { announcementsViewModel.acknowledge(it) },
+                        onToggleMute = { category, muted ->
+                            announcementsViewModel.setMuted(category, muted)
+                        },
                     )
                 }
 
