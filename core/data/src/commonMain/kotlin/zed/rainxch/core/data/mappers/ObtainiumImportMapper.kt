@@ -33,10 +33,11 @@ fun ObtainiumApp.toExportedAppOrSkip(json: Json): ObtainiumMapResult {
 
     val packageName = id.trim().takeIf { it.isNotBlank() } ?: return ObtainiumMapResult(
         exported = null,
-        nonGitHubLabel = "$owner/$repo (missing package id)",
-        unsupportedFailureLabel = null,
+        nonGitHubLabel = null,
+        unsupportedFailureLabel = "$owner/$repo (missing package id)",
     )
 
+    val canonicalUrl = "https://github.com/$owner/$repo"
     val parsed = parseAdditionalSettings(additionalSettingsRaw, json)
     if (parsed.invertFilter) {
         return ObtainiumMapResult(
@@ -51,7 +52,7 @@ fun ObtainiumApp.toExportedAppOrSkip(json: Json): ObtainiumMapResult {
             packageName = packageName,
             repoOwner = owner,
             repoName = repo,
-            repoUrl = rawUrl,
+            repoUrl = canonicalUrl,
             assetFilterRegex = parsed.filter,
             fallbackToOlderReleases = parsed.fallbackToOlderReleases,
             preferredAssetVariant = null,
