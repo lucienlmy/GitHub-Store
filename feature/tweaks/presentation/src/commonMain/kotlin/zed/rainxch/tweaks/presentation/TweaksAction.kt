@@ -79,6 +79,18 @@ sealed interface TweaksAction {
 
     data object OnRequestDhizukuPermission : TweaksAction
 
+    data object OnInstallerAttributionSystemDefault : TweaksAction
+
+    data class OnInstallerAttributionPresetSelected(
+        val key: zed.rainxch.core.domain.model.PresetKey,
+    ) : TweaksAction
+
+    data object OnInstallerAttributionCustomToggleExpanded : TweaksAction
+
+    data class OnInstallerAttributionCustomChanged(val value: String) : TweaksAction
+
+    data object OnInstallerAttributionCustomSave : TweaksAction
+
     data class OnAutoUpdateToggled(
         val enabled: Boolean,
     ) : TweaksAction

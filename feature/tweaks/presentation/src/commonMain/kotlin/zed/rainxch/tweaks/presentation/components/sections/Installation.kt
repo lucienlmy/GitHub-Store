@@ -103,6 +103,171 @@ fun LazyListScope.installationSection(
                     onAction(TweaksAction.OnAutoUpdateToggled(enabled))
                 }
             )
+
+            Spacer(Modifier.height(12.dp))
+
+            InstallerAttributionCard(state = state, onAction = onAction)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun InstallerAttributionCard(
+    state: TweaksState,
+    onAction: (TweaksAction) -> Unit,
+) {
+    val attribution = state.installerAttribution
+    ExpressiveCard {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                text = stringResource(Res.string.installer_attribution_title),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = stringResource(Res.string.installer_attribution_description),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(4.dp))
+
+            AttributionRadioRow(
+                title = stringResource(Res.string.installer_attribution_preset_system),
+                selected = attribution is zed.rainxch.core.domain.model.InstallerAttribution.SystemDefault,
+                onClick = { onAction(TweaksAction.OnInstallerAttributionSystemDefault) },
+            )
+            AttributionRadioRow(
+                title = stringResource(Res.string.installer_attribution_preset_playstore),
+                caption = "com.android.vending",
+                selected = (attribution as? zed.rainxch.core.domain.model.InstallerAttribution.Preset)?.key
+                    == zed.rainxch.core.domain.model.PresetKey.PLAY_STORE,
+                onClick = {
+                    onAction(
+                        TweaksAction.OnInstallerAttributionPresetSelected(
+                            zed.rainxch.core.domain.model.PresetKey.PLAY_STORE,
+                        ),
+                    )
+                },
+            )
+            AttributionRadioRow(
+                title = stringResource(Res.string.installer_attribution_preset_fdroid),
+                caption = "org.fdroid.fdroid",
+                selected = (attribution as? zed.rainxch.core.domain.model.InstallerAttribution.Preset)?.key
+                    == zed.rainxch.core.domain.model.PresetKey.FDROID,
+                onClick = {
+                    onAction(
+                        TweaksAction.OnInstallerAttributionPresetSelected(
+                            zed.rainxch.core.domain.model.PresetKey.FDROID,
+                        ),
+                    )
+                },
+            )
+            AttributionRadioRow(
+                title = stringResource(Res.string.installer_attribution_preset_obtainium),
+                caption = "dev.imranr.obtainium.app",
+                selected = (attribution as? zed.rainxch.core.domain.model.InstallerAttribution.Preset)?.key
+                    == zed.rainxch.core.domain.model.PresetKey.OBTAINIUM,
+                onClick = {
+                    onAction(
+                        TweaksAction.OnInstallerAttributionPresetSelected(
+                            zed.rainxch.core.domain.model.PresetKey.OBTAINIUM,
+                        ),
+                    )
+                },
+            )
+            AttributionRadioRow(
+                title = stringResource(Res.string.installer_attribution_preset_custom),
+                caption = (attribution as? zed.rainxch.core.domain.model.InstallerAttribution.Custom)
+                    ?.packageName,
+                selected = attribution is zed.rainxch.core.domain.model.InstallerAttribution.Custom,
+                onClick = { onAction(TweaksAction.OnInstallerAttributionCustomToggleExpanded) },
+            )
+
+            if (state.installerAttributionCustomExpanded ||
+                attribution is zed.rainxch.core.domain.model.InstallerAttribution.Custom
+            ) {
+                CustomInstallerEditor(state = state, onAction = onAction)
+            }
+
+            Spacer(Modifier.height(4.dp))
+            HintText(text = stringResource(Res.string.installer_attribution_disclosure))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun CustomInstallerEditor(
+    state: TweaksState,
+    onAction: (TweaksAction) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        androidx.compose.material3.OutlinedTextField(
+            value = state.installerAttributionCustomDraft,
+            onValueChange = { onAction(TweaksAction.OnInstallerAttributionCustomChanged(it)) },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text(stringResource(Res.string.installer_attribution_custom_label)) },
+            placeholder = { Text("com.example.installer") },
+            singleLine = true,
+            isError = state.installerAttributionCustomError != null,
+            supportingText = state.installerAttributionCustomError?.let {
+                {
+                    Text(stringResource(Res.string.installer_attribution_custom_error))
+                }
+            },
+        )
+        FilledTonalButton(
+            onClick = { onAction(TweaksAction.OnInstallerAttributionCustomSave) },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+        ) {
+            Text(
+                text = stringResource(Res.string.installer_attribution_custom_apply),
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+    }
+}
+
+@Composable
+private fun AttributionRadioRow(
+    title: String,
+    caption: String? = null,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .selectable(selected = selected, onClick = onClick, role = Role.RadioButton)
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        androidx.compose.material3.RadioButton(
+            selected = selected,
+            onClick = onClick,
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            if (!caption.isNullOrBlank()) {
+                Text(
+                    text = caption,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }
