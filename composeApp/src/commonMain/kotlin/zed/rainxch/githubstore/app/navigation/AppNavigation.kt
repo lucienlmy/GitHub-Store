@@ -253,6 +253,21 @@ fun AppNavigation(
                     )
                 }
 
+                composable<GithubStoreGraph.StarredPickerScreen> {
+                    zed.rainxch.apps.presentation.starred.StarredPickerRoot(
+                        onNavigateBack = { navController.navigateUp() },
+                        onNavigateToDetails = { repoId, owner, repo ->
+                            navController.navigate(
+                                GithubStoreGraph.DetailsScreen(
+                                    repositoryId = repoId,
+                                    owner = owner,
+                                    repo = repo,
+                                ),
+                            )
+                        },
+                    )
+                }
+
                 composable<GithubStoreGraph.ProfileScreen> {
                     ProfileRoot(
                         onNavigateBack = {
@@ -395,6 +410,9 @@ fun AppNavigation(
                         },
                         onNavigateToExternalImport = {
                             navController.navigate(GithubStoreGraph.ExternalImportScreen)
+                        },
+                        onNavigateToStarredPicker = {
+                            navController.navigate(GithubStoreGraph.StarredPickerScreen)
                         },
                         viewModel = appsViewModel,
                         state = appsState,

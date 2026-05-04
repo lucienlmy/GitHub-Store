@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.FileDownload
@@ -109,6 +110,7 @@ import zed.rainxch.core.presentation.utils.ObserveAsEvents
 import zed.rainxch.core.presentation.utils.arrowKeyScroll
 import zed.rainxch.githubstore.core.presentation.res.Res
 import zed.rainxch.githubstore.core.presentation.res.add_by_link
+import zed.rainxch.githubstore.core.presentation.res.add_from_starred_title
 import zed.rainxch.githubstore.core.presentation.res.advanced_settings_open
 import zed.rainxch.githubstore.core.presentation.res.apps_section_up_to_date
 import zed.rainxch.githubstore.core.presentation.res.apps_section_updates_available
@@ -159,6 +161,7 @@ fun AppsRoot(
     onNavigateBack: () -> Unit,
     onNavigateToRepo: (repoId: Long) -> Unit,
     onNavigateToExternalImport: () -> Unit,
+    onNavigateToStarredPicker: () -> Unit,
     viewModel: AppsViewModel = koinViewModel(),
     state: AppsState,
 ) {
@@ -201,6 +204,10 @@ fun AppsRoot(
             when (action) {
                 AppsAction.OnNavigateBackClick -> {
                     onNavigateBack()
+                }
+
+                AppsAction.OnAddFromStarredClick -> {
+                    onNavigateToStarredPicker()
                 }
 
                 else -> {
@@ -328,6 +335,19 @@ fun AppsScreen(
                                 },
                                 leadingIcon = {
                                     Icon(Icons.Outlined.Search, contentDescription = null)
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(Res.string.add_from_starred_title)) },
+                                onClick = {
+                                    showOverflowMenu = false
+                                    onAction(AppsAction.OnAddFromStarredClick)
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Filled.Star,
+                                        contentDescription = null,
+                                    )
                                 },
                             )
                         }

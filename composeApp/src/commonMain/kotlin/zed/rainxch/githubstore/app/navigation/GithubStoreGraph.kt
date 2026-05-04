@@ -58,4 +58,7 @@ sealed interface GithubStoreGraph {
 
     @Serializable
     data object AnnouncementsScreen : GithubStoreGraph
+
+    @Serializable
+    data object StarredPickerScreen : GithubStoreGraph
 }

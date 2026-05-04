@@ -672,6 +672,24 @@
     <string name="import_summary_collapse">Hide details</string>
     <string name="import_summary_unknown_format">Couldn\'t read this file</string>
     <string name="import_summary_unknown_caption">It doesn\'t look like a GitHub Store or Obtainium export. Here\'s the start of the file:</string>
+
+    <string name="add_from_starred_title">Add from starred</string>
+    <string name="starred_picker_title">Add from starred</string>
+    <string name="starred_picker_header_counts">%1$d starred · %2$d ship APKs · %3$d already tracked</string>
+    <string name="starred_picker_progress">Checking %1$d / %2$d…</string>
+    <string name="starred_picker_search_hint">Search owner / repo / description</string>
+    <string name="starred_picker_sort_recent">Recently starred</string>
+    <string name="starred_picker_sort_alphabetical">A → Z</string>
+    <string name="starred_picker_sort_stars">Most stars</string>
+    <string name="starred_picker_filter_show_all">Show repos without APK releases</string>
+    <string name="starred_picker_apk_badge">APK</string>
+    <string name="starred_picker_already_tracked">Tracked</string>
+    <string name="starred_picker_empty">No starred repos. Star repos on GitHub to see them here.</string>
+    <string name="starred_picker_no_match">Nothing matches.</string>
+    <string name="starred_picker_sign_in_required">Sign in to GitHub to see your starred repos.</string>
+    <string name="starred_picker_rate_limited">GitHub rate limit reached. Resume to keep checking.</string>
+    <string name="starred_picker_resume">Resume</string>
+    <string name="starred_picker_star_dedup_tooltip">Removing a star on GitHub won\'t untrack the app.</string>
     <string name="import_apps_title">Import apps</string>
     <string name="import_apps_description">Paste the exported JSON to restore your tracked apps</string>
     <string name="import_apps_hint">Paste exported JSON here…</string>

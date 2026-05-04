@@ -237,6 +237,9 @@ class AppsViewModel(
             AppsAction.OnNavigateBackClick -> {
             }
 
+            AppsAction.OnAddFromStarredClick -> {
+            }
+
             is AppsAction.OnSearchChange -> {
                 _state.update {
                     it.copy(searchQuery = action.query)

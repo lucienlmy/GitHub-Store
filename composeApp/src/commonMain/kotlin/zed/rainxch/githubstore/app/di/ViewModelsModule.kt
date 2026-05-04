@@ -5,6 +5,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import zed.rainxch.apps.presentation.AppsViewModel
 import zed.rainxch.apps.presentation.import.ExternalImportViewModel
+import zed.rainxch.apps.presentation.starred.StarredPickerViewModel
 import zed.rainxch.auth.presentation.AuthenticationViewModel
 import zed.rainxch.details.presentation.DetailsViewModel
 import zed.rainxch.devprofile.presentation.DeveloperProfileViewModel
@@ -68,6 +69,7 @@ val viewModelsModule =
         viewModelOf(::TweaksViewModel)
         viewModelOf(::FeedbackViewModel)
         viewModelOf(::StarredReposViewModel)
+        viewModelOf(::StarredPickerViewModel)
         viewModelOf(::AutoSuggestMirrorViewModel)
         viewModelOf(::WhatsNewViewModel)
         viewModelOf(::AnnouncementsViewModel)

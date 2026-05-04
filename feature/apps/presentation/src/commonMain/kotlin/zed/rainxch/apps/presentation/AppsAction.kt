@@ -135,4 +135,6 @@ sealed interface AppsAction {
     // dismiss watermark and routes the user into the import wizard, which
     // runs a fresh scan + match resolution on entry.
     data object OnRescanForGithubApps : AppsAction
+
+    data object OnAddFromStarredClick : AppsAction
 }
