@@ -13,7 +13,8 @@
         "Fil d’annonces : avis de confidentialité, sondages et alertes de sécurité dans Profil.",
         "Installation silencieuse via Dhizuku : contournez les fenêtres d’installation des OEM (Xiaomi, OPPO, vivo, Huawei) grâce au statut Propriétaire de l’appareil.",
         "Import/Export Obtainium : récupérez votre bibliothèque depuis Obtainium en un toucher, ou exportez vers Obtainium quand vous voulez.",
-        "Ajouter depuis les étoiles : repérez parmi vos repos étoilés sur GitHub ceux qui livrent un APK, puis installez-les directement."
+        "Ajouter depuis les étoiles : repérez parmi vos repos étoilés sur GitHub ceux qui livrent un APK, puis installez-les directement.",
+        "Attribution de l’installateur : choisissez le nom d’installateur que les installations silencieuses revendiquent, pour que les apps qui filtrent par source d’installation fonctionnent."
       ]
     },
     {
