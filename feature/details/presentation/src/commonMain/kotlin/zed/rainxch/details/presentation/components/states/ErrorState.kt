@@ -88,7 +88,7 @@ fun ErrorState(
                     textAlign = TextAlign.Center,
                 )
 
-                if (errorMessage.isNotBlank() && !kind.hideRawMessage) {
+                if (kind == ErrorKind.RATE_LIMIT && errorMessage.isNotBlank()) {
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text = errorMessage,
