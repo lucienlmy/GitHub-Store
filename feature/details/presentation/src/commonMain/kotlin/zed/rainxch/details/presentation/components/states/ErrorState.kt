@@ -1,47 +1,211 @@
 package zed.rainxch.details.presentation.components.states
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CloudOff
+import androidx.compose.material.icons.outlined.HourglassEmpty
+import androidx.compose.material.icons.outlined.SearchOff
+import androidx.compose.material.icons.outlined.SentimentDissatisfied
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import zed.rainxch.core.presentation.components.GithubStoreButton
+import zed.rainxch.core.presentation.components.ExpressiveCard
 import zed.rainxch.details.presentation.DetailsAction
-import zed.rainxch.githubstore.core.presentation.res.*
+import zed.rainxch.githubstore.core.presentation.res.Res
+import zed.rainxch.githubstore.core.presentation.res.error_state_go_back
+import zed.rainxch.githubstore.core.presentation.res.error_state_subtitle_generic
+import zed.rainxch.githubstore.core.presentation.res.error_state_subtitle_not_found
+import zed.rainxch.githubstore.core.presentation.res.error_state_subtitle_offline
+import zed.rainxch.githubstore.core.presentation.res.error_state_subtitle_rate_limit
+import zed.rainxch.githubstore.core.presentation.res.error_state_title_generic
+import zed.rainxch.githubstore.core.presentation.res.error_state_title_not_found
+import zed.rainxch.githubstore.core.presentation.res.error_state_title_offline
+import zed.rainxch.githubstore.core.presentation.res.error_state_title_rate_limit
+import zed.rainxch.githubstore.core.presentation.res.retry
 
 @Composable
 fun ErrorState(
     errorMessage: String,
     onAction: (DetailsAction) -> Unit,
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+    val kind = classify(errorMessage)
+    Box(
+        modifier = Modifier.fillMaxSize().padding(24.dp),
+        contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = stringResource(Res.string.error_loading_details),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onBackground,
-            textAlign = TextAlign.Center,
-        )
+        ExpressiveCard(
+            modifier = Modifier.widthIn(max = 480.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                IconBadge(icon = kind.icon, tint = kind.tint())
 
-        Text(
-            text = errorMessage,
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.error,
-        )
+                Text(
+                    text = stringResource(kind.titleRes),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                )
 
-        GithubStoreButton(
-            text = stringResource(Res.string.retry),
-            onClick = {
-                onAction(DetailsAction.Retry)
-            },
+                Text(
+                    text = stringResource(kind.subtitleRes),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
+
+                if (errorMessage.isNotBlank() && !kind.hideRawMessage) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = errorMessage,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                    )
+                }
+
+                Spacer(Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    TextButton(
+                        onClick = { onAction(DetailsAction.OnNavigateBackClick) },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(16.dp),
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.error_state_go_back),
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                    Button(
+                        onClick = { onAction(DetailsAction.Retry) },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(16.dp),
+                        contentPadding = PaddingValues(vertical = 12.dp),
+                        colors = ButtonDefaults.buttonColors(),
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.retry),
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun IconBadge(icon: ImageVector, tint: Color) {
+    Box(
+        modifier = Modifier
+            .size(72.dp)
+            .clip(CircleShape)
+            .background(tint.copy(alpha = 0.15f)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = tint,
+            modifier = Modifier.size(36.dp),
         )
+    }
+}
+
+private enum class ErrorKind(
+    val icon: ImageVector,
+    val titleRes: StringResource,
+    val subtitleRes: StringResource,
+    val hideRawMessage: Boolean = false,
+) {
+    OFFLINE(
+        icon = Icons.Outlined.CloudOff,
+        titleRes = Res.string.error_state_title_offline,
+        subtitleRes = Res.string.error_state_subtitle_offline,
+        hideRawMessage = true,
+    ),
+    RATE_LIMIT(
+        icon = Icons.Outlined.HourglassEmpty,
+        titleRes = Res.string.error_state_title_rate_limit,
+        subtitleRes = Res.string.error_state_subtitle_rate_limit,
+        hideRawMessage = false,
+    ),
+    NOT_FOUND(
+        icon = Icons.Outlined.SearchOff,
+        titleRes = Res.string.error_state_title_not_found,
+        subtitleRes = Res.string.error_state_subtitle_not_found,
+        hideRawMessage = true,
+    ),
+    GENERIC(
+        icon = Icons.Outlined.SentimentDissatisfied,
+        titleRes = Res.string.error_state_title_generic,
+        subtitleRes = Res.string.error_state_subtitle_generic,
+    ),
+}
+
+@Composable
+private fun ErrorKind.tint(): Color = when (this) {
+    ErrorKind.OFFLINE -> MaterialTheme.colorScheme.tertiary
+    ErrorKind.RATE_LIMIT -> MaterialTheme.colorScheme.tertiary
+    ErrorKind.NOT_FOUND -> MaterialTheme.colorScheme.secondary
+    ErrorKind.GENERIC -> MaterialTheme.colorScheme.error
+}
+
+private fun classify(message: String): ErrorKind {
+    val lower = message.lowercase()
+    return when {
+        lower.contains("rate limit") || lower.contains("retry in") || lower.contains("429") ->
+            ErrorKind.RATE_LIMIT
+        lower.contains("404") || lower.contains("not found") -> ErrorKind.NOT_FOUND
+        lower.contains("unable to resolve host") ||
+            lower.contains("unknownhost") ||
+            lower.contains("connection refused") ||
+            lower.contains("network is unreachable") ||
+            lower.contains("timeout") ||
+            lower.contains("offline") -> ErrorKind.OFFLINE
+        else -> ErrorKind.GENERIC
     }
 }

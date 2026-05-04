@@ -199,7 +199,16 @@
 
     <!-- Errors & states -->
     <string name="error_loading_details">Error loading details</string>
+    <string name="error_state_title_generic">Something went wrong</string>
+    <string name="error_state_title_offline">You\'re offline</string>
+    <string name="error_state_title_rate_limit">Rate limit hit</string>
+    <string name="error_state_title_not_found">Repository not found</string>
+    <string name="error_state_subtitle_offline">Check your connection and try again.</string>
+    <string name="error_state_subtitle_rate_limit">GitHub or our backend hit a quota. Try again in a moment.</string>
+    <string name="error_state_subtitle_not_found">The repository may be private, renamed, or deleted.</string>
+    <string name="error_state_subtitle_generic">We couldn\'t load this repo. Pull to retry below.</string>
     <string name="retry">Retry</string>
+    <string name="error_state_go_back">Go back</string>
     <string name="no_description">No description provided.</string>
     <string name="no_release_notes">No release notes.</string>
 
