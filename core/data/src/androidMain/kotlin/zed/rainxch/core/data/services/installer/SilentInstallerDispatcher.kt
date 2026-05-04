@@ -1,15 +1,13 @@
 package zed.rainxch.core.data.services.installer
 
+import android.os.ParcelFileDescriptor
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import zed.rainxch.core.data.services.dhizuku.DhizukuServiceManager
-import zed.rainxch.core.data.services.dhizuku.IDhizukuInstallerService
 import zed.rainxch.core.data.services.dhizuku.model.DhizukuStatus
-import zed.rainxch.core.data.services.shizuku.IShizukuInstallerService
 import zed.rainxch.core.data.services.shizuku.ShizukuServiceManager
 import zed.rainxch.core.data.services.shizuku.model.ShizukuStatus
 import zed.rainxch.core.domain.model.GithubAsset
@@ -19,12 +17,14 @@ import zed.rainxch.core.domain.repository.TweaksRepository
 import zed.rainxch.core.domain.system.InstallOutcome
 import zed.rainxch.core.domain.system.Installer
 import zed.rainxch.core.domain.system.InstallerInfoExtractor
+import java.io.File
 
 class SilentInstallerDispatcher(
     private val androidInstaller: Installer,
     private val shizukuServiceManager: ShizukuServiceManager,
     private val dhizukuServiceManager: DhizukuServiceManager,
     private val tweaksRepository: TweaksRepository,
+    private val scope: CoroutineScope,
 ) : Installer {
     companion object {
         private const val TAG = "SilentInstaller"
@@ -33,7 +33,7 @@ class SilentInstallerDispatcher(
     @Volatile
     private var cachedInstallerType: InstallerType = InstallerType.DEFAULT
 
-    fun observeInstallerPreference(scope: CoroutineScope) {
+    fun observeInstallerPreference() {
         scope.launch {
             tweaksRepository.getInstallerType().collect { type ->
                 cachedInstallerType = type
@@ -88,20 +88,10 @@ class SilentInstallerDispatcher(
     ): InstallOutcome {
         Logger.d(TAG) { "install() called — filePath=$filePath, extOrMime=$extOrMime, cached=$cachedInstallerType" }
 
-        when (resolveActiveBackend()) {
-            Backend.SHIZUKU -> {
-                Logger.d(TAG) { "Routing install through Shizuku" }
-                val outcome = tryShizukuInstall(filePath)
-                if (outcome != null) return outcome
-            }
-            Backend.DHIZUKU -> {
-                Logger.d(TAG) { "Routing install through Dhizuku" }
-                val outcome = tryDhizukuInstall(filePath)
-                if (outcome != null) return outcome
-            }
-            Backend.DEFAULT -> {
-                Logger.d(TAG) { "No silent backend active — using standard installer" }
-            }
+        val backend = resolveActiveBackend()
+        if (backend != Backend.DEFAULT) {
+            val outcome = trySilentInstall(filePath, backend)
+            if (outcome != null) return outcome
         }
 
         Logger.d(TAG) { "Falling back to standard AndroidInstaller for: $filePath" }
@@ -112,34 +102,11 @@ class SilentInstallerDispatcher(
     override fun uninstall(packageName: String) {
         Logger.d(TAG) { "uninstall() called — packageName=$packageName, cached=$cachedInstallerType" }
 
-        when (resolveActiveBackend()) {
-            Backend.SHIZUKU -> {
-                Thread {
-                    try {
-                        val service: IShizukuInstallerService? = runBlocking { shizukuServiceManager.getService() }
-                        if (service == null || service.uninstallPackage(packageName) != 0) {
-                            Logger.w(TAG) { "Shizuku uninstall failed, falling back" }
-                            androidInstaller.uninstall(packageName)
-                        }
-                    } catch (e: Exception) {
-                        Logger.e(TAG) { "Shizuku uninstall exception, falling back: ${e.message}" }
-                        androidInstaller.uninstall(packageName)
-                    }
-                }.start()
-            }
-            Backend.DHIZUKU -> {
-                Thread {
-                    try {
-                        val service: IDhizukuInstallerService? = runBlocking { dhizukuServiceManager.getService() }
-                        if (service == null || service.uninstallPackage(packageName) != 0) {
-                            Logger.w(TAG) { "Dhizuku uninstall failed, falling back" }
-                            androidInstaller.uninstall(packageName)
-                        }
-                    } catch (e: Exception) {
-                        Logger.e(TAG) { "Dhizuku uninstall exception, falling back: ${e.message}" }
-                        androidInstaller.uninstall(packageName)
-                    }
-                }.start()
+        when (val backend = resolveActiveBackend()) {
+            Backend.SHIZUKU, Backend.DHIZUKU -> {
+                scope.launch(Dispatchers.IO) {
+                    silentUninstall(packageName, backend)
+                }
             }
             Backend.DEFAULT -> {
                 androidInstaller.uninstall(packageName)
@@ -147,46 +114,63 @@ class SilentInstallerDispatcher(
         }
     }
 
-    private suspend fun tryShizukuInstall(filePath: String): InstallOutcome? = try {
-        val service = shizukuServiceManager.getService()
-        if (service == null) {
-            Logger.w(TAG) { "Shizuku service is null, will fall back" }
-            null
-        } else {
+    private suspend fun trySilentInstall(filePath: String, backend: Backend): InstallOutcome? {
+        Logger.d(TAG) { "Routing install through $backend" }
+        return try {
             val result = withContext(Dispatchers.IO) {
-                val file = java.io.File(filePath)
-                val pfd = android.os.ParcelFileDescriptor.open(
-                    file,
-                    android.os.ParcelFileDescriptor.MODE_READ_ONLY,
-                )
-                pfd.use { service.installPackage(it, file.length()) }
+                val file = File(filePath)
+                ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
+                    when (backend) {
+                        Backend.SHIZUKU -> {
+                            val service = shizukuServiceManager.getService() ?: return@use null
+                            service.installPackage(pfd, file.length())
+                        }
+                        Backend.DHIZUKU -> {
+                            val service = dhizukuServiceManager.getService() ?: return@use null
+                            service.installPackage(pfd, file.length())
+                        }
+                        Backend.DEFAULT -> null
+                    }
+                }
             }
-            if (result == 0) InstallOutcome.COMPLETED else null
+            when {
+                result == null -> {
+                    Logger.w(TAG) { "$backend service is null, will fall back" }
+                    null
+                }
+                result == 0 -> InstallOutcome.COMPLETED
+                else -> {
+                    Logger.w(TAG) { "$backend install returned $result, will fall back" }
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            Logger.e(TAG) { "$backend install exception, falling back: ${e.javaClass.simpleName}: ${e.message}" }
+            null
         }
-    } catch (e: Exception) {
-        Logger.e(TAG) { "Shizuku install exception, falling back: ${e.javaClass.simpleName}: ${e.message}" }
-        null
     }
 
-    private suspend fun tryDhizukuInstall(filePath: String): InstallOutcome? = try {
-        val service = dhizukuServiceManager.getService()
-        if (service == null) {
-            Logger.w(TAG) { "Dhizuku service is null, will fall back" }
-            null
-        } else {
-            val result = withContext(Dispatchers.IO) {
-                val file = java.io.File(filePath)
-                val pfd = android.os.ParcelFileDescriptor.open(
-                    file,
-                    android.os.ParcelFileDescriptor.MODE_READ_ONLY,
-                )
-                pfd.use { service.installPackage(it, file.length()) }
+    private suspend fun silentUninstall(packageName: String, backend: Backend) {
+        try {
+            val result = when (backend) {
+                Backend.SHIZUKU -> {
+                    val service = shizukuServiceManager.getService()
+                    service?.uninstallPackage(packageName)
+                }
+                Backend.DHIZUKU -> {
+                    val service = dhizukuServiceManager.getService()
+                    service?.uninstallPackage(packageName)
+                }
+                Backend.DEFAULT -> null
             }
-            if (result == 0) InstallOutcome.COMPLETED else null
+            if (result == null || result != 0) {
+                Logger.w(TAG) { "$backend uninstall failed (result=$result), falling back" }
+                androidInstaller.uninstall(packageName)
+            }
+        } catch (e: Exception) {
+            Logger.e(TAG) { "$backend uninstall exception, falling back: ${e.message}" }
+            androidInstaller.uninstall(packageName)
         }
-    } catch (e: Exception) {
-        Logger.e(TAG) { "Dhizuku install exception, falling back: ${e.javaClass.simpleName}: ${e.message}" }
-        null
     }
 
     private fun resolveActiveBackend(): Backend = when (cachedInstallerType) {

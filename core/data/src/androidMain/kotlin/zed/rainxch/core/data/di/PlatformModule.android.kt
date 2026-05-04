@@ -90,8 +90,9 @@ actual val corePlatformModule =
                 shizukuServiceManager = get(),
                 dhizukuServiceManager = get(),
                 tweaksRepository = get(),
+                scope = get<CoroutineScope>(),
             ).also { dispatcher ->
-                dispatcher.observeInstallerPreference(get<CoroutineScope>())
+                dispatcher.observeInstallerPreference()
             }
         }
 
