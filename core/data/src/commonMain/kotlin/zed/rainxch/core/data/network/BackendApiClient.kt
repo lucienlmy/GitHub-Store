@@ -8,9 +8,12 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.contentLength
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.contentOrNull
 import io.ktor.client.plugins.timeout
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -82,6 +85,11 @@ class BackendApiClient(
                 requestTimeoutMillis = 5_000
                 connectTimeoutMillis = 3_000
                 socketTimeoutMillis = 5_000
+            }
+            install(io.ktor.client.plugins.observer.ResponseObserver) {
+                onResponse { response ->
+                    BackendRateLimitTracker.record(response)
+                }
             }
             defaultRequest {
                 url(BASE_URL)
@@ -370,10 +378,36 @@ class BackendApiClient(
             }
         }
 
-    private fun buildRateLimited(response: io.ktor.client.statement.HttpResponse): RateLimitedException {
-        val retryAfter = response.headers["Retry-After"]?.toLongOrNull()
+    private suspend fun buildRateLimited(response: io.ktor.client.statement.HttpResponse): RateLimitedException {
+        BackendRateLimitTracker.record(response)
+        val headerRetryAfter = response.headers["Retry-After"]?.toLongOrNull()
         val resetEpoch = response.headers["X-RateLimit-Reset"]?.toLongOrNull()
-        return RateLimitedException(retryAfterSeconds = retryAfter, resetEpochSeconds = resetEpoch)
+        val limit = response.headers["X-RateLimit-Limit"]?.toIntOrNull()
+        val bodyRetryAfter = parseRateLimitBody(response)
+        val effectiveRetryAfter = bodyRetryAfter ?: headerRetryAfter
+        return RateLimitedException(
+            retryAfterSeconds = effectiveRetryAfter,
+            resetEpochSeconds = resetEpoch,
+            limit = limit,
+        )
+    }
+
+    private suspend fun parseRateLimitBody(response: io.ktor.client.statement.HttpResponse): Long? {
+        val contentLength = response.contentLength() ?: 0L
+        if (contentLength == 0L) return null
+        return try {
+            val text = response.bodyAsText()
+            if (text.isBlank()) return null
+            val element = Json.parseToJsonElement(text)
+            val obj = element as? kotlinx.serialization.json.JsonObject ?: return null
+            obj["retry_after"]?.let { node ->
+                node as? kotlinx.serialization.json.JsonPrimitive
+            }?.contentOrNull?.toLongOrNull()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            null
+        }
     }
 
     private inline fun <T> safeCall(block: () -> Result<T>): Result<T> =
@@ -399,4 +433,5 @@ class BackendException(
 class RateLimitedException(
     val retryAfterSeconds: Long? = null,
     val resetEpochSeconds: Long? = null,
+    val limit: Int? = null,
 ) : Exception("Rate limited by backend (429)")
