@@ -128,6 +128,7 @@ winget install zed.rainxch.githubstore
 
 - **Smart discovery**
     - Home sections for "Trending", "Hot Release", and "Most Popular" projects with time‑based filters.
+    - Curated discovery layer through the GitHub Store backend, with the live GitHub passthrough as a backup so freshness is honest.
     - Only repos with valid installable assets are shown.
     - Platform‑aware topic scoring so Android/desktop users see relevant apps first.
     - Search with filters for platform, programming language, and sort order.
@@ -140,23 +141,35 @@ winget install zed.rainxch.githubstore
     - Fetches all releases for each repository.
     - Single "Install latest" action, plus an expandable list of all available releases and their installers.
     - Manual install option with automatic compatibility checks.
+    - **APK Inspect** (Android) — peek inside any release before installing. Surfaces app label, signing fingerprint, version codes, min/target SDK, components, file metadata, and grouped permissions colour‑coded by protection level.
+
+- **Download mirror system**
+    - Multi‑source race against the direct GitHub CDN, helpful on networks where `github.com` is throttled.
+    - End‑to‑end SHA‑256 verification against GitHub's published asset digests.
+    - Curated community mirror list, updatable from the backend without an app release.
+    - Custom mirror URL for self‑hosted `gh-proxy`‑style instances.
+    - Auto‑suggest sheet after sustained slow downloads — opt in with one tap, dismissible, never nags.
 
 - **Rich details screen**
     - App name, version and share action.
     - Stars, forks, open issues.
-    - Rendered README content ("About this app").
+    - Rendered README content ("About this app") with optional translation to the user's chosen language.
     - Release notes with Markdown formatting for any selected release.
     - List of installers with platform labels and file sizes.
+    - Pre‑release channel chip — toggle "Include betas" / "Stable only" per app, with a "switch to stable" rollback when a clean stable exists.
+    - "Merged what's changed since v1.0" — concatenated release notes for every version skipped between updates.
     - Deep linking support — open repository details via `githubstore://`, `github.com`, or `github-store.org` URLs.
     - Developer profile screen to explore a developer's repositories and activity.
 
 - **App management**
     - Open, uninstall, and downgrade installed apps directly from GitHub Store.
+    - **Library Imports** (Android) — recognises GitHub‑sourced apps already on the device (Obtainium, sideload, F‑Droid). Three match strategies (manifest hint, signing fingerprint, backend lookup); high‑confidence matches link silently, the rest land in a one‑tap review wizard. Run on demand from Apps overflow → Scan for GitHub apps.
     - **Link apps** — connect any app already installed on your device to its GitHub repository so GitHub Store can track updates for it. A guided flow lets you pick the app, enter the repo URL, and select the matching release asset.
+    - **Sectioned Apps screen** — updates, pending installs, and installed apps grouped so you see what needs attention first.
     - Android: APK architecture matching (armv7/armv8), package monitoring, and update tracking.
-    - Android: Shizuku silent installation — install and update apps without prompts (requires [Shizuku](https://shizuku.rikka.app/) running with ADB or root).
+    - Android: Shizuku and Sui silent installation — install and update apps without prompts (requires [Shizuku](https://shizuku.rikka.app/) or Sui running with ADB or root).
     - Android: Background update checking — configurable periodic checks (3h / 6h / 12h / 24h) with notifications when updates are found.
-    - Android: Auto‑update — silently installs available updates via Shizuku when enabled.
+    - Android: Auto‑update — silently installs available updates via Shizuku/Sui when enabled.
     - Desktop (Windows/macOS/Linux): downloads installers to the user's Downloads folder and opens them with the default handler.
 
 - **Collections**
@@ -164,13 +177,22 @@ winget install zed.rainxch.githubstore
     - **Favourites** — save repositories locally for quick access, no GitHub login required.
     - **Recently viewed** — automatically tracks repositories you've opened for easy return.
 
+- **Cross‑version communication**
+    - **What's new sheet** — one‑shot release highlights on first launch after each update, plus a permanent history under Profile → What's new.
+    - **Announcements feed** — privacy notices, surveys, security advisories, and news in Profile. Anonymous backend feed; dismissal and read state stay on the device.
+
+- **Authentication**
+    - GitHub OAuth via the device flow, routed through the backend by default so sign‑in keeps working on networks that throttle `github.com`. Falls back to direct GitHub on infrastructure errors.
+    - **Personal Access Token sign‑in** for users whose network blocks the OAuth browser flow entirely. Validates locally, full feature parity with the OAuth path.
+
 - **Tweaks**
     - Dedicated settings screen accessible from the bottom navigation bar.
-    - **Appearance** — theme color picker (Ocean, Mint, Rose, Purple, Indigo, Peach, Dynamic), light/dark/system mode, AMOLED black theme, system font toggle, liquid glass UI effect, scrollbar toggle (desktop).
-    - **Network** — proxy configuration with HTTP/SOCKS support and optional authentication.
-    - **Installation** (Android) — choose between default installer and Shizuku silent install, with real‑time Shizuku status indicator.
+    - **Appearance** — theme color picker (Dynamic, Ocean, Purple, Forest, Slate, Amber), light/dark/system mode, AMOLED black theme, system font toggle, liquid glass UI effect, scrollbar toggle (desktop).
+    - **Network** — proxy configuration with HTTP/SOCKS support and optional authentication; download‑mirror picker with latency test.
+    - **Installation** (Android) — choose between default installer and Shizuku/Sui silent install, with real‑time installer status indicator.
     - **Updates** (Android) — update check interval, pre‑release inclusion, auto‑update toggle.
     - **Storage** — view and clear downloaded package cache.
+    - **Send feedback** — bug reports, feature ideas, and change requests sent as email or a pre‑filled GitHub issue. Diagnostics card shows exactly what's being sent before you send it.
 
 - **Localization**
     - Available in 13 languages: English, Arabic, Bengali, Chinese (Simplified), Spanish, French, Hindi, Italian, Japanese, Korean, Polish, Russian, and Turkish.
@@ -178,6 +200,7 @@ winget install zed.rainxch.githubstore
 - **Network & performance**
     - Dynamic proxy support (HTTP, SOCKS, System) for configurable network routing.
     - Enhanced caching system for faster loading and reduced API usage.
+    - Anonymous backend at `api.github-store.org` for auth proxy, curated discovery, and the announcements feed. Open source under Apache 2.0 — self‑hostable.
 
 ---
 
@@ -203,7 +226,7 @@ Your project can appear automatically if it follows these conditions:
         - Android: `.apk`
         - Windows: `.exe`, `.msi`
         - macOS: `.dmg`, `.pkg`
-        - Linux: `.deb`, `.rpm`, `.AppImage`
+        - Linux: `.deb`, `.rpm`, `.AppImage`, `.pkg.tar.zst`
     - GitHub Store ignores GitHub's auto‑generated source artifacts (`Source code (zip)` /
       `Source code (tar.gz)`).
 
@@ -236,7 +259,7 @@ automatically—no manual submission required.
   any previous release via the release picker. Background update checks notify you when new versions drop.
 
 - **Hands‑free updates (Android)**
-  Enable Shizuku silent install + auto‑update and never touch an install prompt again.
+  Enable Shizuku or Sui silent install + auto‑update and never touch an install prompt again.
 
 - **Your library, your way**
   Star, favourite, and track recently viewed repos — all synced locally with no account required for favourites and history.
@@ -292,10 +315,10 @@ Help shape the future of GitHub Store — take this 2-minute survey:
 
 </div>
 
-You can submit any feedback in our [discord server](https://discord.gg/NBW4zeFcG6)
+You can submit any feedback in our [discord server](https://discord.github-store.org)
 
 <p align="center">
-  <a href="https://discord.gg/NBW4zeFcG6">
+  <a href="https://discord.github-store.org">
     <img src="https://invidget.switchblade.xyz/NBW4zeFcG6" />
   </a>
 </p>
@@ -380,7 +403,7 @@ Sync the project and run the app. You should now be able to sign in with GitHub.
 Check out GitHub Store [Wiki](https://github.com/OpenHub-Store/GitHub-Store/wiki) for FAQ and useful information
 
 🌐 **Website:** [github-store.org](https://github-store.org)
-💬 **Discord:** [Join the community](https://discord.gg/x9Cvh2Z9qS)
+💬 **Discord:** [Join the community](https://discord.github-store.org)
 📜 **Privacy Policy:** [github-store.org/privacy-policy](https://github-store.org/privacy-policy/)
 
 ---
@@ -410,8 +433,8 @@ GitHub Store is open to partnerships, sponsorships, and integrations.
 
 If you're interested in working together, reach out:
 
-📧 **Email:** rainxch.dev@email.com
-💬 **Discord:** [Join our community](https://discord.gg/x9Cvh2Z9qS)
+📧 **Email:** hello@github-store.org
+💬 **Discord:** [Join our community](https://discord.github-store.org)
 
 ---
 
@@ -471,7 +494,7 @@ fit for any particular purpose.
 GitHub Store is released under the **Apache License, Version 2.0**.
 
 ```
-Copyright 2025 rainxchzed
+Copyright 2025-2026 rainxchzed
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this project except in compliance with the License.
