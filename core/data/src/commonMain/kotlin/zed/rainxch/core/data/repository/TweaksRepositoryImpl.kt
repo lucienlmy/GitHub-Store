@@ -95,6 +95,56 @@ class TweaksRepositoryImpl(
         }
     }
 
+    override fun getInstallerAttribution(): Flow<zed.rainxch.core.domain.model.InstallerAttribution> =
+        preferences.data.map { prefs ->
+            val raw = prefs[INSTALLER_ATTRIBUTION_KEY]
+            decodeInstallerAttribution(raw)
+        }
+
+    override suspend fun setInstallerAttribution(
+        attribution: zed.rainxch.core.domain.model.InstallerAttribution,
+    ) {
+        preferences.edit { prefs ->
+            prefs[INSTALLER_ATTRIBUTION_KEY] = encodeInstallerAttribution(attribution)
+        }
+    }
+
+    private fun decodeInstallerAttribution(
+        raw: String?,
+    ): zed.rainxch.core.domain.model.InstallerAttribution {
+        if (raw.isNullOrBlank()) return zed.rainxch.core.domain.model.InstallerAttribution.SystemDefault
+        val parts = raw.split(":", limit = 2)
+        return when (parts[0]) {
+            "preset" -> {
+                val key = parts.getOrNull(1)?.let {
+                    zed.rainxch.core.domain.model.PresetKey.fromName(it)
+                }
+                if (key != null) {
+                    zed.rainxch.core.domain.model.InstallerAttribution.Preset(key)
+                } else {
+                    zed.rainxch.core.domain.model.InstallerAttribution.SystemDefault
+                }
+            }
+            "custom" -> {
+                val name = parts.getOrNull(1).orEmpty()
+                if (name.isNotBlank()) {
+                    zed.rainxch.core.domain.model.InstallerAttribution.Custom(name)
+                } else {
+                    zed.rainxch.core.domain.model.InstallerAttribution.SystemDefault
+                }
+            }
+            else -> zed.rainxch.core.domain.model.InstallerAttribution.SystemDefault
+        }
+    }
+
+    private fun encodeInstallerAttribution(
+        attribution: zed.rainxch.core.domain.model.InstallerAttribution,
+    ): String = when (attribution) {
+        zed.rainxch.core.domain.model.InstallerAttribution.SystemDefault -> ""
+        is zed.rainxch.core.domain.model.InstallerAttribution.Preset -> "preset:${attribution.key.name}"
+        is zed.rainxch.core.domain.model.InstallerAttribution.Custom -> "custom:${attribution.packageName.trim()}"
+    }
+
     override fun getAutoUpdateEnabled(): Flow<Boolean> =
         preferences.data.map { prefs ->
             prefs[AUTO_UPDATE_KEY] ?: false
@@ -368,6 +418,7 @@ class TweaksRepositoryImpl(
         private val DISCOVERY_PLATFORMS_KEY = stringSetPreferencesKey("discovery_platforms")
         private val AUTO_DETECT_CLIPBOARD_KEY = booleanPreferencesKey("auto_detect_clipboard_links")
         private val INSTALLER_TYPE_KEY = stringPreferencesKey("installer_type")
+        private val INSTALLER_ATTRIBUTION_KEY = stringPreferencesKey("installer_attribution")
         private val AUTO_UPDATE_KEY = booleanPreferencesKey("auto_update_enabled")
         private val UPDATE_CHECK_INTERVAL_KEY = longPreferencesKey("update_check_interval_hours")
         private val INCLUDE_PRE_RELEASES_KEY = booleanPreferencesKey("include_pre_releases")

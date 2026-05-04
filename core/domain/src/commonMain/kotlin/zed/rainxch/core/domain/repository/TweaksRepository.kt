@@ -33,6 +33,10 @@ interface TweaksRepository {
 
     suspend fun setInstallerType(type: InstallerType)
 
+    fun getInstallerAttribution(): Flow<zed.rainxch.core.domain.model.InstallerAttribution>
+
+    suspend fun setInstallerAttribution(attribution: zed.rainxch.core.domain.model.InstallerAttribution)
+
     fun getAutoUpdateEnabled(): Flow<Boolean>
 
     suspend fun setAutoUpdateEnabled(enabled: Boolean)
