@@ -78,6 +78,7 @@ class TweaksViewModel(
 
                     observeShizukuStatus()
                     observeDhizukuStatus()
+                    observeInstallerAttribution()
 
                     hasLoadedInitialData = true
                 }
@@ -294,6 +295,21 @@ class TweaksViewModel(
             installerStatusProvider.dhizukuAvailability.collect { availability ->
                 _state.update {
                     it.copy(dhizukuAvailability = availability)
+                }
+            }
+        }
+    }
+
+    private fun observeInstallerAttribution() {
+        viewModelScope.launch {
+            tweaksRepository.getInstallerAttribution().collect { attribution ->
+                _state.update { current ->
+                    val customDraft = (attribution as? zed.rainxch.core.domain.model.InstallerAttribution.Custom)?.packageName
+                        ?: current.installerAttributionCustomDraft
+                    current.copy(
+                        installerAttribution = attribution,
+                        installerAttributionCustomDraft = customDraft,
+                    )
                 }
             }
         }
@@ -588,6 +604,72 @@ class TweaksViewModel(
 
             TweaksAction.OnRequestDhizukuPermission -> {
                 installerStatusProvider.requestDhizukuPermission()
+            }
+
+            TweaksAction.OnInstallerAttributionSystemDefault -> {
+                viewModelScope.launch {
+                    tweaksRepository.setInstallerAttribution(
+                        zed.rainxch.core.domain.model.InstallerAttribution.SystemDefault,
+                    )
+                }
+                _state.update {
+                    it.copy(
+                        installerAttributionCustomExpanded = false,
+                        installerAttributionCustomError = null,
+                    )
+                }
+            }
+
+            is TweaksAction.OnInstallerAttributionPresetSelected -> {
+                viewModelScope.launch {
+                    tweaksRepository.setInstallerAttribution(
+                        zed.rainxch.core.domain.model.InstallerAttribution.Preset(action.key),
+                    )
+                }
+                _state.update {
+                    it.copy(
+                        installerAttributionCustomExpanded = false,
+                        installerAttributionCustomError = null,
+                    )
+                }
+            }
+
+            TweaksAction.OnInstallerAttributionCustomToggleExpanded -> {
+                _state.update {
+                    it.copy(
+                        installerAttributionCustomExpanded = !it.installerAttributionCustomExpanded,
+                        installerAttributionCustomError = null,
+                    )
+                }
+            }
+
+            is TweaksAction.OnInstallerAttributionCustomChanged -> {
+                _state.update {
+                    it.copy(
+                        installerAttributionCustomDraft = action.value,
+                        installerAttributionCustomError = null,
+                    )
+                }
+            }
+
+            TweaksAction.OnInstallerAttributionCustomSave -> {
+                val draft = _state.value.installerAttributionCustomDraft.trim()
+                if (!zed.rainxch.core.domain.model.InstallerAttributionDefaults.isValidPackageName(draft)) {
+                    _state.update {
+                        it.copy(
+                            installerAttributionCustomError = "invalid",
+                        )
+                    }
+                } else {
+                    viewModelScope.launch {
+                        tweaksRepository.setInstallerAttribution(
+                            zed.rainxch.core.domain.model.InstallerAttribution.Custom(draft),
+                        )
+                    }
+                    _state.update {
+                        it.copy(installerAttributionCustomError = null)
+                    }
+                }
             }
 
             is TweaksAction.OnAutoUpdateToggled -> {

@@ -631,6 +631,18 @@
     <string name="auto_update_title">Auto-update apps</string>
     <string name="auto_update_description">Automatically download and install updates in background via the selected silent installer</string>
 
+    <string name="installer_attribution_title">Installer attribution</string>
+    <string name="installer_attribution_description">Apps can see which installer placed them on your device. By default this is the system shell.</string>
+    <string name="installer_attribution_preset_system">System default</string>
+    <string name="installer_attribution_preset_playstore">Play Store</string>
+    <string name="installer_attribution_preset_fdroid">F-Droid</string>
+    <string name="installer_attribution_preset_obtainium">Obtainium</string>
+    <string name="installer_attribution_preset_custom">Custom…</string>
+    <string name="installer_attribution_custom_label">Installer package name</string>
+    <string name="installer_attribution_custom_apply">Apply</string>
+    <string name="installer_attribution_custom_error">Use a valid Android package name (e.g. com.example.installer)</string>
+    <string name="installer_attribution_disclosure">Some apps detect when their installer changes and may refuse to run, or fail security checks (e.g. Play Integrity, banking apps).</string>
+
     <string name="section_updates">Updates</string>
     <string name="update_check_interval_title">Update check interval</string>
     <string name="update_check_interval_description">How often to check for app updates in background</string>
