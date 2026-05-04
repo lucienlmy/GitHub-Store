@@ -84,6 +84,8 @@ import zed.rainxch.githubstore.core.presentation.res.installer_saved_downloads
 import zed.rainxch.githubstore.core.presentation.res.releases_unavailable_temporarily
 import zed.rainxch.githubstore.core.presentation.res.link_copied_to_clipboard
 import zed.rainxch.githubstore.core.presentation.res.rate_limit_exceeded
+import zed.rainxch.githubstore.core.presentation.res.rate_limit_exceeded_retry_in
+import zed.rainxch.githubstore.core.presentation.res.rate_limit_exceeded_signin_hint
 import zed.rainxch.githubstore.core.presentation.res.removed_from_favourites
 import zed.rainxch.githubstore.core.presentation.res.translation_failed
 import zed.rainxch.githubstore.core.presentation.res.update_package_mismatch
@@ -2569,10 +2571,18 @@ class DetailsViewModel(
                 observeInstalledApp(repo.id)
             } catch (e: RateLimitException) {
                 logger.error("Rate limited: ${e.message}")
+                val seconds = e.rateLimitInfo.timeUntilReset().inWholeSeconds
+                val message = if (seconds > 0L) {
+                    getString(Res.string.rate_limit_exceeded_retry_in, seconds.toInt()) + " " +
+                        getString(Res.string.rate_limit_exceeded_signin_hint)
+                } else {
+                    getString(Res.string.rate_limit_exceeded) + " " +
+                        getString(Res.string.rate_limit_exceeded_signin_hint)
+                }
                 _state.value =
                     _state.value.copy(
                         isLoading = false,
-                        errorMessage = getString(Res.string.rate_limit_exceeded),
+                        errorMessage = message,
                     )
             } catch (t: Throwable) {
                 logger.error("Details load failed: ${t.message}")

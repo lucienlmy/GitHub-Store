@@ -346,6 +346,8 @@
     <string name="updated_on_date">updated on %1$s</string>
 
     <string name="rate_limit_exceeded">Rate Limit Exceeded</string>
+    <string name="rate_limit_exceeded_retry_in">Rate limit hit — retry in %1$ds.</string>
+    <string name="rate_limit_exceeded_signin_hint">Sign in to GitHub for a higher quota.</string>
     <string name="rate_limit_used_all">You've used all %1$d API requests.</string>
     <string name="rate_limit_used_all_free">You've used all %1$d free API requests.</string>
     <string name="rate_limit_resets_in_minutes">Resets in %1$d minutes</string>
