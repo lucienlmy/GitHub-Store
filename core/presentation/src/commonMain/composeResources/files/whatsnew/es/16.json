@@ -10,7 +10,8 @@
         "APK Inspect: examina el contenido de cualquier release antes de instalarlo.",
         "La pantalla de Apps ahora agrupa actualizaciones, instalaciones pendientes y apps instaladas.",
         "Hoja de novedades: descubre qué cambió tras cada actualización.",
-        "Canal de anuncios: avisos de privacidad, encuestas y alertas de seguridad en Perfil."
+        "Canal de anuncios: avisos de privacidad, encuestas y alertas de seguridad en Perfil.",
+        "Instalación silenciosa con Dhizuku: omite los diálogos de instalación de OEM en Xiaomi, OPPO, vivo y Huawei mediante el propietario del dispositivo."
       ]
     },
     {
